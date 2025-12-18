@@ -76,7 +76,7 @@ func Start() {
 		Command        string
 	}
 	tasks := []ScheduleTask{
-		{"@every 5s", "inspire"},
+		//{"@every 5s", "inspire"},
 		{"@every 1m", "test"},
 	}
 
