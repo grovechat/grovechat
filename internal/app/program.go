@@ -34,7 +34,12 @@ func Start() {
 	cfg.ScheduleWorkers = workers
 
 	// 队列配置
-	// todo
+	queueWorkers, queueOption := frankenphp.WithExtensionWorkers("queue", cfg.PhpProjectRoot+"/public/queue-worker.php", runtime.NumCPU(),
+		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
+		frankenphp.WithWorkerMaxFailures(0),
+	)
+	options = append(options, queueOption)
+	cfg.QueueWorkers = queueWorkers
 
 	// Lambda配置
 	workers, option = frankenphp.WithExtensionWorkers("lambda", cfg.PhpProjectRoot+"/public/lambda-worker.php", runtime.NumCPU()*2,
@@ -92,7 +97,8 @@ func Start() {
 	log.Println("Go Cron 调度器已启动")
 
 	// 队列启动
-	// todo
+	go startQueueWorker(cfg.QueueWorkers)
+	log.Println("队列 Worker 已启动")
 
 	select {}
 }
@@ -116,6 +122,72 @@ func runLaravelCommand(workers frankenphp.Workers, command string) {
 		}
 	} else {
 		log.Printf("[运行Laravel命令失败] 命令: %s, 类型解析失败: %T", command, resp)
+	}
+}
+
+// startQueueWorker 启动队列 Worker 循环
+func startQueueWorker(workers frankenphp.Workers) {
+	ticker := time.NewTicker(100 * time.Millisecond) // 每 100 毫秒检查一次
+	defer ticker.Stop()
+
+	consecutiveEmpty := 0
+	maxConsecutiveEmpty := 10 // 连续 10 次空闲后降速
+
+	lastError := ""
+	errorCount := 0
+
+	for range ticker.C {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+		// 不传递 connection，让 PHP 从配置中读取
+		resp, err := workers.SendMessage(ctx, map[string]any{}, nil)
+		cancel()
+
+		if err != nil {
+			log.Printf("[队列 Worker 错误] %v", err)
+			continue
+		}
+
+		if arr, ok := resp.(frankenphp.AssociativeArray[any]); ok {
+			if processed, found := arr.Map["processed"]; found {
+				if isProcessed, ok := processed.(bool); ok && isProcessed {
+					// 处理了任务，重置空闲计数和错误计数
+					consecutiveEmpty = 0
+					errorCount = 0
+					lastError = ""
+					if job, found := arr.Map["job"]; found {
+						log.Printf("[队列任务已处理] %v", job)
+					}
+					// 立即检查下一个任务
+					ticker.Reset(10 * time.Millisecond)
+				} else {
+					// 没有任务，增加空闲计数
+					consecutiveEmpty++
+					if consecutiveEmpty >= maxConsecutiveEmpty {
+						// 降低检查频率
+						ticker.Reset(1 * time.Second)
+					} else {
+						ticker.Reset(100 * time.Millisecond)
+					}
+				}
+			}
+
+			if errMsg, found := arr.Map["error"]; found && errMsg != nil {
+				currentError := fmt.Sprintf("%v", errMsg)
+				// 只在错误信息变化或者是新错误时才打印
+				if currentError != lastError {
+					log.Printf("[队列任务处理错误] %v", errMsg)
+					lastError = currentError
+					errorCount = 1
+				} else {
+					errorCount++
+					// 相同错误连续出现 10 次后，降低检查频率
+					if errorCount >= 10 {
+						ticker.Reset(5 * time.Second)
+					}
+				}
+			}
+		}
 	}
 }
 
