@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"grovechat/cmd/grovechat/config"
 	"grovechat/internal/app/business/demo"
+	"grovechat/internal/app/config"
 	"log"
 	"net/http"
 	"os"

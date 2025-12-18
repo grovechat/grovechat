@@ -19,3 +19,5 @@ docker compose exec app bash
 ```shell
 make run
 ```
+
+访问: http://localhost:8080
