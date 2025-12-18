@@ -5,6 +5,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
+import { initializeLocale } from './composables/useI18n';
+import { initializeTimezone } from './composables/useTimezone';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -27,3 +29,9 @@ createInertiaApp({
 
 // This will set light / dark mode on page load...
 initializeTheme();
+
+// This will set the locale on page load...
+initializeLocale();
+
+// This will set the timezone on page load...
+initializeTimezone();
