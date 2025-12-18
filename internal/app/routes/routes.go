@@ -2,6 +2,7 @@ package routes
 
 import (
 	"grovechat/internal/app/business/demo"
+	"grovechat/internal/app/business/lambda"
 	"grovechat/internal/app/config"
 	"log"
 	"net/http"
@@ -51,6 +52,10 @@ func Register(mux *http.ServeMux, cfg *config.Config) {
 	// Go 路由
 	mux.HandleFunc("/ping", demo.Ping)
 
-	// PHP 路由
+	// Lambda 路由（调用 PHP 方法）
+	mux.HandleFunc("/lambda/example", lambda.ExampleHandler(cfg))
+	mux.HandleFunc("/lambda/call", lambda.CustomHandler(cfg))
+
+	// PHP 路由（默认路由，必须放在最后）
 	mux.HandleFunc("/", HandlePHP(cfg))
 }

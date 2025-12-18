@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"grovechat/internal/app/config"
+	"grovechat/internal/app/phpbridge"
 	"grovechat/internal/app/routes"
 	"log"
 	"net/http"
@@ -29,16 +30,21 @@ func Start() {
 		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
 		frankenphp.WithWorkerMaxFailures(0),
 	)
+	options = append(options, option)
 	cfg.ScheduleWorkers = workers
 
 	// 队列配置
 	// todo
 
 	// Lambda配置
-	// todo
+	workers, option = frankenphp.WithExtensionWorkers("lambda", cfg.PhpProjectRoot+"/public/lambda-worker.php", runtime.NumCPU()*2,
+		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
+		frankenphp.WithWorkerMaxFailures(0),
+	)
+	options = append(options, option)
+	cfg.LambdaWorkers = workers
 
 	// 初始化frankenphp
-	options = append(options, option)
 	err := frankenphp.Init(options...)
 	if err != nil {
 		log.Fatalln(err.Error())
@@ -73,7 +79,7 @@ func Start() {
 		cmd := task.Command
 		spec := task.CronExpression
 		_, err := c.AddFunc(spec, func() {
-			go runLaravelCommand(workers, cmd)
+			go runLaravelCommand(cfg.ScheduleWorkers, cmd)
 		})
 		if err != nil {
 			log.Printf("无法添加 Cron 任务 [%s]: %v", cmd, err)
@@ -111,6 +117,11 @@ func runLaravelCommand(workers frankenphp.Workers, command string) {
 	} else {
 		log.Printf("[运行Laravel命令失败] 命令: %s, 类型解析失败: %T", command, resp)
 	}
+}
+
+// CallLambda 调用 PHP Lambda 方法（封装 phpbridge.CallLambda）
+func CallLambda(workers frankenphp.Workers, class string, method string, params ...any) (*phpbridge.LambdaResult, error) {
+	return phpbridge.CallLambda(workers, class, method, params...)
 }
 
 func Stop() {
