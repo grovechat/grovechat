@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"grovechat/internal/app/config"
-	"grovechat/internal/app/phpbridge"
 	"grovechat/internal/app/routes"
 	"log"
 	"net/http"
@@ -21,12 +20,14 @@ func Start() {
 
 	// web配置
 	options = append(options, frankenphp.WithWorkers("web", cfg.PhpProjectRoot+"/public/web-worker.php", runtime.NumCPU()*2,
+		frankenphp.WithWorkerEnv(cfg.PhpEnv),
 		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
 		frankenphp.WithWorkerMaxFailures(0),
 	))
 
 	// 定时任务配置
 	workers, option := frankenphp.WithExtensionWorkers("schedule", cfg.PhpProjectRoot+"/public/schedule-worker.php", 1,
+		frankenphp.WithWorkerEnv(cfg.PhpEnv),
 		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
 		frankenphp.WithWorkerMaxFailures(0),
 	)
@@ -35,6 +36,7 @@ func Start() {
 
 	// 队列配置
 	queueWorkers, queueOption := frankenphp.WithExtensionWorkers("queue", cfg.PhpProjectRoot+"/public/queue-worker.php", runtime.NumCPU(),
+		frankenphp.WithWorkerEnv(cfg.PhpEnv),
 		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
 		frankenphp.WithWorkerMaxFailures(0),
 	)
@@ -43,6 +45,7 @@ func Start() {
 
 	// Lambda配置
 	workers, option = frankenphp.WithExtensionWorkers("lambda", cfg.PhpProjectRoot+"/public/lambda-worker.php", runtime.NumCPU()*2,
+		frankenphp.WithWorkerEnv(cfg.PhpEnv),
 		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
 		frankenphp.WithWorkerMaxFailures(0),
 	)
@@ -189,13 +192,4 @@ func startQueueWorker(workers frankenphp.Workers) {
 			}
 		}
 	}
-}
-
-// CallLambda 调用 PHP Lambda 方法（封装 phpbridge.CallLambda）
-func CallLambda(workers frankenphp.Workers, class string, method string, params ...any) (*phpbridge.LambdaResult, error) {
-	return phpbridge.CallLambda(workers, class, method, params...)
-}
-
-func Stop() {
-	frankenphp.Shutdown()
 }
