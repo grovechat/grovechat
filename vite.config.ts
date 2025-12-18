@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
+import { fileURLToPath } from 'url';
 
 export default defineConfig({
     plugins: [
@@ -24,4 +25,16 @@ export default defineConfig({
             },
         }),
     ],
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        hmr: {
+            host: '127.0.0.1',
+        },
+    },
+    resolve: {
+        alias: {
+            '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
+        },
+    },
 });
