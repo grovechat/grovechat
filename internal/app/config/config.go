@@ -25,7 +25,6 @@ func New() *Config {
         WebPort:        80,
         PhpEnv:         make(map[string]string),
     }
-    cfg.PhpEnv[`foo`] = `bar`
     if frankenphp.EmbeddedAppPath != "" {
         cfg.PhpProjectRoot = frankenphp.EmbeddedAppPath
         dataPath := ResolveDataPath()
