@@ -130,4 +130,120 @@ export default {
     loading: 'Loading...',
     error: 'An error occurred',
   },
+  auth: {
+    login: {
+      title: 'Log in to your account',
+      description: 'Enter your email and password below to log in',
+      pageTitle: 'Log in',
+      fields: {
+        email: {
+          label: 'Email address',
+          placeholder: 'email@example.com',
+        },
+        password: {
+          label: 'Password',
+          placeholder: 'Password',
+        },
+        remember: 'Remember me',
+      },
+      forgotPassword: 'Forgot password?',
+      submit: 'Log in',
+      noAccount: "Don't have an account?",
+      signUp: 'Sign up',
+    },
+    register: {
+      title: 'Create an account',
+      description: 'Enter your details below to create your account',
+      pageTitle: 'Register',
+      fields: {
+        name: {
+          label: 'Name',
+          placeholder: 'Full name',
+        },
+        email: {
+          label: 'Email address',
+          placeholder: 'email@example.com',
+        },
+        password: {
+          label: 'Password',
+          placeholder: 'Password',
+        },
+        passwordConfirmation: {
+          label: 'Confirm password',
+          placeholder: 'Confirm password',
+        },
+      },
+      submit: 'Create account',
+      hasAccount: 'Already have an account?',
+      logIn: 'Log in',
+    },
+    resetPassword: {
+      title: 'Reset password',
+      description: 'Please enter your new password below',
+      pageTitle: 'Reset password',
+      fields: {
+        email: {
+          label: 'Email',
+        },
+        password: {
+          label: 'Password',
+          placeholder: 'Password',
+        },
+        passwordConfirmation: {
+          label: 'Confirm Password',
+          placeholder: 'Confirm password',
+        },
+      },
+      submit: 'Reset password',
+    },
+    twoFactorChallenge: {
+      pageTitle: 'Two-Factor Authentication',
+      code: {
+        title: 'Authentication Code',
+        description: 'Enter the authentication code provided by your authenticator application.',
+        toggleText: 'login using a recovery code',
+      },
+      recovery: {
+        title: 'Recovery Code',
+        description: 'Please confirm access to your account by entering one of your emergency recovery codes.',
+        toggleText: 'login using an authentication code',
+        placeholder: 'Enter recovery code',
+      },
+      submit: 'Continue',
+      orYouCan: 'or you can',
+    },
+    confirmPassword: {
+      title: 'Confirm your password',
+      description: 'This is a secure area of the application. Please confirm your password before continuing.',
+      pageTitle: 'Confirm password',
+      fields: {
+        password: {
+          label: 'Password',
+        },
+      },
+      submit: 'Confirm Password',
+    },
+    forgotPassword: {
+      title: 'Forgot password',
+      description: 'Enter your email to receive a password reset link',
+      pageTitle: 'Forgot password',
+      fields: {
+        email: {
+          label: 'Email address',
+          placeholder: 'email@example.com',
+        },
+      },
+      submit: 'Email password reset link',
+      backToLogin: 'Or, return to',
+      login: 'log in',
+    },
+    verifyEmail: {
+      title: 'Verify email',
+      description: 'Please verify your email address by clicking on the link we just emailed to you.',
+      pageTitle: 'Email verification',
+      linkSent: 'A new verification link has been sent to the email address you provided during registration.',
+      submit: 'Resend verification email',
+      logout: 'Log out',
+    },
+  },
 } as const;

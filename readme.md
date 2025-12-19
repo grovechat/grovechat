@@ -14,7 +14,13 @@ docker compose up -d
 docker compose exec app bash
 ```
 
-启动服务：
+先启动前端服务: 
+
+```shell
+npm run dev
+```
+
+然后再开一个窗口进入docker启动后端服务：
 
 ```shell
 make run

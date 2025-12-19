@@ -130,4 +130,120 @@ export default {
     loading: '加载中...',
     error: '发生错误',
   },
+  auth: {
+    login: {
+      title: '登录你的账户',
+      description: '在下方输入你的邮箱和密码以登录',
+      pageTitle: '登录',
+      fields: {
+        email: {
+          label: '电子邮件地址',
+          placeholder: 'email@example.com',
+        },
+        password: {
+          label: '密码',
+          placeholder: '密码',
+        },
+        remember: '记住我',
+      },
+      forgotPassword: '忘记密码？',
+      submit: '登录',
+      noAccount: '还没有账户？',
+      signUp: '注册',
+    },
+    register: {
+      title: '创建账户',
+      description: '在下方输入你的详细信息以创建账户',
+      pageTitle: '注册',
+      fields: {
+        name: {
+          label: '姓名',
+          placeholder: '请输入姓名',
+        },
+        email: {
+          label: '电子邮件地址',
+          placeholder: 'email@example.com',
+        },
+        password: {
+          label: '密码',
+          placeholder: '密码',
+        },
+        passwordConfirmation: {
+          label: '确认密码',
+          placeholder: '确认密码',
+        },
+      },
+      submit: '创建账户',
+      hasAccount: '已有账户？',
+      logIn: '登录',
+    },
+    resetPassword: {
+      title: '重置密码',
+      description: '请在下方输入你的新密码',
+      pageTitle: '重置密码',
+      fields: {
+        email: {
+          label: '电子邮件',
+        },
+        password: {
+          label: '密码',
+          placeholder: '密码',
+        },
+        passwordConfirmation: {
+          label: '确认密码',
+          placeholder: '确认密码',
+        },
+      },
+      submit: '重置密码',
+    },
+    twoFactorChallenge: {
+      pageTitle: '两步验证',
+      code: {
+        title: '身份验证码',
+        description: '输入你的身份验证器应用程序提供的验证码。',
+        toggleText: '使用恢复码登录',
+      },
+      recovery: {
+        title: '恢复码',
+        description: '请输入你的紧急恢复码之一来确认访问你的账户。',
+        toggleText: '使用身份验证码登录',
+        placeholder: '输入恢复码',
+      },
+      submit: '继续',
+      orYouCan: '或者你可以',
+    },
+    confirmPassword: {
+      title: '确认你的密码',
+      description: '这是应用程序的安全区域。请在继续之前确认你的密码。',
+      pageTitle: '确认密码',
+      fields: {
+        password: {
+          label: '密码',
+        },
+      },
+      submit: '确认密码',
+    },
+    forgotPassword: {
+      title: '忘记密码',
+      description: '输入你的电子邮件以接收密码重置链接',
+      pageTitle: '忘记密码',
+      fields: {
+        email: {
+          label: '电子邮件地址',
+          placeholder: 'email@example.com',
+        },
+      },
+      submit: '发送密码重置链接',
+      backToLogin: '或者，返回',
+      login: '登录',
+    },
+    verifyEmail: {
+      title: '验证电子邮件',
+      description: '请点击我们刚刚发送给你的电子邮件中的链接来验证你的电子邮件地址。',
+      pageTitle: '邮箱验证',
+      linkSent: '新的验证链接已发送到你注册时提供的电子邮件地址。',
+      submit: '重新发送验证邮件',
+      logout: '退出登录',
+    },
+  },
 } as const;
