@@ -2,6 +2,12 @@
 
 ## 开发
 
+创建 .env 文件:
+
+```shell
+cp .env.example .env
+```
+
 启动开发环境: 
 
 ```shell
