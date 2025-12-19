@@ -1,49 +1,28 @@
-# Git 相关
 .git
 .gitignore
 .gitattributes
-
-# IDE 相关
 .vscode
+.claude
 .idea
+.zed
 *.swp
 *.swo
+.env
 *~
-
-# 文档
 *.md
 LICENSE
-
-# Docker 相关文件
 Dockerfile
 docker-compose.yaml
 .dockerignore
-
-# 构建产物
 build/
-
-# FrankenPHP 源代码目录（不需要复制到镜像中）
-frankenphp/
-
-# Go 相关（如果不需要自定义依赖，可以忽略）
-# go.mod
-# go.sum
-
-# Node.js（前端构建产物应该已经在 public/build 中）
-php/node_modules/
-php/.npm
-php/.yarn
-
-# 日志和临时文件
+node_modules/
+.npm
+.yarn
 *.log
-php/storage/logs/
+storage/logs/
 *.tmp
-
-# 测试相关
-php/tests/
-php/phpunit.xml
-
-# 其他不需要的文件
+tests/
+phpunit.xml
 .DS_Store
 Thumbs.db
 *.sqlite
