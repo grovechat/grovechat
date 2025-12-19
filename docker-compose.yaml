@@ -1,5 +1,5 @@
 services:
-  app:
+  dev:
     build:
       context: .
       dockerfile: dev.Dockerfile
@@ -11,17 +11,17 @@ services:
     environment:
       TZ: Asia/Shanghai
     ports:
-      - 80:80
-      - 443:443
-      - 5173:5173
+      - "80:80"
+      - "443:443"
+      - "5173:5173"
 
-  test:
+  build:
     image: ubuntu:24.04
     volumes:
-      - ./build/grovechat:/root/grovechat
+      - ./build/:/tmp/
     tty: true
-    working_dir: /root/
+    working_dir: /tmp/
     environment:
       TZ: Asia/Shanghai
     ports:
-      - 8081:80
+      - "8081:80"

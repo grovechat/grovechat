@@ -23,6 +23,11 @@ func StartWithCLI(cliCfg config.CLIConfig) {
 func start(cfg *config.Config) {
 	var options []frankenphp.Option
 
+	options = append(options, frankenphp.WithPhpIni(map[string]string{
+		`post_max_size`:       `200M`,
+		`upload_max_filesize`: `200M`,
+	}))
+
 	// web配置
 	options = append(options, frankenphp.WithWorkers("web", cfg.PhpProjectRoot+"/public/web-worker.php", runtime.NumCPU()*2,
 		frankenphp.WithWorkerEnv(cfg.PhpEnv),

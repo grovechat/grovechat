@@ -5,6 +5,7 @@ go 1.25.4
 require (
 	github.com/caddyserver/certmagic v0.25.0
 	github.com/dunglas/frankenphp v1.10.1
+	github.com/dunglas/mercure v0.21.4
 	github.com/robfig/cron/v3 v3.0.1
 )
 
@@ -16,7 +17,6 @@ require (
 	github.com/caddyserver/zerossl v0.1.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dolthub/maphash v0.1.0 // indirect
-	github.com/dunglas/mercure v0.21.4 // indirect
 	github.com/dunglas/skipfilter v1.0.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect

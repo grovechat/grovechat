@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/dunglas/frankenphp"
+	"github.com/dunglas/mercure"
 )
 
 // HandlePHP 返回处理 PHP 请求的 HandlerFunc
@@ -25,6 +26,18 @@ func HandlePHP(cfg *config.Config) http.HandlerFunc {
 			return
 		}
 
+		// mercure
+		hub, err := mercure.NewHub(
+			r.Context(),
+			mercure.WithAnonymous(),
+			mercure.WithDebug(),
+			mercure.WithUI(),
+			mercure.WithSubscriptions(),
+		)
+		if err != nil {
+			return
+		}
+
 		// php 动态脚本
 		phpReq := r.Clone(r.Context())
 		phpReq.URL.Path = "/web-worker.php"
@@ -36,6 +49,7 @@ func HandlePHP(cfg *config.Config) http.HandlerFunc {
 			frankenphp.WithRequestEnv(map[string]string{
 				"REQUEST_URI": r.RequestURI,
 			}),
+			frankenphp.WithMercureHub(hub),
 		)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
