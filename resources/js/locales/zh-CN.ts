@@ -246,4 +246,12 @@ export default {
       logout: '退出登录',
     },
   },
+  sidebarMenu: {
+    dashboard: '工作台',
+    githubRepo: 'GitHub仓库',
+    documentation: '文档',
+    settings: '系统设置',
+    profile: '个人资料',
+    logout: '退出登录'
+  }
 } as const;

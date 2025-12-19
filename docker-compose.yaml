@@ -8,6 +8,8 @@ services:
     tty: true
     command: tail -f /dev/null
     working_dir: /app
+    environment:
+      TZ: Asia/Shanghai
     ports:
       - 8080:80
       - 5173:5173

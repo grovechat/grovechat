@@ -246,4 +246,12 @@ export default {
       logout: 'Log out',
     },
   },
+  sidebarMenu: {
+    dashboard: 'Dashboard',
+    githubRepo:  'Github Repo',
+    documentation: 'Documentation',
+    settings: 'Settings',
+    profile: 'Profile',
+    logout: 'Log Out'
+  }
 } as const;
