@@ -13,3 +13,14 @@ services:
     ports:
       - 8080:80
       - 5173:5173
+
+  test:
+    image: ubuntu:24.04
+    volumes:
+      - ./build/grovechat:/root/grovechat
+    tty: true
+    working_dir: /root/
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - 8081:80

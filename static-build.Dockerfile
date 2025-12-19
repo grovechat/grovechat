@@ -36,10 +36,6 @@ RUN rm -rf downloads && \
     --prefer-pre-built \
     --retry 5
 
-# 复制 PHP 应用
-WORKDIR /work
-COPY . ./php-app/
-
 # 构建静态 PHP embed 库
 WORKDIR /go/src/app/dist/static-php-cli
 ENV SPC_DEFAULT_C_FLAGS="-fPIC -O2"
@@ -51,8 +47,9 @@ RUN ./spc build \
     $PHP_EXTENSIONS \
     --with-libs=$PHP_EXTENSION_LIBS
 
-# 复制 Go 项目文件
+# 复制项目文件
 WORKDIR /work
+COPY . ./php-app/
 COPY go.mod go.sum ./
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
@@ -74,6 +71,4 @@ RUN mkdir -p dist && \
     export PATH="${PHP_ROOT}/bin:${PATH}" && \
     export CGO_CFLAGS="$(php-config --includes) -I${PHP_ROOT}/include" && \
     export CGO_LDFLAGS="$(php-config --ldflags) $(php-config --libs)" && \
-    go build -mod=mod -tags "netgo,osusergo,nowatcher,nobadger,nomysql,nopgx" -ldflags="-s -w" -o dist/grovechat-linux-$(uname -m) ./cmd/grovechat-app
-
-# 构建产物在 /work/dist/grovechat-linux-*
+    go build -mod=mod -tags "netgo,osusergo,nowatcher,nobadger,nomysql,nopgx" -ldflags="-s -w" -o dist/grovechat-linux-$(uname -m) ./cmd/grovechat

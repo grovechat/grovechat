@@ -60,7 +60,17 @@ func ResolveRootPath() string {
 func ResolveDataPath() string {
 	root := ResolveRootPath()
 	dataPath := filepath.Join(root, "data")
-	ensureDir(filepath.Join(dataPath, "storage"))
+
+	// 创建 Laravel 必需的 storage 目录结构
+	// 即使使用数据库缓存，Blade 视图编译和日志仍需要文件系统
+	storagePath := filepath.Join(dataPath, "storage")
+	ensureDir(filepath.Join(storagePath, "app", "public"))
+	ensureDir(filepath.Join(storagePath, "framework", "cache", "data"))
+	ensureDir(filepath.Join(storagePath, "framework", "sessions"))
+	ensureDir(filepath.Join(storagePath, "framework", "views"))  // Blade 编译必需
+	ensureDir(filepath.Join(storagePath, "logs"))
+
+	// 创建数据库目录和文件
 	ensureDir(filepath.Join(dataPath, "database"))
 	ensureFile(filepath.Join(dataPath, "database", "main.sqlite"))
 

@@ -14,7 +14,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Settings, GitBranch, } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { useI18n } from '@/composables/useI18n';
 
@@ -32,7 +32,7 @@ const footerNavItems: NavItem[] = [
     {
         title: t('sidebarMenu.githubRepo'),
         href: 'https://github.com/grovechat/grovechat',
-        icon: Folder,
+        icon: GitBranch,
     },
     {
         title: t('sidebarMenu.documentation'),
@@ -42,7 +42,7 @@ const footerNavItems: NavItem[] = [
     {
         title: t('sidebarMenu.settings'),
         href: '#',
-        icon: BookOpen,
+        icon: Settings,
     },
 ];
 </script>
