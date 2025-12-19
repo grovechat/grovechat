@@ -1,6 +1,16 @@
 import { onMounted, ref } from 'vue';
 import { defaultLocale, locales, type Locale, type Messages } from '@/locales';
 
+const setCookie = (name: string, value: string, days = 365) => {
+    if (typeof document === 'undefined') {
+        return;
+    }
+
+    const maxAge = days * 24 * 60 * 60;
+
+    document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
+};
+
 const getStoredLocale = (): Locale | null => {
     if (typeof window === 'undefined') {
         return null;
@@ -43,8 +53,11 @@ export function useI18n() {
         locale.value = newLocale;
         messages.value = locales[newLocale];
 
-        // Store in localStorage for persistence
+        // Store in localStorage for client-side persistence
         localStorage.setItem('locale', newLocale);
+
+        // Store in cookie for SSR
+        setCookie('locale', newLocale);
     }
 
     // Translation function with nested key support

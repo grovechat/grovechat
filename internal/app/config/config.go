@@ -35,6 +35,7 @@ func New() *Config {
         cfg.PhpProjectRoot + "/routes",
         cfg.PhpProjectRoot + "/app",
         cfg.PhpProjectRoot + "/config",
+        cfg.PhpProjectRoot + "/lang",
     }
     return cfg
 }
