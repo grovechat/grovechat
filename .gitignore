@@ -32,3 +32,4 @@ frankenphp
 frankenphp-worker.php
 data/
 build/
+*.db
