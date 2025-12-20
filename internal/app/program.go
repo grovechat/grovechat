@@ -220,7 +220,7 @@ func startHTTPSServer(handler http.Handler, cfg *config.Config) {
 
 	// 配置certmagic
 	certmagic.DefaultACME.Agreed = true
-	certmagic.DefaultACME.Email = "" // 可选：设置邮箱
+	certmagic.DefaultACME.Email = cfg.Email
 
 	if cfg.CertCachePath != "" {
 		certmagic.Default.Storage = &certmagic.FileStorage{Path: cfg.CertCachePath}

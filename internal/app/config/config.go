@@ -20,15 +20,17 @@ type Config struct {
     QueueWorkers   frankenphp.Workers
     // HTTPS 配置
     ServerNames   []string // HTTPS域名列表，如：["example.com", "www.example.com"]，留空则使用HTTP模式
-    HTTPPort      string   // HTTP端口，默认":80"
-    HTTPSPort     string   // HTTPS端口，默认":443"
-    CertCachePath string   // 证书缓存路径
+    Email         string
+    HTTPPort      string // HTTP端口，默认":80"
+    HTTPSPort     string // HTTPS端口，默认":443"
+    CertCachePath string // 证书缓存路径
 }
 
 // CLIConfig CLI参数配置
 type CLIConfig struct {
     Port        string
     Domain      string
+    Email       string
     StoragePath string
 }
 
@@ -53,6 +55,10 @@ func New(cli CLIConfig) *Config {
             for i, name := range cfg.ServerNames {
                 cfg.ServerNames[i] = strings.TrimSpace(name)
             }
+        }
+        // 接收https证书过期通知的电子邮件地址
+        if cli.Email != "" {
+            cfg.Email = cli.Email
         }
         // 确定存储路径
         var storagePath string

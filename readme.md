@@ -51,7 +51,7 @@ chmod +x grovechat-amd64
 sudo setcap 'cap_net_bind_service=+ep' grovechat-amd64
 
 # 启动并自动配置 HTTPS
-./grovechat-amd64 --domain=app.grovechat.com
+./grovechat-amd64 --domain=app.grovechat.com --email=admin@grovechat.com
 ```
 
 首次启动会自动申请 SSL 证书，需要几秒钟。访问 https://app.grovechat.com
@@ -67,6 +67,7 @@ nohup ./grovechat-amd64 --domain=app.grovechat.com >> /tmp/grovechat.log 2>&1 &
 ```bash
 --port=8080                    # 指定 HTTP 端口（默认 80）
 --domain=example.com           # 指定域名，自动启用 HTTPS（多个域名用逗号分隔）
+--email=admin@example.com      # 接收 HTTPS 证书过期的邮箱
 --storage-path=/data           # 指定数据存储路径（默认 ./storage）
 ```
 
