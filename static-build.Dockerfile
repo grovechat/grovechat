@@ -6,7 +6,7 @@ ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 
 # PHP 扩展配置
 ENV PHP_VERSION=8.5
-ENV PHP_EXTENSIONS=bcmath,ctype,dom,fileinfo,filter,mbregex,mbstring,opcache,openssl,pdo,pdo_sqlite,phar,posix,session,simplexml,sqlite3,tokenizer,xml,xmlreader,xmlwriter,zlib
+ENV PHP_EXTENSIONS=bcmath,ctype,dom,fileinfo,filter,mbregex,mbstring,opcache,openssl,pdo,pdo_sqlite,phar,posix,session,simplexml,sqlite3,tokenizer,xml,xmlreader,xmlwriter,zlib,iconv
 ENV PHP_EXTENSION_LIBS=""
 
 # 下载 static-php-cli 二进制
