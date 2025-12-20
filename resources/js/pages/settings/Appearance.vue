@@ -14,25 +14,25 @@ import { edit } from '@/routes/appearance';
 const { t } = useI18n();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-    {
-        title: t('appearance.title'),
-        href: edit().url,
-    },
+  {
+    title: t('appearance.title'),
+    href: edit().url,
+  },
 ]);
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head :title="t('appearance.title')" />
+  <AppLayout :breadcrumbs="breadcrumbItems">
+    <Head :title="t('appearance.title')" />
 
-        <SettingsLayout>
-            <div class="space-y-6">
-                <HeadingSmall
-                    :title="t('appearance.heading')"
-                    :description="t('appearance.description')"
-                />
-                <AppearanceTabs />
-            </div>
-        </SettingsLayout>
-    </AppLayout>
+    <SettingsLayout>
+      <div class="space-y-6">
+        <HeadingSmall
+          :title="t('appearance.heading')"
+          :description="t('appearance.description')"
+        />
+        <AppearanceTabs />
+      </div>
+    </SettingsLayout>
+  </AppLayout>
 </template>

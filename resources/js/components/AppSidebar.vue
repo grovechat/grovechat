@@ -3,72 +3,72 @@ import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useI18n } from '@/composables/useI18n';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Settings, GitBranch, } from 'lucide-vue-next';
+import { BookOpen, GitBranch, LayoutGrid, Settings } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
-import { useI18n } from '@/composables/useI18n';
 
 const { t } = useI18n();
 
 const mainNavItems: NavItem[] = [
-    {
-        title: t('sidebarMenu.dashboard'),
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
+  {
+    title: t('sidebarMenu.dashboard'),
+    href: dashboard(),
+    icon: LayoutGrid,
+  },
 ];
 
 const footerNavItems: NavItem[] = [
-    {
-        title: t('sidebarMenu.githubRepo'),
-        href: 'https://github.com/grovechat/grovechat',
-        icon: GitBranch,
-    },
-    {
-        title: t('sidebarMenu.documentation'),
-        href: 'https://docs.grovechat.com',
-        icon: BookOpen,
-    },
-    {
-        title: t('sidebarMenu.settings'),
-        href: '#',
-        icon: Settings,
-    },
+  {
+    title: t('sidebarMenu.githubRepo'),
+    href: 'https://github.com/grovechat/grovechat',
+    icon: GitBranch,
+  },
+  {
+    title: t('sidebarMenu.documentation'),
+    href: 'https://docs.grovechat.com',
+    icon: BookOpen,
+  },
+  {
+    title: t('sidebarMenu.settings'),
+    href: '#',
+    icon: Settings,
+  },
 ];
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
-                            <AppLogo />
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarHeader>
+  <Sidebar collapsible="icon" variant="inset">
+    <SidebarHeader>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" as-child>
+            <Link :href="dashboard()">
+              <AppLogo />
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarHeader>
 
-        <SidebarContent>
-            <NavMain :items="mainNavItems" />
-        </SidebarContent>
+    <SidebarContent>
+      <NavMain :items="mainNavItems" />
+    </SidebarContent>
 
-        <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
-            <NavUser />
-        </SidebarFooter>
-    </Sidebar>
-    <slot />
+    <SidebarFooter>
+      <NavFooter :items="footerNavItems" />
+      <NavUser />
+    </SidebarFooter>
+  </Sidebar>
+  <slot />
 </template>

@@ -76,19 +76,23 @@ export default {
       disabled: '已禁用',
     },
     disabled: {
-      description: '启用两步验证后，登录时将需要输入安全验证码。该验证码可以通过手机上支持 TOTP 的应用程序获取。',
+      description:
+        '启用两步验证后，登录时将需要输入安全验证码。该验证码可以通过手机上支持 TOTP 的应用程序获取。',
       continueSetup: '继续设置',
       enable: '启用两步验证',
     },
     enabled: {
-      description: '启用两步验证后，登录时将需要输入安全的随机验证码，你可以通过手机上支持 TOTP 的应用程序获取该验证码。',
+      description:
+        '启用两步验证后，登录时将需要输入安全的随机验证码，你可以通过手机上支持 TOTP 的应用程序获取该验证码。',
       disable: '禁用两步验证',
     },
     modal: {
       enableTitle: '启用两步验证',
-      enableDescription: '要完成两步验证的启用，请扫描二维码或在身份验证器应用中输入设置密钥',
+      enableDescription:
+        '要完成两步验证的启用，请扫描二维码或在身份验证器应用中输入设置密钥',
       enabledTitle: '两步验证已启用',
-      enabledDescription: '两步验证现已启用。扫描二维码或在身份验证器应用中输入设置密钥。',
+      enabledDescription:
+        '两步验证现已启用。扫描二维码或在身份验证器应用中输入设置密钥。',
       verifyTitle: '验证身份验证码',
       verifyDescription: '输入来自身份验证器应用的 6 位数字验证码',
       orManual: '或者，手动输入密钥',
@@ -99,11 +103,13 @@ export default {
     },
     recoveryCodes: {
       title: '两步验证恢复码',
-      description: '如果丢失两步验证设备，恢复码可以让你重新访问账户。请将它们存储在安全的密码管理器中。',
+      description:
+        '如果丢失两步验证设备，恢复码可以让你重新访问账户。请将它们存储在安全的密码管理器中。',
       view: '查看恢复码',
       hide: '隐藏恢复码',
       regenerate: '重新生成恢复码',
-      instructions: '每个恢复码只能使用一次来访问你的账户，使用后将被删除。如需更多恢复码，请点击上方的',
+      instructions:
+        '每个恢复码只能使用一次来访问你的账户，使用后将被删除。如需更多恢复码，请点击上方的',
       regenerateButton: '"重新生成恢复码"',
     },
   },
@@ -115,7 +121,7 @@ export default {
     select: '选择语言',
     languages: {
       'zh-CN': '简体中文',
-      'en': 'English',
+      en: 'English',
     },
   },
   timezone: {
@@ -239,7 +245,8 @@ export default {
     },
     verifyEmail: {
       title: '验证电子邮件',
-      description: '请点击我们刚刚发送给你的电子邮件中的链接来验证你的电子邮件地址。',
+      description:
+        '请点击我们刚刚发送给你的电子邮件中的链接来验证你的电子邮件地址。',
       pageTitle: '邮箱验证',
       linkSent: '新的验证链接已发送到你注册时提供的电子邮件地址。',
       submit: '重新发送验证邮件',
@@ -252,6 +259,6 @@ export default {
     documentation: '文档',
     settings: '系统设置',
     profile: '个人资料',
-    logout: '退出登录'
-  }
+    logout: '退出登录',
+  },
 } as const;

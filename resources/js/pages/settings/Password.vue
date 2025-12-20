@@ -17,102 +17,101 @@ import { type BreadcrumbItem } from '@/types';
 const { t } = useI18n();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-    {
-        title: t('password.title'),
-        href: edit().url,
-    },
+  {
+    title: t('password.title'),
+    href: edit().url,
+  },
 ]);
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head :title="t('password.title')" />
+  <AppLayout :breadcrumbs="breadcrumbItems">
+    <Head :title="t('password.title')" />
 
-        <SettingsLayout>
-            <div class="space-y-6">
-                <HeadingSmall
-                    :title="t('password.heading')"
-                    :description="t('password.description')"
-                />
+    <SettingsLayout>
+      <div class="space-y-6">
+        <HeadingSmall
+          :title="t('password.heading')"
+          :description="t('password.description')"
+        />
 
-                <Form
-                    v-bind="PasswordController.update.form()"
-                    :options="{
-                        preserveScroll: true,
-                    }"
-                    reset-on-success
-                    :reset-on-error="[
-                        'password',
-                        'password_confirmation',
-                        'current_password',
-                    ]"
-                    class="space-y-6"
-                    v-slot="{ errors, processing, recentlySuccessful }"
-                >
-                    <div class="grid gap-2">
-                        <Label for="current_password">{{ t('password.fields.currentPassword.label') }}</Label>
-                        <Input
-                            id="current_password"
-                            name="current_password"
-                            type="password"
-                            class="mt-1 block w-full"
-                            autocomplete="current-password"
-                            :placeholder="t('password.fields.currentPassword.placeholder')"
-                        />
-                        <InputError :message="errors.current_password" />
-                    </div>
+        <Form
+          v-bind="PasswordController.update.form()"
+          :options="{
+            preserveScroll: true,
+          }"
+          reset-on-success
+          :reset-on-error="[
+            'password',
+            'password_confirmation',
+            'current_password',
+          ]"
+          class="space-y-6"
+          v-slot="{ errors, processing, recentlySuccessful }"
+        >
+          <div class="grid gap-2">
+            <Label for="current_password">{{
+              t('password.fields.currentPassword.label')
+            }}</Label>
+            <Input
+              id="current_password"
+              name="current_password"
+              type="password"
+              class="mt-1 block w-full"
+              autocomplete="current-password"
+              :placeholder="t('password.fields.currentPassword.placeholder')"
+            />
+            <InputError :message="errors.current_password" />
+          </div>
 
-                    <div class="grid gap-2">
-                        <Label for="password">{{ t('password.fields.newPassword.label') }}</Label>
-                        <Input
-                            id="password"
-                            name="password"
-                            type="password"
-                            class="mt-1 block w-full"
-                            autocomplete="new-password"
-                            :placeholder="t('password.fields.newPassword.placeholder')"
-                        />
-                        <InputError :message="errors.password" />
-                    </div>
+          <div class="grid gap-2">
+            <Label for="password">{{
+              t('password.fields.newPassword.label')
+            }}</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              class="mt-1 block w-full"
+              autocomplete="new-password"
+              :placeholder="t('password.fields.newPassword.placeholder')"
+            />
+            <InputError :message="errors.password" />
+          </div>
 
-                    <div class="grid gap-2">
-                        <Label for="password_confirmation"
-                            >{{ t('password.fields.confirmPassword.label') }}</Label
-                        >
-                        <Input
-                            id="password_confirmation"
-                            name="password_confirmation"
-                            type="password"
-                            class="mt-1 block w-full"
-                            autocomplete="new-password"
-                            :placeholder="t('password.fields.confirmPassword.placeholder')"
-                        />
-                        <InputError :message="errors.password_confirmation" />
-                    </div>
+          <div class="grid gap-2">
+            <Label for="password_confirmation">{{
+              t('password.fields.confirmPassword.label')
+            }}</Label>
+            <Input
+              id="password_confirmation"
+              name="password_confirmation"
+              type="password"
+              class="mt-1 block w-full"
+              autocomplete="new-password"
+              :placeholder="t('password.fields.confirmPassword.placeholder')"
+            />
+            <InputError :message="errors.password_confirmation" />
+          </div>
 
-                    <div class="flex items-center gap-4">
-                        <Button
-                            :disabled="processing"
-                            data-test="update-password-button"
-                            >{{ t('password.actions.save') }}</Button
-                        >
+          <div class="flex items-center gap-4">
+            <Button :disabled="processing" data-test="update-password-button">{{
+              t('password.actions.save')
+            }}</Button>
 
-                        <Transition
-                            enter-active-class="transition ease-in-out"
-                            enter-from-class="opacity-0"
-                            leave-active-class="transition ease-in-out"
-                            leave-to-class="opacity-0"
-                        >
-                            <p
-                                v-show="recentlySuccessful"
-                                class="text-sm text-neutral-600"
-                            >
-                                {{ t('password.actions.saved') }}
-                            </p>
-                        </Transition>
-                    </div>
-                </Form>
-            </div>
-        </SettingsLayout>
-    </AppLayout>
+            <Transition
+              enter-active-class="transition ease-in-out"
+              enter-from-class="opacity-0"
+              leave-active-class="transition ease-in-out"
+              leave-to-class="opacity-0"
+            >
+              <p v-show="recentlySuccessful" class="text-sm text-neutral-600">
+                {{ t('password.actions.saved') }}
+              </p>
+            </Transition>
+          </div>
+        </Form>
+      </div>
+    </SettingsLayout>
+  </AppLayout>
 </template>

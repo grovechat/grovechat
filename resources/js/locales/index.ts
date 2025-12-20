@@ -6,7 +6,7 @@ export type Messages = typeof zhCN;
 
 export const locales: Record<Locale, Messages> = {
   'zh-CN': zhCN,
-  'en': en,
+  en: en,
 };
 
 export const defaultLocale: Locale = 'zh-CN';
