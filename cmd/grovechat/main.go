@@ -22,7 +22,6 @@ func main() {
 	// 主命令参数
 	port := flag.String("port", "", "HTTP端口 (如: 80 或 :80)")
 	domain := flag.String("domain", "", "域名，多个用逗号分隔，设置后自动启用HTTPS")
-	email := flag.String("email", "", "设置https证书时设置接收域名过期通知的电子邮件地址")
 	storagePath := flag.String("storage-path", "", "数据存储路径")
 	flag.Parse()
 
@@ -30,7 +29,6 @@ func main() {
 	cfg := config.CLIConfig{
 		Port:        *port,
 		Domain:      *domain,
-		Email:       *email,
 		StoragePath: *storagePath,
 	}
 

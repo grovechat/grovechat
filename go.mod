@@ -6,8 +6,10 @@ require (
 	github.com/caddyserver/certmagic v0.25.0
 	github.com/dunglas/frankenphp v1.10.1
 	github.com/dunglas/mercure v0.21.4
+	github.com/gin-gonic/autotls v1.2.2
 	github.com/gin-gonic/gin v1.11.0
 	github.com/robfig/cron/v3 v3.0.1
+	golang.org/x/crypto v0.46.0
 )
 
 require (
@@ -78,7 +80,6 @@ require (
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.23.0 // indirect
-	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/mod v0.31.0 // indirect
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect

@@ -21,18 +21,15 @@ type Config struct {
 	QueueWorkers   frankenphp.Workers
 	StoragePath    string   // 自定义 storage 目录路径
 	// HTTPS 配置
-	ServerNames   []string // HTTPS域名列表，如：["example.com", "www.example.com"]，留空则使用HTTP模式
-	Email         string
-	HTTPPort      string // HTTP端口，默认":80"
-	HTTPSPort     string // HTTPS端口，默认":443"
-	CertCachePath string // 证书缓存路径
+	ServerNames []string // HTTPS域名列表，如：["example.com", "www.example.com"]，留空则使用HTTP模式
+	HTTPPort    string   // HTTP端口，默认":80"
+	HTTPSPort   string   // HTTPS端口，默认":443"
 }
 
 // CLIConfig CLI参数配置
 type CLIConfig struct {
 	Port        string
 	Domain      string
-	Email       string
 	StoragePath string
 }
 
@@ -43,7 +40,6 @@ func New(cli CLIConfig) *Config {
 		ServerNames:    []string{},
 		HTTPPort:       "80",
 		HTTPSPort:      "443",
-		CertCachePath:  "",
 	}
 
 	cfg.PhpEnv[`MAX_REQUESTS`] = "500"
@@ -63,10 +59,6 @@ func New(cli CLIConfig) *Config {
 				cfg.ServerNames[i] = strings.TrimSpace(name)
 			}
 		}
-		// 接收https证书过期通知的电子邮件地址
-		if cli.Email != "" {
-			cfg.Email = cli.Email
-		}
 		// 确定存储路径
 		var storagePath string
 		if cli.StoragePath != "" {
@@ -78,7 +70,6 @@ func New(cli CLIConfig) *Config {
 		storagePath, _ = filepath.Abs(storagePath)
 		ensureStorageStructure(storagePath)
 		cfg.StoragePath = storagePath
-		cfg.CertCachePath = filepath.Join(storagePath, "certs")
 		cfg.PhpProjectRoot = frankenphp.EmbeddedAppPath
 
 		// 环境变量

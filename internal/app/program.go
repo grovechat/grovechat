@@ -6,15 +6,16 @@ import (
     "grovechat/internal/app/config"
     "grovechat/internal/app/routes"
     "log"
-    "net/http"
     "os"
+    "path/filepath"
     "runtime"
     "time"
 
-    "github.com/caddyserver/certmagic"
     "github.com/dunglas/frankenphp"
+    "github.com/gin-gonic/autotls"
     "github.com/gin-gonic/gin"
     "github.com/robfig/cron/v3"
+    "golang.org/x/crypto/acme/autocert"
 )
 
 func StartWithCLI(cliCfg config.CLIConfig) {
@@ -62,6 +63,11 @@ func start(cfg *config.Config) {
         runLaravelCommand(cfg.ArtisanWorkers, "optimize")
     }
 
+    // 设置 Gin 模式
+    if frankenphp.EmbeddedAppPath != "" {
+        gin.SetMode(gin.ReleaseMode) // 嵌入式应用使用生产模式
+    }
+
     // 注册路由
     router := gin.Default() // gin.Default() 包含 Logger 和 Recovery 中间件
     routes.Register(router, cfg)
@@ -70,17 +76,31 @@ func start(cfg *config.Config) {
     if len(cfg.ServerNames) > 0 {
         // HTTPS模式（带自动证书）
         log.Printf("启用自动HTTPS模式，域名: %v", cfg.ServerNames)
-        startHTTPSServer(router, cfg)
+
+        // 配置 autocert Manager
+        certCachePath := filepath.Join(cfg.StoragePath, "certs")
+        m := autocert.Manager{
+            Prompt:     autocert.AcceptTOS,
+            HostPolicy: autocert.HostWhitelist(cfg.ServerNames...),
+            Cache:      autocert.DirCache(certCachePath),
+        }
+
+        log.Printf("证书缓存路径: %s", certCachePath)
+        log.Println("首次启动需要几秒获取证书...")
+        log.Printf("访问: https://%s", cfg.ServerNames[0])
+
+        // 使用 autotls 启动（自动处理 HTTP 重定向和 HTTPS）
+        go func() {
+            err := autotls.RunWithManager(router, &m)
+            if err != nil {
+                log.Fatalln(err.Error())
+            }
+        }()
     } else {
         // 纯HTTP模式
         log.Printf("HTTP模式，监听端口: %s", cfg.HTTPPort)
-        httpServer := &http.Server{
-            Addr:    ":" + cfg.HTTPPort,
-            Handler: router,
-        }
         go func() {
-            err = httpServer.ListenAndServe()
-            if err != nil {
+            if err := router.Run(":" + cfg.HTTPPort); err != nil {
                 log.Fatalln(err.Error())
             }
         }()
@@ -205,74 +225,17 @@ func startQueueWorker(workers frankenphp.Workers) {
     }
 }
 
-// startHTTPSServer 启动HTTPS服务器（带Let's Encrypt自动证书）
-func startHTTPSServer(handler http.Handler, cfg *config.Config) {
-    log.Printf("启用自动HTTPS，域名: %v", cfg.ServerNames)
-
-    // 配置certmagic
-    certmagic.DefaultACME.Agreed = true
-    certmagic.DefaultACME.Email = cfg.Email
-
-    if cfg.CertCachePath != "" {
-        certmagic.Default.Storage = &certmagic.FileStorage{Path: cfg.CertCachePath}
-        log.Printf("证书缓存: %s", cfg.CertCachePath)
-    }
-
-    // 获取TLS配置
-    tlsConfig, err := certmagic.TLS(cfg.ServerNames)
-    if err != nil {
-        log.Fatalf("配置TLS失败: %v", err)
-    }
-
-    // HTTPS服务器
-    httpsServer := &http.Server{
-        Addr:      ":" + cfg.HTTPSPort,
-        Handler:   handler,
-        TLSConfig: tlsConfig,
-    }
-
-    // HTTP服务器（ACME验证 + 重定向）
-    httpServer := &http.Server{
-        Addr: ":" + cfg.HTTPPort,
-        Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            target := "https://" + r.Host + r.URL.Path
-            if r.URL.RawQuery != "" {
-                target += "?" + r.URL.RawQuery
-            }
-            http.Redirect(w, r, target, http.StatusMovedPermanently)
-        }),
-    }
-
-    // 启动
-    go func() {
-        log.Printf("HTTP服务器: %s (ACME验证+重定向)", cfg.HTTPPort)
-        err := httpServer.ListenAndServe()
-        if err != nil {
-            log.Fatalf("HTTP服务器启动失败: %v", err)
-            return
-        }
-    }()
-
-    go func() {
-        log.Printf("HTTPS服务器: %s", cfg.HTTPSPort)
-        log.Printf("访问: https://%s", cfg.ServerNames[0])
-        err := httpsServer.ListenAndServeTLS("", "")
-        if err != nil {
-            log.Fatalf("HTTPS服务器启动失败: %v", err)
-            return
-        }
-    }()
-
-    log.Println("首次启动需要几秒获取证书...")
-}
-
 // RunArtisan 运行Laravel Artisan命令（CLI模式）
 func RunArtisan(cmdArgs []string) {
     cfg := config.New(config.CLIConfig{})
 
     // 设置环境变量
     for key, value := range cfg.PhpEnv {
-        os.Setenv(key, value)
+        err := os.Setenv(key, value)
+        if err != nil {
+            log.Printf("无法设置环境变量: %s=%s", key, value)
+            return
+        }
     }
 
     // 使用 ExecuteScriptCLI 直接执行，支持完整的交互式 TTY
