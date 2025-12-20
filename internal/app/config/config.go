@@ -12,12 +12,12 @@ import (
 )
 
 type Config struct {
-    PhpProjectRoot  string
-    PhpEnv          map[string]string
-    WatchPaths      []string
-    LambdaWorkers   frankenphp.Workers
-    ScheduleWorkers frankenphp.Workers
-    QueueWorkers    frankenphp.Workers
+    PhpProjectRoot string
+    PhpEnv         map[string]string
+    WatchPaths     []string
+    LambdaWorkers  frankenphp.Workers
+    ArtisanWorkers frankenphp.Workers
+    QueueWorkers   frankenphp.Workers
     // HTTPS 配置
     ServerNames   []string // HTTPS域名列表，如：["example.com", "www.example.com"]，留空则使用HTTP模式
     HTTPPort      string   // HTTP端口，默认":80"

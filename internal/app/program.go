@@ -40,7 +40,7 @@ func start(cfg *config.Config) {
 	// 定时任务配置
 	workers, option := frankenphp.WithExtensionWorkers("schedule", cfg.PhpProjectRoot+"/public/artisan-worker.php", 1, workerOptions...)
 	options = append(options, option)
-	cfg.ScheduleWorkers = workers
+	cfg.ArtisanWorkers = workers
 
 	// 队列配置
 	queueWorkers, queueOption := frankenphp.WithExtensionWorkers("queue", cfg.PhpProjectRoot+"/public/queue-worker.php", runtime.NumCPU(), workerOptions...)
@@ -60,8 +60,11 @@ func start(cfg *config.Config) {
 
 	// 嵌入式应用首次启动初始化
 	if frankenphp.EmbeddedAppPath != "" {
-		log.Println("开始运行数据库迁移...")
-		runMigration(cfg.ScheduleWorkers)
+		log.Printf("开始执行optimize...")
+		runLaravelCommand(cfg.ArtisanWorkers, "optimize")
+
+		log.Println("开始执行数据库迁移...")
+		runLaravelCommand(cfg.ArtisanWorkers, "migrate --force")
 	}
 
 	// 注册路由
@@ -103,7 +106,7 @@ func start(cfg *config.Config) {
 		cmd := task.Command
 		spec := task.CronExpression
 		_, err := c.AddFunc(spec, func() {
-			go runLaravelCommand(cfg.ScheduleWorkers, cmd)
+			go runLaravelCommand(cfg.ArtisanWorkers, cmd)
 		})
 		if err != nil {
 			log.Printf("无法添加 Cron 任务 [%s]: %v", cmd, err)
@@ -210,30 +213,6 @@ func startQueueWorker(workers frankenphp.Workers) {
 	}
 }
 
-// runMigration 运行数据库迁移
-func runMigration(workers frankenphp.Workers) {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	// 运行 migrate --force 命令（--force 用于在生产环境运行，无需确认）
-	// Laravel 会自动检查 migrations 表，只运行尚未执行的迁移
-	resp, err := workers.SendMessage(ctx, map[string]any{"command": "migrate --force"}, nil)
-	if err != nil {
-		log.Printf("[数据库迁移失败] %v", err)
-		return
-	}
-
-	if arr, ok := resp.(frankenphp.AssociativeArray[any]); ok {
-		if output, found := arr.Map["output"]; found {
-			log.Printf("[数据库迁移输出]\n%v", output)
-		} else {
-			log.Printf("[数据库迁移失败] 结果不完整: %v", arr.Map)
-		}
-	} else {
-		log.Printf("[数据库迁移失败] 类型解析失败: %T", resp)
-	}
-}
-
 // startHTTPSServer 启动HTTPS服务器（带Let's Encrypt自动证书）
 func startHTTPSServer(handler http.Handler, cfg *config.Config) {
 	log.Printf("启用自动HTTPS，域名: %v", cfg.ServerNames)
@@ -311,22 +290,5 @@ func RunArtisan(command string) {
 	}
 	defer frankenphp.Shutdown()
 
-	// 执行命令
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-	defer cancel()
-
-	resp, err := workers.SendMessage(ctx, map[string]any{"command": command}, nil)
-	if err != nil {
-		log.Fatalf("命令执行失败: %v", err)
-	}
-
-	if arr, ok := resp.(frankenphp.AssociativeArray[any]); ok {
-		if output, found := arr.Map["output"]; found {
-			fmt.Printf("%v", output)
-		} else {
-			log.Fatalf("命令输出不完整: %v", arr.Map)
-		}
-	} else {
-		log.Fatalf("命令返回类型错误: %T", resp)
-	}
+	runLaravelCommand(workers, command)
 }

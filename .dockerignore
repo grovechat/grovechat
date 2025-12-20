@@ -21,6 +21,7 @@ node_modules/
 *.log
 storage/logs/
 *.tmp
+bootstrap/cache/*.php
 tests/
 phpunit.xml
 .DS_Store
