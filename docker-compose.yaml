@@ -15,7 +15,7 @@ services:
       - "443:443"
       - "5173:5173"
 
-  build:
+  test:
     image: ubuntu:24.04
     volumes:
       - ./build/:/tmp/
