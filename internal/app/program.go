@@ -13,6 +13,7 @@ import (
 
     "github.com/caddyserver/certmagic"
     "github.com/dunglas/frankenphp"
+    "github.com/gin-gonic/gin"
     "github.com/robfig/cron/v3"
 )
 
@@ -62,20 +63,20 @@ func start(cfg *config.Config) {
     }
 
     // 注册路由
-    mux := http.NewServeMux()
-    routes.Register(mux, cfg)
+    router := gin.Default() // gin.Default() 包含 Logger 和 Recovery 中间件
+    routes.Register(router, cfg)
 
     // 启动HTTP/HTTPS服务器
     if len(cfg.ServerNames) > 0 {
         // HTTPS模式（带自动证书）
         log.Printf("启用自动HTTPS模式，域名: %v", cfg.ServerNames)
-        startHTTPSServer(mux, cfg)
+        startHTTPSServer(router, cfg)
     } else {
         // 纯HTTP模式
         log.Printf("HTTP模式，监听端口: %s", cfg.HTTPPort)
         httpServer := &http.Server{
             Addr:    ":" + cfg.HTTPPort,
-            Handler: mux,
+            Handler: router,
         }
         go func() {
             err = httpServer.ListenAndServe()

@@ -65,6 +65,7 @@ nohup ./grovechat-amd64 --domain=app.grovechat.com --email=admin@grovechat.com >
 ### 命令行参数
 
 ```bash
+artisan tinker                 # 启动 Tinker（可以安装 rlwrap，用 rlwrap ./grovechat-arm64 artisan tinker 启动有更好的交互效果）
 --port=8080                    # 指定 HTTP 端口（默认 80）
 --domain=example.com           # 指定域名，自动启用 HTTPS（多个域名用逗号分隔）
 --email=admin@example.com      # 接收 HTTPS 证书过期的邮箱
