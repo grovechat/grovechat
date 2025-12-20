@@ -6,14 +6,7 @@ use Laravel\Fortify\Features;
 
 Route::get('/test', function () {
     return response("hello, world");
-})->withoutMiddleware([
-    \App\Http\Middleware\HandleAppearance::class,
-    \App\Http\Middleware\HandleLocale::class,
-    \App\Http\Middleware\HandleInertiaRequests::class,
-    \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
-    \Illuminate\Cookie\Middleware\EncryptCookies::class,
-    'web',
-]);
+});
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
