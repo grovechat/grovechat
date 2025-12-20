@@ -59,7 +59,7 @@ sudo setcap 'cap_net_bind_service=+ep' grovechat-amd64
 4. 后台运行
 
 ```bash
-nohup ./grovechat-amd64 --domain=app.grovechat.com >> /tmp/grovechat.log 2>&1 &
+nohup ./grovechat-amd64 --domain=app.grovechat.com --email=admin@grovechat.com >> /tmp/grovechat.log 2>&1 &
 ```
 
 ### 命令行参数

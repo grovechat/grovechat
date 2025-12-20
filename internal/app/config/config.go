@@ -15,6 +15,7 @@ type Config struct {
     PhpProjectRoot string
     PhpEnv         map[string]string
     WatchPaths     []string
+    PhpOption      []frankenphp.Option
     LambdaWorkers  frankenphp.Workers
     ArtisanWorkers frankenphp.Workers
     QueueWorkers   frankenphp.Workers
@@ -44,6 +45,11 @@ func New(cli CLIConfig) *Config {
         CertCachePath:  "",
     }
 
+    cfg.PhpEnv[`MAX_REQUESTS`] = "500"
+    cfg.PhpOption = append(cfg.PhpOption, frankenphp.WithPhpIni(map[string]string{
+        `post_max_size`:       `200M`,
+        `upload_max_filesize`: `200M`,
+    }))
     if frankenphp.EmbeddedAppPath != "" {
         // 自定义端口号
         if cli.Port != "" {

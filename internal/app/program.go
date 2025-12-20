@@ -21,39 +21,32 @@ func StartWithCLI(cliCfg config.CLIConfig) {
 }
 
 func start(cfg *config.Config) {
-	var options []frankenphp.Option
 	var workerOptions []frankenphp.WorkerOption
-
-	options = append(options, frankenphp.WithPhpIni(map[string]string{
-		`post_max_size`:       `200M`,
-		`upload_max_filesize`: `200M`,
-	}))
-
 	if frankenphp.EmbeddedAppPath == "" {
 		workerOptions = append(workerOptions, frankenphp.WithWorkerWatchMode(cfg.WatchPaths))
 	}
 	workerOptions = append(workerOptions, frankenphp.WithWorkerEnv(cfg.PhpEnv), frankenphp.WithWorkerMaxFailures(0))
 
 	// web配置
-	options = append(options, frankenphp.WithWorkers("web", cfg.PhpProjectRoot+"/public/web-worker.php", runtime.NumCPU()*2, workerOptions...))
+	cfg.PhpOption = append(cfg.PhpOption, frankenphp.WithWorkers("web", cfg.PhpProjectRoot+"/public/web-worker.php", runtime.NumCPU()*2, workerOptions...))
 
 	// 定时任务配置
 	workers, option := frankenphp.WithExtensionWorkers("schedule", cfg.PhpProjectRoot+"/public/artisan-worker.php", 1, workerOptions...)
-	options = append(options, option)
+	cfg.PhpOption = append(cfg.PhpOption, option)
 	cfg.ArtisanWorkers = workers
 
 	// 队列配置
 	queueWorkers, queueOption := frankenphp.WithExtensionWorkers("queue", cfg.PhpProjectRoot+"/public/queue-worker.php", runtime.NumCPU(), workerOptions...)
-	options = append(options, queueOption)
+	cfg.PhpOption = append(cfg.PhpOption, queueOption)
 	cfg.QueueWorkers = queueWorkers
 
 	// Lambda配置
 	workers, option = frankenphp.WithExtensionWorkers("lambda", cfg.PhpProjectRoot+"/public/lambda-worker.php", runtime.NumCPU()*2, workerOptions...)
-	options = append(options, option)
+	cfg.PhpOption = append(cfg.PhpOption, option)
 	cfg.LambdaWorkers = workers
 
 	// 初始化frankenphp
-	err := frankenphp.Init(options...)
+	err := frankenphp.Init(cfg.PhpOption...)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
