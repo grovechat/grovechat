@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/dunglas/frankenphp"
 	"github.com/dunglas/mercure"
@@ -50,30 +49,44 @@ func InitMercureHub(cfg *config.Config) error {
 }
 
 // HandlePHP 返回处理 PHP 请求的 HandlerFunc
+// 提前定义好静态资源后缀
+var staticExts = map[string]struct{}{
+	".css": {}, ".js": {}, ".png": {}, ".jpg": {}, ".jpeg": {},
+	".gif": {}, ".svg": {}, ".ico": {}, ".woff": {}, ".woff2": {},
+	".ttf": {}, ".pdf": {}, ".txt": {},
+}
+
 func HandlePHP(cfg *config.Config) http.HandlerFunc {
+	publicPath := filepath.Join(cfg.PhpProjectRoot, "public")
+	phpWorkerPath := "/web-worker.php"
+	docRootOption := frankenphp.WithRequestDocumentRoot(publicPath, false)
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestPath := r.URL.Path
-		fullPath := filepath.Join(cfg.PhpProjectRoot, "public", requestPath)
 
-		// 静态文件
-		if info, err := os.Stat(fullPath); err == nil && !info.IsDir() && !strings.HasSuffix(requestPath, ".php") {
-			http.ServeFile(w, r, fullPath)
-			return
+		// 静态文件请求
+		ext := filepath.Ext(requestPath)
+		if _, isStatic := staticExts[ext]; isStatic {
+			fullPath := filepath.Join(publicPath, requestPath)
+			if info, err := os.Stat(fullPath); err == nil && !info.IsDir() {
+				http.ServeFile(w, r, fullPath)
+				return
+			}
 		}
 
-		// php 动态脚本
+		// PHP 请求
 		phpReq := r.Clone(r.Context())
-		phpReq.URL.Path = "/web-worker.php"
+		phpReq.URL.Path = phpWorkerPath
 
 		req, err := frankenphp.NewRequestWithContext(
 			phpReq,
-			frankenphp.WithRequestDocumentRoot(cfg.PhpProjectRoot+"/public", false),
+			docRootOption,
 			frankenphp.WithRequestSplitPath([]string{".php"}),
 			frankenphp.WithRequestEnv(map[string]string{
 				"REQUEST_URI": r.RequestURI,
 			}),
-			frankenphp.WithMercureHub(globalHub),
 		)
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -101,6 +114,6 @@ func Register(mux *http.ServeMux, cfg *config.Config) {
 	// Mercure 路由
 	mux.Handle("/.well-known/mercure", globalHub)
 
-	// PHP 路由（默认路由，必须放在最后）
+	// PHP 路由
 	mux.HandleFunc("/", HandlePHP(cfg))
 }

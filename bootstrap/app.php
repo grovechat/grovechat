@@ -27,4 +27,4 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create()
-    ->useStoragePath(env('LARAVEL_STORAGE_PATH', 'storage'));
+    ->useStoragePath(env('LARAVEL_STORAGE_PATH', '/app/storage'));
