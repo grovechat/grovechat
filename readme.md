@@ -61,8 +61,13 @@ sudo setcap 'cap_net_bind_service=+ep' grovechat-amd64
 如果要启用https，请在授权后运行：
 
 ```shell
-./grovechat-amd64 --domain=www.example.com
+./grovechat-amd64 --domain=app.grovechat.com
 ```
 
-访问：https://www.example.com
+访问：https://app.grovechat.com
 
+后台运行：
+
+```shell
+nohup ./grovechat-amd64 --domain=app.grovechat.com >> /tmp/grovechat.log 2>&1 &
+```
