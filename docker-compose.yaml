@@ -18,9 +18,9 @@ services:
   test:
     image: ubuntu:24.04
     volumes:
-      - ./build/:/tmp/
+      - ./build/:/root/
     tty: true
-    working_dir: /tmp/
+    working_dir: /root/
     environment:
       TZ: Asia/Shanghai
     ports:
