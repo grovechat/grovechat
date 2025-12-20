@@ -20,7 +20,11 @@ var globalHub *mercure.Hub
 
 // InitMercureHub 初始化全局 Mercure Hub
 func InitMercureHub(cfg *config.Config) error {
-	dbPath := filepath.Join(cfg.PhpProjectRoot, "storage", "database", "mercure.db")
+	storagePath := cfg.StoragePath
+	if storagePath == "" {
+		storagePath = filepath.Join(cfg.PhpProjectRoot, "storage")
+	}
+	dbPath := filepath.Join(storagePath, "database", "mercure.db")
 	if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
 		return err
 	}

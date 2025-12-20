@@ -6,7 +6,6 @@ import (
 	"grovechat/internal/app"
 	"grovechat/internal/app/config"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -16,8 +15,7 @@ func main() {
 			fmt.Println("用法: grovechat artisan <command> [args...]")
 			os.Exit(1)
 		}
-		command := strings.Join(os.Args[2:], " ")
-		app.RunArtisan(command)
+		app.RunArtisan(os.Args[2:])
 		return
 	}
 
