@@ -60,11 +60,11 @@ func start(cfg *config.Config) {
 
 	// 嵌入式应用首次启动初始化
 	if frankenphp.EmbeddedAppPath != "" {
-		log.Printf("开始执行optimize...")
-		runLaravelCommand(cfg.ArtisanWorkers, "optimize")
-
 		log.Println("开始执行数据库迁移...")
 		runLaravelCommand(cfg.ArtisanWorkers, "migrate --force")
+
+		log.Printf("开始执行optimize...")
+		runLaravelCommand(cfg.ArtisanWorkers, "optimize")
 	}
 
 	// 注册路由
@@ -115,10 +115,11 @@ func start(cfg *config.Config) {
 		}
 	}
 
+	// 定时任务启动
 	c.Start()
 	log.Println("Go Cron 调度器已启动")
 
-	// 队列启动
+	//队列启动
 	go startQueueWorker(cfg.QueueWorkers)
 	log.Println("队列 Worker 已启动")
 

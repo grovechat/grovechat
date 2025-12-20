@@ -69,7 +69,6 @@ func New(cli CLIConfig) *Config {
 
         // 环境变量
         cfg.PhpEnv[`LARAVEL_STORAGE_PATH`] = storagePath
-        cfg.PhpEnv[`DB_DATABASE`] = filepath.Join(storagePath, "database", "main.sqlite")
     }
 
     // 监听目录
