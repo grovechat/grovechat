@@ -1,5 +1,5 @@
 FROM composer/composer:latest-bin AS composer
-FROM dunglas/frankenphp:1.11-php8.5.1-trixie
+FROM dunglas/frankenphp:1.11.0-builder-php8.5.1-trixie
 
 ARG UID=1000
 ARG GID=1000
@@ -52,9 +52,11 @@ ENV LANG=zh_CN.UTF-8 \
     LC_ALL=zh_CN.UTF-8 \
     LANGUAGE=zh_CN:zh
 
-# Go 代理配置
+# Go 配置
 ENV GOPROXY=https://goproxy.cn,direct \
     GO111MODULE=on
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
 
 COPY --from=composer /composer /usr/bin/composer
 

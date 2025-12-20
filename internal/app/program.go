@@ -28,10 +28,11 @@ func start(cfg *config.Config) {
 		`post_max_size`:       `200M`,
 		`upload_max_filesize`: `200M`,
 	}))
-	workerOptions = append(workerOptions, frankenphp.WithWorkerEnv(cfg.PhpEnv), frankenphp.WithWorkerMaxFailures(0))
+
 	if frankenphp.EmbeddedAppPath == "" {
 		workerOptions = append(workerOptions, frankenphp.WithWorkerWatchMode(cfg.WatchPaths))
 	}
+	workerOptions = append(workerOptions, frankenphp.WithWorkerEnv(cfg.PhpEnv), frankenphp.WithWorkerMaxFailures(0))
 
 	// web配置
 	options = append(options, frankenphp.WithWorkers("web", cfg.PhpProjectRoot+"/public/web-worker.php", runtime.NumCPU()*2, workerOptions...))

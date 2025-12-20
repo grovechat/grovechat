@@ -79,31 +79,30 @@ nohup ./grovechat-amd64 --domain=app.grovechat.com >> /tmp/grovechat.log 2>&1 &
 
 ### 启动开发环境
 
-1. 复制配置文件
+1. 启动 Docker 容器
 
 ```bash
-cp .env.example .env
+docker compose up -d dev
 ```
 
-2. 启动 Docker 容器
-
-```bash
-docker compose up -d
-```
-
-3. 进入容器
+2. 进入容器并初始化
 
 ```bash
 docker compose exec dev bash
+npm i
+cp .env.example .env
+composer install
+php artisan key:generate
+php artisan migrate
 ```
 
-4. 启动前端开发服务器
+3. 启动前端开发服务器
 
 ```bash
 npm run dev
 ```
 
-5. 新开一个终端，进入容器启动后端
+4. 新开一个终端，进入容器启动后端
 
 ```bash
 docker compose exec dev bash
