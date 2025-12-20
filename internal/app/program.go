@@ -22,43 +22,32 @@ func StartWithCLI(cliCfg config.CLIConfig) {
 
 func start(cfg *config.Config) {
 	var options []frankenphp.Option
+	var workerOptions []frankenphp.WorkerOption
 
 	options = append(options, frankenphp.WithPhpIni(map[string]string{
 		`post_max_size`:       `200M`,
 		`upload_max_filesize`: `200M`,
 	}))
+	workerOptions = append(workerOptions, frankenphp.WithWorkerEnv(cfg.PhpEnv), frankenphp.WithWorkerMaxFailures(0))
+	if frankenphp.EmbeddedAppPath == "" {
+		workerOptions = append(workerOptions, frankenphp.WithWorkerWatchMode(cfg.WatchPaths))
+	}
 
 	// web配置
-	options = append(options, frankenphp.WithWorkers("web", cfg.PhpProjectRoot+"/public/web-worker.php", runtime.NumCPU()*2,
-		frankenphp.WithWorkerEnv(cfg.PhpEnv),
-		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
-		frankenphp.WithWorkerMaxFailures(0),
-	))
+	options = append(options, frankenphp.WithWorkers("web", cfg.PhpProjectRoot+"/public/web-worker.php", runtime.NumCPU()*2, workerOptions...))
 
 	// 定时任务配置
-	workers, option := frankenphp.WithExtensionWorkers("schedule", cfg.PhpProjectRoot+"/public/artisan-worker.php", 1,
-		frankenphp.WithWorkerEnv(cfg.PhpEnv),
-		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
-		frankenphp.WithWorkerMaxFailures(0),
-	)
+	workers, option := frankenphp.WithExtensionWorkers("schedule", cfg.PhpProjectRoot+"/public/artisan-worker.php", 1, workerOptions...)
 	options = append(options, option)
 	cfg.ScheduleWorkers = workers
 
 	// 队列配置
-	queueWorkers, queueOption := frankenphp.WithExtensionWorkers("queue", cfg.PhpProjectRoot+"/public/queue-worker.php", runtime.NumCPU(),
-		frankenphp.WithWorkerEnv(cfg.PhpEnv),
-		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
-		frankenphp.WithWorkerMaxFailures(0),
-	)
+	queueWorkers, queueOption := frankenphp.WithExtensionWorkers("queue", cfg.PhpProjectRoot+"/public/queue-worker.php", runtime.NumCPU(), workerOptions...)
 	options = append(options, queueOption)
 	cfg.QueueWorkers = queueWorkers
 
 	// Lambda配置
-	workers, option = frankenphp.WithExtensionWorkers("lambda", cfg.PhpProjectRoot+"/public/lambda-worker.php", runtime.NumCPU()*2,
-		frankenphp.WithWorkerEnv(cfg.PhpEnv),
-		frankenphp.WithWorkerWatchMode(cfg.WatchPaths),
-		frankenphp.WithWorkerMaxFailures(0),
-	)
+	workers, option = frankenphp.WithExtensionWorkers("lambda", cfg.PhpProjectRoot+"/public/lambda-worker.php", runtime.NumCPU()*2, workerOptions...)
 	options = append(options, option)
 	cfg.LambdaWorkers = workers
 

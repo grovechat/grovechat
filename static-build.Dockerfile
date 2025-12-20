@@ -70,5 +70,5 @@ ENV CGO_ENABLED=1
 RUN mkdir -p dist && \
     export PATH="${PHP_ROOT}/bin:${PATH}" && \
     export CGO_CFLAGS="$(php-config --includes) -I${PHP_ROOT}/include" && \
-    export CGO_LDFLAGS="$(php-config --ldflags) $(php-config --libs)" && \
+    export CGO_LDFLAGS="$(php-config --ldflags) $(php-config --libs) -L${PHP_ROOT}/lib -lssl -lcrypto" && \
     go build -mod=mod -tags "netgo,osusergo,nowatcher,nobadger,nomysql,nopgx" -ldflags="-s -w" -o dist/grovechat-linux-$(uname -m) ./cmd/grovechat
