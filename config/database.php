@@ -31,16 +31,40 @@ return [
 
     'connections' => [
 
-        'sqlite' => [
+        'sqlite' => [  // 主库
             'driver' => 'sqlite',
-            'url' => env('DB_URL'),
-            'database' => env('DB_DATABASE', storage_path('database/main.sqlite')),
-            'prefix' => '',
-            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout' => null,
-            'journal_mode' => null,
-            'synchronous' => null,
-            'transaction_mode' => 'DEFERRED',
+            'database' => storage_path('database/main.sqlite'),
+            'busy_timeout' => 5000,
+            'journal_mode' => 'wal',
+            'synchronous' => 'NORMAL',
+            'transaction_mode' => 'immediate',
+        ],
+
+        'sqlite_cache' => [ // 缓存库
+            'driver' => 'sqlite',
+            'database' => storage_path('database/cache.sqlite'),
+            'journal_mode' => 'WAL',
+            'synchronous' => 'NORMAL',
+            'busy_timeout' => 5000,
+            'transaction_mode' => 'immediate',
+        ],
+
+        'sqlite_session' => [ // session 库
+            'driver' => 'sqlite',
+            'database' => storage_path('database/session.sqlite'),
+            'journal_mode' => 'WAL',
+            'synchronous' => 'NORMAL',
+            'busy_timeout' => 5000,
+            'transaction_mode' => 'immediate',
+        ],
+
+        'sqlite_jobs' => [ // jobs 库
+            'driver' => 'sqlite',
+            'database' => storage_path('database/jobs.sqlite'),
+            'journal_mode' => 'WAL',
+            'synchronous' => 'NORMAL',
+            'busy_timeout' => 5000,
+            'transaction_mode' => 'immediate',
         ],
 
         'mysql' => [

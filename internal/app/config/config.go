@@ -110,6 +110,9 @@ func ensureStorageStructure(storagePath string) {
     // 数据库目录和文件
     ensureDir(filepath.Join(storagePath, "database"))
     ensureFile(filepath.Join(storagePath, "database", "main.sqlite"))
+    ensureFile(filepath.Join(storagePath, "database", "session.sqlite"))
+    ensureFile(filepath.Join(storagePath, "database", "cache.sqlite"))
+    ensureFile(filepath.Join(storagePath, "database", "jobs.sqlite"))
 
     // 证书目录
     ensureDir(filepath.Join(storagePath, "certs"))
