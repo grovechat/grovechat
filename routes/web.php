@@ -5,7 +5,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
 Route::get('/test', function () {
-    return response()->json($_SERVER);
+    return response("hello, world!");
 });
 Route::get('/', function () {
     return Inertia::render('Welcome', [
