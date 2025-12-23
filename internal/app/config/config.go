@@ -16,10 +16,10 @@ type Config struct {
 	PhpEnv         map[string]string
 	WatchPaths     []string
 	PhpOption      []frankenphp.Option
-	LambdaWorkers  frankenphp.Workers
+	NativeWorkers  frankenphp.Workers
 	ArtisanWorkers frankenphp.Workers
 	QueueWorkers   frankenphp.Workers
-	StoragePath    string   // 自定义 storage 目录路径
+	StoragePath    string // 自定义 storage 目录路径
 	// HTTPS 配置
 	ServerNames []string // HTTPS域名列表，如：["example.com", "www.example.com"]，留空则使用HTTP模式
 	HTTPPort    string   // HTTP端口，默认":80"

@@ -43,10 +43,10 @@ func start(cfg *config.Config) {
 	cfg.PhpOption = append(cfg.PhpOption, queueOption)
 	cfg.QueueWorkers = queueWorkers
 
-	// Lambda配置
-	workers, option = frankenphp.WithExtensionWorkers("lambda", cfg.PhpProjectRoot+"/public/lambda-worker.php", runtime.NumCPU()*2, workerOptions...)
+	// Native配置
+	workers, option = frankenphp.WithExtensionWorkers("native", cfg.PhpProjectRoot+"/public/native-worker.php", runtime.NumCPU()*2, workerOptions...)
 	cfg.PhpOption = append(cfg.PhpOption, option)
-	cfg.LambdaWorkers = workers
+	cfg.NativeWorkers = workers
 
 	// 初始化frankenphp
 	err := frankenphp.Init(cfg.PhpOption...)

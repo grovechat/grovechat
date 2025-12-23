@@ -1,6 +1,6 @@
 <?php
 
-// lambda-worker.php
+// native-worker.php
 
 require __DIR__ . '/../vendor/autoload.php';
 

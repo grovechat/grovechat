@@ -8,16 +8,16 @@ import (
 	"github.com/dunglas/frankenphp"
 )
 
-// LambdaResult Lambda 调用结果
-type LambdaResult struct {
+// NativeResult Native 调用结果
+type NativeResult struct {
 	Success bool   `json:"success"`
 	Data    any    `json:"data"`
 	Error   string `json:"error"`
 	Trace   string `json:"trace"`
 }
 
-// CallLambda 调用 PHP Lambda 方法
-func CallLambda(workers frankenphp.Workers, class string, method string, params ...any) (*LambdaResult, error) {
+// CallNative 调用 PHP Native 方法
+func CallNative(workers frankenphp.Workers, class string, method string, params ...any) (*NativeResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -29,11 +29,11 @@ func CallLambda(workers frankenphp.Workers, class string, method string, params 
 
 	resp, err := workers.SendMessage(ctx, request, nil)
 	if err != nil {
-		return nil, fmt.Errorf("发送消息到 Lambda Worker 失败: %w", err)
+		return nil, fmt.Errorf("发送消息到 Native Worker 失败: %w", err)
 	}
 
 	// 解析响应
-	result := &LambdaResult{}
+	result := &NativeResult{}
 	if arr, ok := resp.(frankenphp.AssociativeArray[any]); ok {
 		if success, found := arr.Map["success"]; found {
 			result.Success, _ = success.(bool)
@@ -52,11 +52,11 @@ func CallLambda(workers frankenphp.Workers, class string, method string, params 
 			}
 		}
 	} else {
-		return nil, fmt.Errorf("lambda Worker 返回类型解析失败: %T", resp)
+		return nil, fmt.Errorf("Native Worker 返回类型解析失败: %T", resp)
 	}
 
 	if !result.Success && result.Error != "" {
-		return result, fmt.Errorf("lambda 调用失败: %s", result.Error)
+		return result, fmt.Errorf("Native 调用失败: %s", result.Error)
 	}
 
 	return result, nil

@@ -1,4 +1,4 @@
-package lambda
+package native
 
 import (
 	"encoding/json"
@@ -8,20 +8,20 @@ import (
 	"net/http"
 )
 
-// ExampleHandler 示例 Lambda 调用处理器
-// 访问: http://localhost:80/lambda/example
+// ExampleHandler 示例 Native 调用处理器
+// 访问: http://localhost:80/native/example
 func ExampleHandler(cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// 示例：调用 PHP 的 App\Services\ExampleService 类的 hello 方法
-		result, err := phpbridge.CallLambda(
-			cfg.LambdaWorkers,
+		result, err := phpbridge.CallNative(
+			cfg.NativeWorkers,
 			"App\\Services\\ExampleService",
 			"hello",
 			"World", // 参数
 		)
 
 		if err != nil {
-			log.Printf("Lambda 调用失败: %v", err)
+			log.Printf("Native 调用失败: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -32,8 +32,8 @@ func ExampleHandler(cfg *config.Config) http.HandlerFunc {
 	}
 }
 
-// CustomHandler 自定义 Lambda 调用处理器（通过 URL 参数指定类和方法）
-// 访问: http://localhost:80/lambda/call?class=App\\Services\\ExampleService&method=hello&params=["World"]
+// CustomHandler 自定义 Native 调用处理器（通过 URL 参数指定类和方法）
+// 访问: http://localhost:80/native/call?class=App\\Services\\ExampleService&method=hello&params=["World"]
 func CustomHandler(cfg *config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		class := r.URL.Query().Get("class")
@@ -53,10 +53,10 @@ func CustomHandler(cfg *config.Config) http.HandlerFunc {
 			}
 		}
 
-		// 调用 Lambda
-		result, err := phpbridge.CallLambda(cfg.LambdaWorkers, class, method, params...)
+		// 调用 Native
+		result, err := phpbridge.CallNative(cfg.NativeWorkers, class, method, params...)
 		if err != nil {
-			log.Printf("Lambda 调用失败: %v", err)
+			log.Printf("Native 调用失败: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

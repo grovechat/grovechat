@@ -3,7 +3,7 @@ package routes
 import (
 	"context"
 	"grovechat/internal/app/business/demo"
-	"grovechat/internal/app/business/lambda"
+	"grovechat/internal/app/business/native"
 	"grovechat/internal/app/config"
 	"log"
 	"log/slog"
@@ -114,12 +114,12 @@ func Register(router *gin.Engine, cfg *config.Config) {
 		demo.Ping(c.Writer, c.Request)
 	})
 
-	// Lambda 路由（调用 PHP 方法）
-	router.GET("/lambda/example", func(c *gin.Context) {
-		lambda.ExampleHandler(cfg)(c.Writer, c.Request)
+	// Native 路由（调用 PHP 方法）
+	router.GET("/native/example", func(c *gin.Context) {
+		native.ExampleHandler(cfg)(c.Writer, c.Request)
 	})
-	router.GET("/lambda/call", func(c *gin.Context) {
-		lambda.CustomHandler(cfg)(c.Writer, c.Request)
+	router.GET("/native/call", func(c *gin.Context) {
+		native.CustomHandler(cfg)(c.Writer, c.Request)
 	})
 
 	// Mercure 路由
