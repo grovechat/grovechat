@@ -13,9 +13,7 @@ Route::get('/test', function () {
 ]);
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return redirect()->to('/login');
 })->name('home');
 
 Route::get('dashboard', function () {
