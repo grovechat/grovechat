@@ -1,5 +1,5 @@
 FROM composer/composer:latest-bin AS composer
-FROM dunglas/frankenphp:1.11.0-builder-php8.5.1-trixie
+FROM dunglas/frankenphp:1.11.1-builder-php8.5.1-trixie
 
 ARG UID=1000
 ARG GID=1000
