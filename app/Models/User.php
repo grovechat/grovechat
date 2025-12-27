@@ -49,4 +49,9 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    public function tenants()
+    {
+        return $this->belongsToMany(Tenant::class)->withPivot('role')->withTimestamps();
+    }
 }

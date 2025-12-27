@@ -4,24 +4,13 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-Route::get('/test', function () {
-    return response("hello, world!");
-})->withoutMiddleware([
-    \App\Http\Middleware\HandleAppearance::class,
-    \App\Http\Middleware\HandleLocale::class,
-    \App\Http\Middleware\HandleInertiaRequests::class,
-]);
-
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+require __DIR__.'/home.php';
 require __DIR__.'/settings.php';
 require __DIR__."/system_settiings.php";
 require __DIR__.'/tenant_settings.php';
