@@ -24,3 +24,6 @@ Route::get('dashboard', function () {
 
 require __DIR__.'/settings.php';
 require __DIR__."/system_settiings.php";
+require __DIR__.'/tenant_settings.php';
+require __DIR__.'/contacts.php';
+require __DIR__.'/stats.php';
