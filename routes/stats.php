@@ -5,7 +5,8 @@
  */
 
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
-Route::middleware('auth')->prefix('stats')->group(function () {
-
-});
+Route::get('/stats/overview', function () {
+    return Inertia::render('stats/Index');
+})->name('stats.index');
