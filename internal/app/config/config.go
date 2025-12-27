@@ -47,6 +47,22 @@ func New(cli CLIConfig) *Config {
 		`post_max_size`:       `200M`,
 		`upload_max_filesize`: `200M`,
 	}))
+
+	// 确定存储路径
+	var storagePath string
+	if cli.StoragePath != "" {
+		storagePath, _ = filepath.Abs(cli.StoragePath)
+	} else {
+		rootPath := ResolveRootPath()
+		storagePath = filepath.Join(rootPath, "storage")
+	}
+	storagePath, _ = filepath.Abs(storagePath)
+	ensureStorageStructure(storagePath)
+	cfg.StoragePath = storagePath
+
+	// 环境变量
+	cfg.PhpEnv[`LARAVEL_STORAGE_PATH`] = storagePath
+
 	if frankenphp.EmbeddedAppPath != "" {
 		// 自定义端口号
 		if cli.Port != "" {
@@ -59,21 +75,7 @@ func New(cli CLIConfig) *Config {
 				cfg.ServerNames[i] = strings.TrimSpace(name)
 			}
 		}
-		// 确定存储路径
-		var storagePath string
-		if cli.StoragePath != "" {
-			storagePath, _ = filepath.Abs(cli.StoragePath)
-		} else {
-			rootPath := ResolveRootPath()
-			storagePath = filepath.Join(rootPath, "storage")
-		}
-		storagePath, _ = filepath.Abs(storagePath)
-		ensureStorageStructure(storagePath)
-		cfg.StoragePath = storagePath
 		cfg.PhpProjectRoot = frankenphp.EmbeddedAppPath
-
-		// 环境变量
-		cfg.PhpEnv[`LARAVEL_STORAGE_PATH`] = storagePath
 	}
 
 	// 监听目录

@@ -1,9 +1,11 @@
 <?php
 
-use App\Http\Controllers\SystemSettings\GeneralSettingController;
+use App\Http\Controllers\SystemSettingController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/general-settings', [GeneralSettingController::class, 'index'])->name('general-setting.index');
-    Route::put('/general-settings', [GeneralSettingController::class, 'update'])->name('general-setting.update');
+Route::middleware(['auth'])->prefix('system-settings')->group(function () {
+    Route::get('/general', [SystemSettingController::class, 'getGeneralSettings'])
+        ->name('system-setting.get-general-settings');
+    Route::put('/general', [SystemSettingController::class, 'updateGeneralSettings'])
+        ->name('system-setting.update-general-settings');
 });
