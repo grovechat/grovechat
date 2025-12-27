@@ -1,32 +1,37 @@
 <?php
 
+use App\Models\Tenant;
 use App\Models\User;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('profile page is displayed', function () {
     $user = User::factory()->create();
+    $tenant = Tenant::factory()->create();
+    $user->tenants()->attach($tenant, ['role' => 'owner']);
 
     $response = $this
         ->actingAs($user)
-        ->get(route('profile.edit'));
+        ->get(route('profile.edit', ['tenant_path' => $tenant->path]));
 
     $response->assertOk();
 });
 
 test('profile information can be updated', function () {
     $user = User::factory()->create();
+    $tenant = Tenant::factory()->create();
+    $user->tenants()->attach($tenant, ['role' => 'owner']);
 
     $response = $this
         ->actingAs($user)
-        ->patch(route('profile.update'), [
+        ->patch(route('profile.update', ['tenant_path' => $tenant->path]), [
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('profile.edit'));
+        ->assertRedirect(route('profile.edit', ['tenant_path' => $tenant->path]));
 
     $user->refresh();
 
@@ -37,27 +42,31 @@ test('profile information can be updated', function () {
 
 test('email verification status is unchanged when the email address is unchanged', function () {
     $user = User::factory()->create();
+    $tenant = Tenant::factory()->create();
+    $user->tenants()->attach($tenant, ['role' => 'owner']);
 
     $response = $this
         ->actingAs($user)
-        ->patch(route('profile.update'), [
+        ->patch(route('profile.update', ['tenant_path' => $tenant->path]), [
             'name' => 'Test User',
             'email' => $user->email,
         ]);
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('profile.edit'));
+        ->assertRedirect(route('profile.edit', ['tenant_path' => $tenant->path]));
 
     expect($user->refresh()->email_verified_at)->not->toBeNull();
 });
 
 test('user can delete their account', function () {
     $user = User::factory()->create();
+    $tenant = Tenant::factory()->create();
+    $user->tenants()->attach($tenant, ['role' => 'owner']);
 
     $response = $this
         ->actingAs($user)
-        ->delete(route('profile.destroy'), [
+        ->delete(route('profile.destroy', ['tenant_path' => $tenant->path]), [
             'password' => 'password',
         ]);
 
@@ -71,17 +80,19 @@ test('user can delete their account', function () {
 
 test('correct password must be provided to delete account', function () {
     $user = User::factory()->create();
+    $tenant = Tenant::factory()->create();
+    $user->tenants()->attach($tenant, ['role' => 'owner']);
 
     $response = $this
         ->actingAs($user)
-        ->from(route('profile.edit'))
-        ->delete(route('profile.destroy'), [
+        ->from(route('profile.edit', ['tenant_path' => $tenant->path]))
+        ->delete(route('profile.destroy', ['tenant_path' => $tenant->path]), [
             'password' => 'wrong-password',
         ]);
 
     $response
         ->assertSessionHasErrors('password')
-        ->assertRedirect(route('profile.edit'));
+        ->assertRedirect(route('profile.edit', ['tenant_path' => $tenant->path]));
 
     expect($user->fresh())->not->toBeNull();
 });

@@ -16,10 +16,10 @@ const { t } = useI18n();
 
 <template>
   <AuthBase
-    :title="t('auth.register.title')"
-    :description="t('auth.register.description')"
+    :title="t('创建账户')"
+    :description="t('在下方输入你的详细信息以创建账户')"
   >
-    <Head :title="t('auth.register.pageTitle')" />
+    <Head :title="t('注册')" />
 
     <Form
       v-bind="store.form()"
@@ -29,7 +29,7 @@ const { t } = useI18n();
     >
       <div class="grid gap-6">
         <div class="grid gap-2">
-          <Label for="name">{{ t('auth.register.fields.name.label') }}</Label>
+          <Label for="name">{{ t('姓名') }}</Label>
           <Input
             id="name"
             type="text"
@@ -38,13 +38,13 @@ const { t } = useI18n();
             :tabindex="1"
             autocomplete="name"
             name="name"
-            :placeholder="t('auth.register.fields.name.placeholder')"
+            :placeholder="t('请输入姓名')"
           />
           <InputError :message="errors.name" />
         </div>
 
         <div class="grid gap-2">
-          <Label for="email">{{ t('auth.register.fields.email.label') }}</Label>
+          <Label for="email">{{ t('电子邮件地址') }}</Label>
           <Input
             id="email"
             type="email"
@@ -52,14 +52,14 @@ const { t } = useI18n();
             :tabindex="2"
             autocomplete="email"
             name="email"
-            :placeholder="t('auth.register.fields.email.placeholder')"
+            :placeholder="t('请输入电子邮件地址')"
           />
           <InputError :message="errors.email" />
         </div>
 
         <div class="grid gap-2">
           <Label for="password">{{
-            t('auth.register.fields.password.label')
+            t('密码')
           }}</Label>
           <Input
             id="password"
@@ -68,14 +68,14 @@ const { t } = useI18n();
             :tabindex="3"
             autocomplete="new-password"
             name="password"
-            :placeholder="t('auth.register.fields.password.placeholder')"
+            :placeholder="t('密码')"
           />
           <InputError :message="errors.password" />
         </div>
 
         <div class="grid gap-2">
           <Label for="password_confirmation">{{
-            t('auth.register.fields.passwordConfirmation.label')
+            t('确认密码')
           }}</Label>
           <Input
             id="password_confirmation"
@@ -84,9 +84,7 @@ const { t } = useI18n();
             :tabindex="4"
             autocomplete="new-password"
             name="password_confirmation"
-            :placeholder="
-              t('auth.register.fields.passwordConfirmation.placeholder')
-            "
+            :placeholder="t('确认密码')"
           />
           <InputError :message="errors.password_confirmation" />
         </div>
@@ -99,17 +97,17 @@ const { t } = useI18n();
           data-test="register-user-button"
         >
           <Spinner v-if="processing" />
-          {{ t('auth.register.submit') }}
+          {{ t('创建账户') }}
         </Button>
       </div>
 
       <div class="text-center text-sm text-muted-foreground">
-        {{ t('auth.register.hasAccount') }}
+        {{ t('已有账户？') }}
         <TextLink
           :href="login()"
           class="underline underline-offset-4"
           :tabindex="6"
-          >{{ t('auth.register.logIn') }}</TextLink
+          >{{ t('登录') }}</TextLink
         >
       </div>
     </Form>

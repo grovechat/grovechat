@@ -24,10 +24,10 @@ const { t } = useI18n();
 
 <template>
   <AuthBase
-    :title="t('auth.login.title')"
-    :description="t('auth.login.description')"
+    :title="t('登录你的账户')"
+    :description="t('在下方输入你的邮箱和密码以登录')"
   >
-    <Head :title="t('auth.login.pageTitle')" />
+    <Head :title="t('登录')" />
 
     <div
       v-if="status"
@@ -44,7 +44,7 @@ const { t } = useI18n();
     >
       <div class="grid gap-6">
         <div class="grid gap-2">
-          <Label for="email">{{ t('auth.login.fields.email.label') }}</Label>
+          <Label for="email">{{ t('电子邮件地址') }}</Label>
           <Input
             id="email"
             type="email"
@@ -53,7 +53,7 @@ const { t } = useI18n();
             autofocus
             :tabindex="1"
             autocomplete="email"
-            :placeholder="t('auth.login.fields.email.placeholder')"
+            :placeholder="t('请输入电子邮件地址')"
           />
           <InputError :message="errors.email" />
         </div>
@@ -61,7 +61,7 @@ const { t } = useI18n();
         <div class="grid gap-2">
           <div class="flex items-center justify-between">
             <Label for="password">{{
-              t('auth.login.fields.password.label')
+              t('密码')
             }}</Label>
             <TextLink
               v-if="canResetPassword"
@@ -69,7 +69,7 @@ const { t } = useI18n();
               class="text-sm"
               :tabindex="5"
             >
-              {{ t('auth.login.forgotPassword') }}
+              {{ t('忘记密码？') }}
             </TextLink>
           </div>
           <Input
@@ -79,7 +79,7 @@ const { t } = useI18n();
             required
             :tabindex="2"
             autocomplete="current-password"
-            :placeholder="t('auth.login.fields.password.placeholder')"
+            :placeholder="t('密码')"
           />
           <InputError :message="errors.password" />
         </div>
@@ -87,7 +87,7 @@ const { t } = useI18n();
         <div class="flex items-center justify-between">
           <Label for="remember" class="flex items-center space-x-3">
             <Checkbox id="remember" name="remember" :tabindex="3" />
-            <span>{{ t('auth.login.fields.remember') }}</span>
+            <span>{{ t('记住我') }}</span>
           </Label>
         </div>
 
@@ -99,14 +99,14 @@ const { t } = useI18n();
           data-test="login-button"
         >
           <Spinner v-if="processing" />
-          {{ t('auth.login.submit') }}
+          {{ t('登录') }}
         </Button>
       </div>
 
       <div class="text-center text-sm text-muted-foreground" v-if="canRegister">
-        {{ t('auth.login.noAccount') }}
+        {{ t('还没有账户？') }}
         <TextLink :href="register()" :tabindex="5">{{
-          t('auth.login.signUp')
+          t('注册')
         }}</TextLink>
       </div>
     </Form>

@@ -17,16 +17,16 @@ const { t } = useI18n();
 
 <template>
   <AuthLayout
-    :title="t('auth.verifyEmail.title')"
-    :description="t('auth.verifyEmail.description')"
+    :title="t('验证电子邮件')"
+    :description="t('请点击我们刚刚发送给你的电子邮件中的链接来验证你的电子邮件地址。')"
   >
-    <Head :title="t('auth.verifyEmail.pageTitle')" />
+    <Head :title="t('邮箱验证')" />
 
     <div
       v-if="status === 'verification-link-sent'"
       class="mb-4 text-center text-sm font-medium text-green-600"
     >
-      {{ t('auth.verifyEmail.linkSent') }}
+      {{ t('新的验证链接已发送到你注册时提供的电子邮件地址。') }}
     </div>
 
     <Form
@@ -36,11 +36,11 @@ const { t } = useI18n();
     >
       <Button :disabled="processing" variant="secondary">
         <Spinner v-if="processing" />
-        {{ t('auth.verifyEmail.submit') }}
+        {{ t('重新发送验证邮件') }}
       </Button>
 
       <TextLink :href="logout()" as="button" class="mx-auto block text-sm">
-        {{ t('auth.verifyEmail.logout') }}
+        {{ t('退出登录') }}
       </TextLink>
     </Form>
   </AuthLayout>

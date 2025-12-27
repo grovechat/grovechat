@@ -3,8 +3,10 @@ import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
+import { edit as editLanguage } from '@/routes/language';
 import { edit as editProfile } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
@@ -13,29 +15,34 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
+const { tenantPath } = useTenant();
 
-const sidebarNavItems = computed<NavItem[]>(() => [
-  {
-    title: t('settings.nav.profile'),
-    href: editProfile(),
-  },
-  {
-    title: t('settings.nav.password'),
-    href: editPassword(),
-  },
-  {
-    title: t('settings.nav.twoFactor'),
-    href: show(),
-  },
-  {
-    title: t('settings.nav.language'),
-    href: '/settings/language',
-  },
-  {
-    title: t('settings.nav.appearance'),
-    href: editAppearance(),
-  },
-]);
+const sidebarNavItems = computed<NavItem[]>(() => {
+  if (!tenantPath.value) return [];
+
+  return [
+    {
+      title: t('个人资料'),
+      href: editProfile(tenantPath.value),
+    },
+    {
+      title: t('密码'),
+      href: editPassword(tenantPath.value),
+    },
+    {
+      title: t('两步验证'),
+      href: show(tenantPath.value),
+    },
+    {
+      title: t('语言和时区'),
+      href: editLanguage(tenantPath.value),
+    },
+    {
+      title: t('外观'),
+      href: editAppearance(tenantPath.value),
+    },
+  ];
+});
 
 const currentPath = typeof window !== undefined ? window.location.pathname : '';
 </script>
@@ -43,8 +50,8 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
 <template>
   <div class="px-4 py-6">
     <Heading
-      :title="t('settings.title')"
-      :description="t('settings.description')"
+      :title="t('设置')"
+      :description="t('管理你的个人资料和账户设置')"
     />
 
     <div class="flex flex-col lg:flex-row lg:space-x-12">

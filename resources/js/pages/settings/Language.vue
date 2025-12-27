@@ -13,22 +13,25 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import { useTimezone, type Timezone } from '@/composables/useTimezone';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { availableLocales, type Locale } from '@/locales';
+import { edit } from '@/routes/language';
 import { type BreadcrumbItem } from '@/types';
 
 const { locale, updateLocale, t } = useI18n();
 const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =
   useTimezone();
+const { tenantPath } = useTenant();
 
-const breadcrumbItems: BreadcrumbItem[] = [
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
-    title: computed(() => t('language.title')).value,
-    href: '/settings/language',
+    title: t('语言和时区设置'),
+    href: tenantPath.value ? edit(tenantPath.value).url : '#',
   },
-];
+]);
 
 const currentLanguageLabel = computed(() => {
   const current = availableLocales.find((l) => l.value === locale.value);
@@ -54,19 +57,19 @@ function handleTimezoneChange(value: string) {
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head :title="t('language.title')" />
+    <Head :title="t('语言和时区设置')" />
 
     <SettingsLayout>
       <div class="flex flex-col space-y-6">
         <!-- 语言设置 -->
         <HeadingSmall
-          :title="t('language.heading')"
-          :description="t('language.description')"
+          :title="t('语言偏好')"
+          :description="t('选择你的首选语言')"
         />
 
         <div class="space-y-4">
           <div class="grid gap-2">
-            <Label for="language-select">{{ t('language.select') }}</Label>
+            <Label for="language-select">{{ t('选择语言') }}</Label>
             <Select
               :model-value="locale"
               @update:model-value="handleLanguageChange"
@@ -93,13 +96,13 @@ function handleTimezoneChange(value: string) {
 
         <!-- 时区设置 -->
         <HeadingSmall
-          :title="t('timezone.heading')"
-          :description="t('timezone.description')"
+          :title="t('时区设置')"
+          :description="t('选择你的时区，用于正确显示时间')"
         />
 
         <div class="space-y-4">
           <div class="grid gap-2">
-            <Label for="timezone-select">{{ t('timezone.select') }}</Label>
+            <Label for="timezone-select">{{ t('选择时区') }}</Label>
             <Select
               :model-value="timezone"
               @update:model-value="handleTimezoneChange"

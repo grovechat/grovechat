@@ -14,10 +14,10 @@ const { t } = useI18n();
 
 <template>
   <AuthLayout
-    :title="t('auth.confirmPassword.title')"
-    :description="t('auth.confirmPassword.description')"
+    :title="t('确认你的密码')"
+    :description="t('这是应用程序的安全区域。请在继续之前确认你的密码。')"
   >
-    <Head :title="t('auth.confirmPassword.pageTitle')" />
+    <Head :title="t('确认密码页面')" />
 
     <Form
       v-bind="store.form()"
@@ -27,7 +27,7 @@ const { t } = useI18n();
       <div class="space-y-6">
         <div class="grid gap-2">
           <Label htmlFor="password">{{
-            t('auth.confirmPassword.fields.password.label')
+            t('密码')
           }}</Label>
           <Input
             id="password"
@@ -49,7 +49,7 @@ const { t } = useI18n();
             data-test="confirm-password-button"
           >
             <Spinner v-if="processing" />
-            {{ t('auth.confirmPassword.submit') }}
+            {{ t('确认密码') }}
           </Button>
         </div>
       </div>

@@ -24,16 +24,16 @@ interface AuthConfigContent {
 const authConfigContent = computed<AuthConfigContent>(() => {
   if (showRecoveryInput.value) {
     return {
-      title: t('auth.twoFactorChallenge.recovery.title'),
-      description: t('auth.twoFactorChallenge.recovery.description'),
-      toggleText: t('auth.twoFactorChallenge.recovery.toggleText'),
+      title: t('恢复码'),
+      description: t('请输入你的紧急恢复码之一来确认访问你的账户。'),
+      toggleText: t('使用身份验证码登录'),
     };
   }
 
   return {
-    title: t('auth.twoFactorChallenge.code.title'),
-    description: t('auth.twoFactorChallenge.code.description'),
-    toggleText: t('auth.twoFactorChallenge.code.toggleText'),
+    title: t('身份验证码'),
+    description: t('输入你的身份验证器应用程序提供的验证码。'),
+    toggleText: t('使用恢复码登录'),
   };
 });
 
@@ -53,7 +53,7 @@ const code = ref<string>('');
     :title="authConfigContent.title"
     :description="authConfigContent.description"
   >
-    <Head :title="t('auth.twoFactorChallenge.pageTitle')" />
+    <Head :title="t('两步验证')" />
 
     <div class="space-y-6">
       <template v-if="!showRecoveryInput">
@@ -88,10 +88,10 @@ const code = ref<string>('');
             <InputError :message="errors.code" />
           </div>
           <Button type="submit" class="w-full" :disabled="processing">{{
-            t('auth.twoFactorChallenge.submit')
+            t('继续')
           }}</Button>
           <div class="text-center text-sm text-muted-foreground">
-            <span>{{ t('auth.twoFactorChallenge.orYouCan') }} </span>
+            <span>{{ t('或者你可以') }} </span>
             <button
               type="button"
               class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
@@ -113,17 +113,17 @@ const code = ref<string>('');
           <Input
             name="recovery_code"
             type="text"
-            :placeholder="t('auth.twoFactorChallenge.recovery.placeholder')"
+            :placeholder="t('输入恢复码')"
             :autofocus="showRecoveryInput"
             required
           />
           <InputError :message="errors.recovery_code" />
           <Button type="submit" class="w-full" :disabled="processing">{{
-            t('auth.twoFactorChallenge.submit')
+            t('继续')
           }}</Button>
 
           <div class="text-center text-sm text-muted-foreground">
-            <span>{{ t('auth.twoFactorChallenge.orYouCan') }} </span>
+            <span>{{ t('或者你可以') }} </span>
             <button
               type="button"
               class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"

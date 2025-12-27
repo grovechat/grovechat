@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/tooltip';
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
+import { useTenant } from '@/composables/useTenant';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
@@ -47,6 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
+const { tenantPath } = useTenant();
 
 const isCurrentRoute = computed(
   () => (url: NonNullable<InertiaLinkProps['href']>) =>
@@ -60,13 +62,13 @@ const activeItemStyles = computed(
       : '',
 );
 
-const mainNavItems: NavItem[] = [
+const mainNavItems = computed<NavItem[]>(() => [
   {
     title: 'Dashboard',
-    href: dashboard(),
+    href: tenantPath.value ? dashboard(tenantPath.value) : '/',
     icon: LayoutGrid,
   },
-];
+]);
 
 const rightNavItems: NavItem[] = [
   {
@@ -142,7 +144,7 @@ const rightNavItems: NavItem[] = [
           </Sheet>
         </div>
 
-        <Link :href="dashboard()" class="flex items-center gap-x-2">
+        <Link :href="tenantPath ? dashboard(tenantPath) : '/'" class="flex items-center gap-x-2">
           <AppLogo />
         </Link>
 

@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem } from '@/types';
@@ -23,36 +24,37 @@ interface Props {
 defineProps<Props>();
 
 const { t } = useI18n();
-
-const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-  {
-    title: t('profile.title'),
-    href: edit().url,
-  },
-]);
+const { tenantPath } = useTenant();
 
 const page = usePage();
 const user = page.props.auth.user;
+
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+  {
+    title: t('个人资料设置'),
+    href: tenantPath.value ? edit(tenantPath.value).url : '#',
+  },
+]);
 </script>
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head :title="t('profile.title')" />
+    <Head :title="t('个人资料设置')" />
 
     <SettingsLayout>
       <div class="flex flex-col space-y-6">
         <HeadingSmall
-          :title="t('profile.heading')"
-          :description="t('profile.description')"
+          :title="t('个人信息')"
+          :description="t('更新你的姓名和电子邮件地址')"
         />
 
         <Form
-          v-bind="ProfileController.update.form()"
+          v-bind="tenantPath ? ProfileController.update.form(tenantPath) : {}"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
           <div class="grid gap-2">
-            <Label for="name">{{ t('profile.fields.name.label') }}</Label>
+            <Label for="name">{{ t('姓名') }}</Label>
             <Input
               id="name"
               class="mt-1 block w-full"
@@ -60,13 +62,13 @@ const user = page.props.auth.user;
               :default-value="user.name"
               required
               autocomplete="name"
-              :placeholder="t('profile.fields.name.placeholder')"
+              :placeholder="t('请输入姓名')"
             />
             <InputError class="mt-2" :message="errors.name" />
           </div>
 
           <div class="grid gap-2">
-            <Label for="email">{{ t('profile.fields.email.label') }}</Label>
+            <Label for="email">{{ t('电子邮件地址') }}</Label>
             <Input
               id="email"
               type="email"
@@ -75,20 +77,20 @@ const user = page.props.auth.user;
               :default-value="user.email"
               required
               autocomplete="username"
-              :placeholder="t('profile.fields.email.placeholder')"
+              :placeholder="t('请输入电子邮件地址')"
             />
             <InputError class="mt-2" :message="errors.email" />
           </div>
 
           <div v-if="mustVerifyEmail && !user.email_verified_at">
             <p class="-mt-4 text-sm text-muted-foreground">
-              {{ t('profile.verification.unverified') }}
+              {{ t('你的电子邮件地址未验证。') }}
               <Link
-                :href="send()"
+                :href="tenantPath ? send(tenantPath) : '#'"
                 as="button"
                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
               >
-                {{ t('profile.verification.resend') }}
+                {{ t('点击这里重新发送验证邮件。') }}
               </Link>
             </p>
 
@@ -96,13 +98,13 @@ const user = page.props.auth.user;
               v-if="status === 'verification-link-sent'"
               class="mt-2 text-sm font-medium text-green-600"
             >
-              {{ t('profile.verification.linkSent') }}
+              {{ t('新的验证链接已发送到你的电子邮件地址。') }}
             </div>
           </div>
 
           <div class="flex items-center gap-4">
             <Button :disabled="processing" data-test="update-profile-button">{{
-              t('profile.actions.save')
+              t('保存')
             }}</Button>
 
             <Transition
@@ -112,7 +114,7 @@ const user = page.props.auth.user;
               leave-to-class="opacity-0"
             >
               <p v-show="recentlySuccessful" class="text-sm text-neutral-600">
-                {{ t('profile.actions.saved') }}
+                {{ t('已保存。') }}
               </p>
             </Transition>
           </div>
