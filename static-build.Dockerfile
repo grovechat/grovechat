@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:static-builder-gnu-1.11
+FROM dunglas/frankenphp:static-builder-gnu-1.11.1
 
 # 接收 GitHub Token（用于避免 API 限流）
 ARG GITHUB_TOKEN
