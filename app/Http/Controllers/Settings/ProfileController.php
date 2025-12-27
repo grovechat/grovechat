@@ -37,7 +37,8 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return to_route('profile.edit');
+        $tenantPath = $request->route('tenant_path');
+        return to_route('profile.edit', ['tenant_path' => $tenantPath]);
     }
 
     /**

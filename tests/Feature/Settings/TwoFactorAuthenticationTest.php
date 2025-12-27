@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Tenant;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
@@ -17,10 +18,12 @@ test('two factor settings page can be rendered', function () {
     ]);
 
     $user = User::factory()->withoutTwoFactor()->create();
+    $tenant = Tenant::factory()->create();
+    $user->tenants()->attach($tenant, ['role' => 'owner']);
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->get(route('two-factor.show'))
+        ->get(route('two-factor.show', ['tenant_path' => $tenant->path]))
         ->assertInertia(fn (Assert $page) => $page
             ->component('settings/TwoFactor')
             ->where('twoFactorEnabled', false)
@@ -33,6 +36,8 @@ test('two factor settings page requires password confirmation when enabled', fun
     }
 
     $user = User::factory()->create();
+    $tenant = Tenant::factory()->create();
+    $user->tenants()->attach($tenant, ['role' => 'owner']);
 
     Features::twoFactorAuthentication([
         'confirm' => true,
@@ -40,7 +45,7 @@ test('two factor settings page requires password confirmation when enabled', fun
     ]);
 
     $response = $this->actingAs($user)
-        ->get(route('two-factor.show'));
+        ->get(route('two-factor.show', ['tenant_path' => $tenant->path]));
 
     $response->assertRedirect(route('password.confirm'));
 });
@@ -51,6 +56,8 @@ test('two factor settings page does not requires password confirmation when disa
     }
 
     $user = User::factory()->create();
+    $tenant = Tenant::factory()->create();
+    $user->tenants()->attach($tenant, ['role' => 'owner']);
 
     Features::twoFactorAuthentication([
         'confirm' => true,
@@ -58,7 +65,7 @@ test('two factor settings page does not requires password confirmation when disa
     ]);
 
     $this->actingAs($user)
-        ->get(route('two-factor.show'))
+        ->get(route('two-factor.show', ['tenant_path' => $tenant->path]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('settings/TwoFactor')
@@ -73,9 +80,11 @@ test('two factor settings page returns forbidden response when two factor is dis
     config(['fortify.features' => []]);
 
     $user = User::factory()->create();
+    $tenant = Tenant::factory()->create();
+    $user->tenants()->attach($tenant, ['role' => 'owner']);
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->get(route('two-factor.show'))
+        ->get(route('two-factor.show', ['tenant_path' => $tenant->path]))
         ->assertForbidden();
 });
