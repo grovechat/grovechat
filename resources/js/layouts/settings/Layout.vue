@@ -3,39 +3,48 @@ import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
+import { edit as editLanguage } from '@/routes/language';
 import { edit as editProfile } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
+const { tenantPath } = useTenant();
 
-const sidebarNavItems = computed<NavItem[]>(() => [
-  {
-    title: t('settings.nav.profile'),
-    href: editProfile(),
-  },
-  {
-    title: t('settings.nav.password'),
-    href: editPassword(),
-  },
-  {
-    title: t('settings.nav.twoFactor'),
-    href: show(),
-  },
-  {
-    title: t('settings.nav.language'),
-    href: '/settings/language',
-  },
-  {
-    title: t('settings.nav.appearance'),
-    href: editAppearance(),
-  },
-]);
+const page = usePage();
+
+const sidebarNavItems = computed<NavItem[]>(() => {
+  if (!tenantPath.value) return [];
+  
+  return [
+    {
+      title: t('settings.nav.profile'),
+      href: editProfile(tenantPath.value),
+    },
+    {
+      title: t('settings.nav.password'),
+      href: editPassword(tenantPath.value),
+    },
+    {
+      title: t('settings.nav.twoFactor'),
+      href: show(tenantPath.value),
+    },
+    {
+      title: t('settings.nav.language'),
+      href: editLanguage(tenantPath.value),
+    },
+    {
+      title: t('settings.nav.appearance'),
+      href: editAppearance(tenantPath.value),
+    },
+  ];
+});
 
 const currentPath = typeof window !== undefined ? window.location.pathname : '';
 </script>

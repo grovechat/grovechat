@@ -12,21 +12,24 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, GitBranch, LayoutGrid, Settings } from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
 const { t } = useI18n();
+const { tenantPath } = useTenant();
 
-const mainNavItems: NavItem[] = [
+const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('sidebarMenu.dashboard'),
-    href: dashboard(),
+    href: tenantPath.value ? dashboard(tenantPath.value) : '/',
     icon: LayoutGrid,
   },
-];
+]);
 
 const footerNavItems: NavItem[] = [
   {
@@ -53,7 +56,7 @@ const footerNavItems: NavItem[] = [
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" as-child>
-            <Link :href="dashboard()">
+            <Link :href="tenantPath ? dashboard(tenantPath) : '/'">
               <AppLogo />
             </Link>
           </SidebarMenuButton>

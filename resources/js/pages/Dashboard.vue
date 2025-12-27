@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { useTenant } from '@/composables/useTenant';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import PlaceholderPattern from '../components/PlaceholderPattern.vue';
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { tenantPath } = useTenant();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: 'Dashboard',
-    href: dashboard().url,
+    href: tenantPath.value ? dashboard(tenantPath.value).url : '#',
   },
-];
+]);
 </script>
 
 <template>

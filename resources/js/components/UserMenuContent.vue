@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import type { User } from '@/types';
@@ -24,6 +25,7 @@ const handleLogout = () => {
 defineProps<Props>();
 
 const { t } = useI18n();
+const { tenantPath } = useTenant();
 </script>
 
 <template>
@@ -35,7 +37,7 @@ const { t } = useI18n();
   <DropdownMenuSeparator />
   <DropdownMenuGroup>
     <DropdownMenuItem :as-child="true">
-      <Link class="block w-full" :href="edit()" prefetch as="button">
+      <Link class="block w-full" :href="tenantPath ? edit(tenantPath) : '#'" prefetch as="button">
         <Settings class="mr-2 h-4 w-4" />
         {{ t('sidebarMenu.profile') }}
       </Link>

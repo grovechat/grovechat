@@ -5,6 +5,7 @@ import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
@@ -25,11 +26,12 @@ withDefaults(defineProps<Props>(), {
 });
 
 const { t } = useI18n();
+const { tenantPath } = useTenant();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('twoFactor.title'),
-    href: show.url(),
+    href: tenantPath.value ? show(tenantPath.value).url : '#',
   },
 ]);
 
@@ -69,7 +71,7 @@ onUnmounted(() => {
             </Button>
             <Form
               v-else
-              v-bind="enable.form()"
+              v-bind="tenantPath ? enable.form(tenantPath) : {}"
               @success="showSetupModal = true"
               #default="{ processing }"
             >
@@ -90,7 +92,7 @@ onUnmounted(() => {
           <TwoFactorRecoveryCodes />
 
           <div class="relative inline">
-            <Form v-bind="disable.form()" #default="{ processing }">
+            <Form v-bind="tenantPath ? disable.form(tenantPath) : {}" #default="{ processing }">
               <Button
                 variant="destructive"
                 type="submit"

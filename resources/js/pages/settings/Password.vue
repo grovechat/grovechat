@@ -2,6 +2,7 @@
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import InputError from '@/components/InputError.vue';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/user-password';
@@ -15,11 +16,12 @@ import { Label } from '@/components/ui/label';
 import { type BreadcrumbItem } from '@/types';
 
 const { t } = useI18n();
+const { tenantPath } = useTenant();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('password.title'),
-    href: edit().url,
+    href: tenantPath.value ? edit(tenantPath.value).url : '#',
   },
 ]);
 </script>
@@ -36,7 +38,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="PasswordController.update.form()"
+          v-bind="tenantPath ? PasswordController.update.form(tenantPath) : {}"
           :options="{
             preserveScroll: true,
           }"

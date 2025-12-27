@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem } from '@/types';
@@ -23,16 +24,17 @@ interface Props {
 defineProps<Props>();
 
 const { t } = useI18n();
+const { tenantPath } = useTenant();
+
+const page = usePage();
+const user = page.props.auth.user;
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('profile.title'),
-    href: edit().url,
+    href: tenantPath.value ? edit(tenantPath.value).url : '#',
   },
 ]);
-
-const page = usePage();
-const user = page.props.auth.user;
 </script>
 
 <template>
@@ -47,7 +49,7 @@ const user = page.props.auth.user;
         />
 
         <Form
-          v-bind="ProfileController.update.form()"
+          v-bind="tenantPath ? ProfileController.update.form(tenantPath) : {}"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
@@ -84,7 +86,7 @@ const user = page.props.auth.user;
             <p class="-mt-4 text-sm text-muted-foreground">
               {{ t('profile.verification.unverified') }}
               <Link
-                :href="send()"
+                :href="tenantPath ? send(tenantPath) : '#'"
                 as="button"
                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
               >

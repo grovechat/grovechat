@@ -13,22 +13,25 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import { useTimezone, type Timezone } from '@/composables/useTimezone';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { availableLocales, type Locale } from '@/locales';
+import { edit } from '@/routes/language';
 import { type BreadcrumbItem } from '@/types';
 
 const { locale, updateLocale, t } = useI18n();
 const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =
   useTimezone();
+const { tenantPath } = useTenant();
 
-const breadcrumbItems: BreadcrumbItem[] = [
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
-    title: computed(() => t('language.title')).value,
-    href: '/settings/language',
+    title: t('language.title'),
+    href: tenantPath.value ? edit(tenantPath.value).url : '#',
   },
-];
+]);
 
 const currentLanguageLabel = computed(() => {
   const current = availableLocales.find((l) => l.value === locale.value);

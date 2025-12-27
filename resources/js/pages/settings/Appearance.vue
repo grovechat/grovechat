@@ -5,6 +5,7 @@ import { computed } from 'vue';
 import AppearanceTabs from '@/components/AppearanceTabs.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { useI18n } from '@/composables/useI18n';
+import { useTenant } from '@/composables/useTenant';
 import { type BreadcrumbItem } from '@/types';
 
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -12,11 +13,12 @@ import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/appearance';
 
 const { t } = useI18n();
+const { tenantPath } = useTenant();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('appearance.title'),
-    href: edit().url,
+    href: tenantPath.value ? edit(tenantPath.value).url : '#',
   },
 ]);
 </script>
