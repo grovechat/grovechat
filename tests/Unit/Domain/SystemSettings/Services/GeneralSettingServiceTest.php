@@ -1,92 +1,78 @@
 <?php
 
-namespace Tests\Unit\Domain\SystemSettings\Services;
-
 use App\Domain\SystemSettings\Services\GeneralSettingService;
 use App\Settings\GeneralSettings;
-use Mockery;
-use Tests\TestCase;
 
-class GeneralSettingServiceTest extends TestCase
-{
-    private GeneralSettingService $service;
-    private GeneralSettings $mockSettings;
+test('it can update all settings', function () {
+    // 创建 Mock 对象
+    $mockSettings = Mockery::mock(GeneralSettings::class);
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        
-        // 创建 Mock 对象，避免真实数据库操作
-        $this->mockSettings = Mockery::mock(GeneralSettings::class);
-        $this->service = new GeneralSettingService($this->mockSettings);
-    }
+    // 准备测试数据
+    $data = [
+        'baseUrl' => 'https://app.grovechat.com',
+        'name' => 'GroveChat',
+        'logo' => 'logo.png',
+        'copyright' => '© 2026 GroveChat',
+        'icpRecord' => '京ICP备12345678号',
+    ];
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
+    // 设置 Mock 期望 - save() 返回对象本身
+    $mockSettings->shouldReceive('save')->once()->andReturnSelf();
 
-    /** @test */
-    public function it_can_update_all_settings()
-    {
-        // 准备测试数据
-        $data = [
-            'baseUrl' => 'https://example.com',
-            'name' => '客服系统',
-            'logo' => 'logo.png',
-            'copyright' => '© 2025 公司',
-            'icpRecord' => '京ICP备12345678号',
-        ];
+    // 创建 Service 实例
+    $service = new GeneralSettingService($mockSettings);
 
-        // 设置 Mock 期望
-        $this->mockSettings->shouldReceive('getAttribute')->andReturnSelf();
-        $this->mockSettings->shouldReceive('save')->once()->andReturn(true);
+    // 执行测试
+    $result = $service->updateSettings($data);
 
-        // 执行测试
-        $result = $this->service->updateSettings($data);
+    // 断言
+    expect($result)->toBeTrue();
+    expect($mockSettings->baseUrl)->toBe('https://app.grovechat.com');
+    expect($mockSettings->name)->toBe('GroveChat');
+    expect($mockSettings->logo)->toBe('logo.png');
+    expect($mockSettings->copyright)->toBe('© 2026 GroveChat');
+    expect($mockSettings->icpRecord)->toBe('京ICP备12345678号');
 
-        // 断言
-        $this->assertTrue($result);
-        $this->assertEquals('https://example.com', $this->mockSettings->baseUrl);
-        $this->assertEquals('客服系统', $this->mockSettings->name);
-        $this->assertEquals('logo.png', $this->mockSettings->logo);
-        $this->assertEquals('© 2025 公司', $this->mockSettings->copyright);
-        $this->assertEquals('京ICP备12345678号', $this->mockSettings->icpRecord);
-    }
+    Mockery::close();
+});
 
-    /** @test */
-    public function it_can_update_required_settings_only()
-    {
-        // 只提供必填字段
-        $data = [
-            'baseUrl' => 'https://test.com',
-            'name' => '测试系统',
-            'logo' => null,
-            'copyright' => null,
-            'icpRecord' => null,
-        ];
+test('it can update required settings only', function () {
+    // 创建 Mock 对象
+    $mockSettings = Mockery::mock(GeneralSettings::class);
 
-        $this->mockSettings->shouldReceive('getAttribute')->andReturnSelf();
-        $this->mockSettings->shouldReceive('save')->once()->andReturn(true);
+    // 只提供必填字段
+    $data = [
+        'baseUrl' => 'https://app.grovechat.com',
+        'name' => 'GroveChat',
+        'logo' => null,
+        'copyright' => null,
+        'icpRecord' => null,
+    ];
 
-        $result = $this->service->updateSettings($data);
+    $mockSettings->shouldReceive('save')->once()->andReturnSelf();
 
-        $this->assertTrue($result);
-        $this->assertEquals('https://test.com', $this->mockSettings->baseUrl);
-        $this->assertEquals('测试系统', $this->mockSettings->name);
-        $this->assertNull($this->mockSettings->logo);
-        $this->assertNull($this->mockSettings->copyright);
-        $this->assertNull($this->mockSettings->icpRecord);
-    }
+    $service = new GeneralSettingService($mockSettings);
+    $result = $service->updateSettings($data);
 
-    /** @test */
-    public function it_can_get_settings()
-    {
-        // 执行测试
-        $settings = $this->service->getSettings();
+    expect($result)->toBeTrue();
+    expect($mockSettings->baseUrl)->toBe('https://app.grovechat.com');
+    expect($mockSettings->name)->toBe('GroveChat');
+    expect($mockSettings->logo)->toBeNull();
+    expect($mockSettings->copyright)->toBeNull();
+    expect($mockSettings->icpRecord)->toBeNull();
 
-        // 断言返回的是 GeneralSettings 实例
-        $this->assertInstanceOf(GeneralSettings::class, $settings);
-    }
-}
+    Mockery::close();
+});
+
+test('it can get settings', function () {
+    // 创建 Mock 对象
+    $mockSettings = Mockery::mock(GeneralSettings::class);
+
+    $service = new GeneralSettingService($mockSettings);
+    $settings = $service->getSettings();
+
+    // 断言返回的是 GeneralSettings 实例
+    expect($settings)->toBeInstanceOf(GeneralSettings::class);
+
+    Mockery::close();
+});

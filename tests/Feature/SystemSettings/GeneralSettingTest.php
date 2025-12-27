@@ -2,11 +2,13 @@
 
 use App\Models\User;
 use App\Settings\GeneralSettings;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\put;
+
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     // 每个测试前创建认证用户
@@ -14,6 +16,8 @@ beforeEach(function () {
 });
 
 test('authenticated user can view general settings page', function () {
+    $this->withoutExceptionHandling();
+
     actingAs($this->user)
         ->get('/system-settings/general')
         ->assertOk()
@@ -100,8 +104,6 @@ test('unauthenticated user cannot update general settings', function () {
 });
 
 test('logo must be an image file', function () {
-    Storage::fake('public');
-
     actingAs($this->user)
         ->put('/system-settings/general', [
             'baseUrl' => 'https://app.grovechat.com',
@@ -112,8 +114,6 @@ test('logo must be an image file', function () {
 });
 
 test('logo cannot exceed 4MB', function () {
-    Storage::fake('public');
-
     actingAs($this->user)
         ->put('/system-settings/general', [
             'baseUrl' => 'https://app.grovechat.com',

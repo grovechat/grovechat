@@ -33,7 +33,7 @@ return [
 
         'sqlite' => [  // 主库
             'driver' => 'sqlite',
-            'database' => storage_path('database/main.sqlite'),
+            'database' => env('DB_DATABASE', storage_path('database/main.sqlite')),
             'busy_timeout' => 5000,
             'journal_mode' => 'wal',
             'synchronous' => 'NORMAL',
@@ -42,7 +42,7 @@ return [
 
         'sqlite_cache' => [ // 缓存库
             'driver' => 'sqlite',
-            'database' => storage_path('database/cache.sqlite'),
+            'database' => env('DB_CACHE_DATABASE', storage_path('database/cache.sqlite')),
             'journal_mode' => 'WAL',
             'synchronous' => 'NORMAL',
             'busy_timeout' => 5000,
@@ -51,7 +51,7 @@ return [
 
         'sqlite_session' => [ // session 库
             'driver' => 'sqlite',
-            'database' => storage_path('database/session.sqlite'),
+            'database' => env('DB_SESSION_DATABASE', storage_path('database/session.sqlite')),
             'journal_mode' => 'WAL',
             'synchronous' => 'NORMAL',
             'busy_timeout' => 5000,
@@ -60,7 +60,7 @@ return [
 
         'sqlite_jobs' => [ // jobs 库
             'driver' => 'sqlite',
-            'database' => storage_path('database/jobs.sqlite'),
+            'database' => env('DB_JOBS_DATABASE', storage_path('database/jobs.sqlite')),
             'journal_mode' => 'WAL',
             'synchronous' => 'NORMAL',
             'busy_timeout' => 5000,
