@@ -11,17 +11,15 @@ import { edit as editProfile } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { tenantPath } = useTenant();
 
-const page = usePage();
-
 const sidebarNavItems = computed<NavItem[]>(() => {
   if (!tenantPath.value) return [];
-  
+
   return [
     {
       title: t('个人资料'),
