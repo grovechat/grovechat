@@ -48,24 +48,24 @@ const modalConfig = computed<{
 }>(() => {
   if (props.twoFactorEnabled) {
     return {
-      title: t('twoFactor.modal.enabledTitle'),
-      description: t('twoFactor.modal.enabledDescription'),
-      buttonText: t('twoFactor.modal.close'),
+      title: t('两步验证现已启用'),
+      description: t('两步验证现已启用。扫描二维码或在身份验证器应用中输入设置密钥。'),
+      buttonText: t('关闭'),
     };
   }
 
   if (showVerificationStep.value) {
     return {
-      title: t('twoFactor.modal.verifyTitle'),
-      description: t('twoFactor.modal.verifyDescription'),
-      buttonText: t('twoFactor.modal.continue'),
+      title: t('验证身份验证码'),
+      description: t('输入来自身份验证器应用的 6 位数字验证码'),
+      buttonText: t('继续'),
     };
   }
 
   return {
-    title: t('twoFactor.modal.enableTitle'),
-    description: t('twoFactor.modal.enableDescription'),
-    buttonText: t('twoFactor.modal.continue'),
+    title: t('启用两步验证'),
+    description: t('要完成两步验证的启用，请扫描二维码或在身份验证器应用中输入设置密钥'),
+    buttonText: t('继续'),
   };
 });
 
@@ -177,7 +177,7 @@ watch(
             <div class="relative flex w-full items-center justify-center">
               <div class="absolute inset-0 top-1/2 h-px w-full bg-border" />
               <span class="relative bg-card px-2 py-1">{{
-                t('twoFactor.modal.orManual')
+                t('或者，手动输入密钥')
               }}</span>
             </div>
 
@@ -251,14 +251,14 @@ watch(
                   @click="showVerificationStep = false"
                   :disabled="processing"
                 >
-                  {{ t('twoFactor.modal.back') }}
+                  {{ t('返回') }}
                 </Button>
                 <Button
                   type="submit"
                   class="w-auto flex-1"
                   :disabled="processing || code.length < 6"
                 >
-                  {{ t('twoFactor.modal.confirm') }}
+                  {{ t('确认') }}
                 </Button>
               </div>
             </div>

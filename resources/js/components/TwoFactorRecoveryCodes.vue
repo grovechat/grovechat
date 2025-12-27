@@ -22,8 +22,8 @@ const recoveryCodeSectionRef = useTemplateRef('recoveryCodeSectionRef');
 
 const viewHideButtonText = computed(() =>
   isRecoveryCodesVisible.value
-    ? t('twoFactor.recoveryCodes.hide')
-    : t('twoFactor.recoveryCodes.view'),
+    ? t('隐藏恢复码')
+    : t('查看恢复码'),
 );
 
 const toggleRecoveryCodesVisibility = async () => {
@@ -50,10 +50,10 @@ onMounted(async () => {
   <Card class="w-full">
     <CardHeader>
       <CardTitle class="flex gap-3">
-        <LockKeyhole class="size-4" />{{ t('twoFactor.recoveryCodes.title') }}
+        <LockKeyhole class="size-4" />{{ t('两步验证恢复码') }}
       </CardTitle>
       <CardDescription>
-        {{ t('twoFactor.recoveryCodes.description') }}
+        {{ t('如果丢失两步验证设备，恢复码可以让你重新访问账户。请将它们存储在安全的密码管理器中。') }}
       </CardDescription>
     </CardHeader>
     <CardContent>
@@ -77,7 +77,7 @@ onMounted(async () => {
           #default="{ processing }"
         >
           <Button variant="secondary" type="submit" :disabled="processing">
-            <RefreshCw /> {{ t('twoFactor.recoveryCodes.regenerate') }}
+            <RefreshCw /> {{ t('重新生成恢复码') }}
           </Button>
         </Form>
       </div>
@@ -107,9 +107,9 @@ onMounted(async () => {
             </div>
           </div>
           <p class="text-xs text-muted-foreground select-none">
-            {{ t('twoFactor.recoveryCodes.instructions') }}
+            {{ t('每个恢复码只能使用一次来访问你的账户，使用后将被删除。如需更多恢复码，请点击上方的') }}
             <span class="font-bold">{{
-              t('twoFactor.recoveryCodes.regenerateButton')
+              t('"重新生成恢复码"')
             }}</span>
           </p>
         </div>

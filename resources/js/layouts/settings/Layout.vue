@@ -24,23 +24,23 @@ const sidebarNavItems = computed<NavItem[]>(() => {
   
   return [
     {
-      title: t('settings.nav.profile'),
+      title: t('个人资料'),
       href: editProfile(tenantPath.value),
     },
     {
-      title: t('settings.nav.password'),
+      title: t('密码'),
       href: editPassword(tenantPath.value),
     },
     {
-      title: t('settings.nav.twoFactor'),
+      title: t('两步验证'),
       href: show(tenantPath.value),
     },
     {
-      title: t('settings.nav.language'),
+      title: t('语言和时区'),
       href: editLanguage(tenantPath.value),
     },
     {
-      title: t('settings.nav.appearance'),
+      title: t('外观'),
       href: editAppearance(tenantPath.value),
     },
   ];
@@ -52,8 +52,8 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
 <template>
   <div class="px-4 py-6">
     <Heading
-      :title="t('settings.title')"
-      :description="t('settings.description')"
+      :title="t('设置')"
+      :description="t('管理你的个人资料和账户设置')"
     />
 
     <div class="flex flex-col lg:flex-row lg:space-x-12">

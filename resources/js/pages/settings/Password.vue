@@ -20,7 +20,7 @@ const { tenantPath } = useTenant();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
-    title: t('password.title'),
+    title: t('密码设置'),
     href: tenantPath.value ? edit(tenantPath.value).url : '#',
   },
 ]);
@@ -28,13 +28,13 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head :title="t('password.title')" />
+    <Head :title="t('密码设置')" />
 
     <SettingsLayout>
       <div class="space-y-6">
         <HeadingSmall
-          :title="t('password.heading')"
-          :description="t('password.description')"
+          :title="t('修改密码')"
+          :description="t('确保你的账户使用长且随机的密码以保证安全')"
         />
 
         <Form
@@ -53,7 +53,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         >
           <div class="grid gap-2">
             <Label for="current_password">{{
-              t('password.fields.currentPassword.label')
+              t('当前密码')
             }}</Label>
             <Input
               id="current_password"
@@ -61,14 +61,14 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               type="password"
               class="mt-1 block w-full"
               autocomplete="current-password"
-              :placeholder="t('password.fields.currentPassword.placeholder')"
+              :placeholder="t('请输入当前密码')"
             />
             <InputError :message="errors.current_password" />
           </div>
 
           <div class="grid gap-2">
             <Label for="password">{{
-              t('password.fields.newPassword.label')
+              t('新密码')
             }}</Label>
             <Input
               id="password"
@@ -76,14 +76,14 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               type="password"
               class="mt-1 block w-full"
               autocomplete="new-password"
-              :placeholder="t('password.fields.newPassword.placeholder')"
+              :placeholder="t('请输入新密码')"
             />
             <InputError :message="errors.password" />
           </div>
 
           <div class="grid gap-2">
             <Label for="password_confirmation">{{
-              t('password.fields.confirmPassword.label')
+              t('确认密码')
             }}</Label>
             <Input
               id="password_confirmation"
@@ -91,14 +91,14 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               type="password"
               class="mt-1 block w-full"
               autocomplete="new-password"
-              :placeholder="t('password.fields.confirmPassword.placeholder')"
+              :placeholder="t('请再次输入新密码')"
             />
             <InputError :message="errors.password_confirmation" />
           </div>
 
           <div class="flex items-center gap-4">
             <Button :disabled="processing" data-test="update-password-button">{{
-              t('password.actions.save')
+              t('保存密码')
             }}</Button>
 
             <Transition
@@ -108,7 +108,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               leave-to-class="opacity-0"
             >
               <p v-show="recentlySuccessful" class="text-sm text-neutral-600">
-                {{ t('password.actions.saved') }}
+                {{ t('已保存。') }}
               </p>
             </Transition>
           </div>

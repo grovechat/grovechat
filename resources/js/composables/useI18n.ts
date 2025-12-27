@@ -60,21 +60,15 @@ export function useI18n() {
     setCookie('locale', newLocale);
   }
 
-  // Translation function with nested key support
+  // Translation function - key is the default text (usually Chinese)
   function t(key: string): string {
-    const keys = key.split('.');
-    let value: any = messages.value;
-
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
-      } else {
-        console.warn(`Translation key "${key}" not found`);
-        return key;
-      }
+    // Check if the key exists in current locale messages
+    if (messages.value && key in messages.value) {
+      return messages.value[key as keyof Messages] as string;
     }
 
-    return typeof value === 'string' ? value : key;
+    // If not found, return the key itself (which should be the Chinese text)
+    return key;
   }
 
   return {

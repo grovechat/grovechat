@@ -17,7 +17,7 @@ const { tenantPath } = useTenant();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
-    title: t('appearance.title'),
+    title: t('外观设置'),
     href: tenantPath.value ? edit(tenantPath.value).url : '#',
   },
 ]);
@@ -25,13 +25,13 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head :title="t('appearance.title')" />
+    <Head :title="t('外观设置')" />
 
     <SettingsLayout>
       <div class="space-y-6">
         <HeadingSmall
-          :title="t('appearance.heading')"
-          :description="t('appearance.description')"
+          :title="t('外观设置')"
+          :description="t('更新你账户的外观设置')"
         />
         <AppearanceTabs />
       </div>

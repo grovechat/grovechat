@@ -20,10 +20,10 @@ const { t } = useI18n();
 
 <template>
   <AuthLayout
-    :title="t('auth.forgotPassword.title')"
-    :description="t('auth.forgotPassword.description')"
+    :title="t('忘记密码')"
+    :description="t('输入你的电子邮件以接收密码重置链接')"
   >
-    <Head :title="t('auth.forgotPassword.pageTitle')" />
+    <Head :title="t('忘记密码')" />
 
     <div
       v-if="status"
@@ -36,7 +36,7 @@ const { t } = useI18n();
       <Form v-bind="email.form()" v-slot="{ errors, processing }">
         <div class="grid gap-2">
           <Label for="email">{{
-            t('auth.forgotPassword.fields.email.label')
+            t('电子邮件地址')
           }}</Label>
           <Input
             id="email"
@@ -44,7 +44,7 @@ const { t } = useI18n();
             name="email"
             autocomplete="off"
             autofocus
-            :placeholder="t('auth.forgotPassword.fields.email.placeholder')"
+            :placeholder="t('请输入电子邮件地址')"
           />
           <InputError :message="errors.email" />
         </div>
@@ -56,15 +56,15 @@ const { t } = useI18n();
             data-test="email-password-reset-link-button"
           >
             <Spinner v-if="processing" />
-            {{ t('auth.forgotPassword.submit') }}
+            {{ t('发送密码重置链接') }}
           </Button>
         </div>
       </Form>
 
       <div class="space-x-1 text-center text-sm text-muted-foreground">
-        <span>{{ t('auth.forgotPassword.backToLogin') }}</span>
+        <span>{{ t('或者，返回') }}</span>
         <TextLink :href="login()">{{
-          t('auth.forgotPassword.login')
+          t('登录')
         }}</TextLink>
       </div>
     </div>

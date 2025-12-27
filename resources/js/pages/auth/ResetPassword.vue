@@ -21,10 +21,10 @@ const { t } = useI18n();
 
 <template>
   <AuthLayout
-    :title="t('auth.resetPassword.title')"
-    :description="t('auth.resetPassword.description')"
+    :title="t('重置密码')"
+    :description="t('请在下方输入你的新密码')"
   >
-    <Head :title="t('auth.resetPassword.pageTitle')" />
+    <Head :title="t('重置密码')" />
 
     <Form
       v-bind="update.form()"
@@ -35,7 +35,7 @@ const { t } = useI18n();
       <div class="grid gap-6">
         <div class="grid gap-2">
           <Label for="email">{{
-            t('auth.resetPassword.fields.email.label')
+            t('电子邮件')
           }}</Label>
           <Input
             id="email"
@@ -51,7 +51,7 @@ const { t } = useI18n();
 
         <div class="grid gap-2">
           <Label for="password">{{
-            t('auth.resetPassword.fields.password.label')
+            t('密码')
           }}</Label>
           <Input
             id="password"
@@ -60,14 +60,14 @@ const { t } = useI18n();
             autocomplete="new-password"
             class="mt-1 block w-full"
             autofocus
-            :placeholder="t('auth.resetPassword.fields.password.placeholder')"
+            :placeholder="t('密码')"
           />
           <InputError :message="errors.password" />
         </div>
 
         <div class="grid gap-2">
           <Label for="password_confirmation">
-            {{ t('auth.resetPassword.fields.passwordConfirmation.label') }}
+            {{ t('确认密码') }}
           </Label>
           <Input
             id="password_confirmation"
@@ -75,9 +75,7 @@ const { t } = useI18n();
             name="password_confirmation"
             autocomplete="new-password"
             class="mt-1 block w-full"
-            :placeholder="
-              t('auth.resetPassword.fields.passwordConfirmation.placeholder')
-            "
+            :placeholder="t('确认密码')"
           />
           <InputError :message="errors.password_confirmation" />
         </div>
@@ -89,7 +87,7 @@ const { t } = useI18n();
           data-test="reset-password-button"
         >
           <Spinner v-if="processing" />
-          {{ t('auth.resetPassword.submit') }}
+          {{ t('重置密码') }}
         </Button>
       </div>
     </Form>

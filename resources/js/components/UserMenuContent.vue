@@ -39,7 +39,7 @@ const { tenantPath } = useTenant();
     <DropdownMenuItem :as-child="true">
       <Link class="block w-full" :href="tenantPath ? edit(tenantPath) : '#'" prefetch as="button">
         <Settings class="mr-2 h-4 w-4" />
-        {{ t('sidebarMenu.profile') }}
+        {{ t('个人资料') }}
       </Link>
     </DropdownMenuItem>
   </DropdownMenuGroup>
@@ -53,7 +53,7 @@ const { tenantPath } = useTenant();
       data-test="logout-button"
     >
       <LogOut class="mr-2 h-4 w-4" />
-      {{ t('sidebarMenu.logout') }}
+      {{ t('退出登录') }}
     </Link>
   </DropdownMenuItem>
 </template>

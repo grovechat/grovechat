@@ -30,7 +30,7 @@ const { tenantPath } = useTenant();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
-    title: t('twoFactor.title'),
+    title: t('两步验证'),
     href: tenantPath.value ? show(tenantPath.value).url : '#',
   },
 ]);
@@ -45,12 +45,12 @@ onUnmounted(() => {
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
-    <Head :title="t('twoFactor.title')" />
+    <Head :title="t('两步验证')" />
     <SettingsLayout>
       <div class="space-y-6">
         <HeadingSmall
-          :title="t('twoFactor.heading')"
-          :description="t('twoFactor.description')"
+          :title="t('两步验证')"
+          :description="t('管理你的两步验证设置')"
         />
 
         <div
@@ -58,16 +58,16 @@ onUnmounted(() => {
           class="flex flex-col items-start justify-start space-y-4"
         >
           <Badge variant="destructive">{{
-            t('twoFactor.status.disabled')
+            t('已禁用')
           }}</Badge>
 
           <p class="text-muted-foreground">
-            {{ t('twoFactor.disabled.description') }}
+            {{ t('启用两步验证后，登录时将需要输入安全验证码。该验证码可以通过手机上支持 TOTP 的应用程序获取。') }}
           </p>
 
           <div>
             <Button v-if="hasSetupData" @click="showSetupModal = true">
-              <ShieldCheck />{{ t('twoFactor.disabled.continueSetup') }}
+              <ShieldCheck />{{ t('继续设置') }}
             </Button>
             <Form
               v-else
@@ -76,17 +76,17 @@ onUnmounted(() => {
               #default="{ processing }"
             >
               <Button type="submit" :disabled="processing">
-                <ShieldCheck />{{ t('twoFactor.disabled.enable') }}</Button
+                <ShieldCheck />{{ t('启用两步验证') }}</Button
               ></Form
             >
           </div>
         </div>
 
         <div v-else class="flex flex-col items-start justify-start space-y-4">
-          <Badge variant="default">{{ t('twoFactor.status.enabled') }}</Badge>
+          <Badge variant="default">{{ t('已启用') }}</Badge>
 
           <p class="text-muted-foreground">
-            {{ t('twoFactor.enabled.description') }}
+            {{ t('启用两步验证后，登录时将需要输入安全的随机验证码，你可以通过手机上支持 TOTP 的应用程序获取该验证码。') }}
           </p>
 
           <TwoFactorRecoveryCodes />
@@ -99,7 +99,7 @@ onUnmounted(() => {
                 :disabled="processing"
               >
                 <ShieldBan />
-                {{ t('twoFactor.enabled.disable') }}
+                {{ t('禁用两步验证') }}
               </Button>
             </Form>
           </div>

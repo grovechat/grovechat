@@ -10,9 +10,9 @@ const { t } = useI18n();
 const tabs = computed(
   () =>
     [
-      { value: 'light', Icon: Sun, label: t('appearance.themes.light') },
-      { value: 'dark', Icon: Moon, label: t('appearance.themes.dark') },
-      { value: 'system', Icon: Monitor, label: t('appearance.themes.system') },
+      { value: 'light', Icon: Sun, label: t('浅色') },
+      { value: 'dark', Icon: Moon, label: t('深色') },
+      { value: 'system', Icon: Monitor, label: t('跟随系统') },
     ] as const,
 );
 </script>
