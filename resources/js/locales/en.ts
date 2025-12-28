@@ -194,7 +194,6 @@ export default {
   '常规设置': 'General',
   '客服': 'Support',
   '多客服': 'Team',
-  '渠道': 'Channels',
   '网站': 'Website',
   '数据': 'Data',
   '标签': 'Tags',

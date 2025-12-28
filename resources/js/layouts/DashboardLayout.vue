@@ -105,10 +105,10 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
 </script>
 
 <template>
-  <div class="px-4 py-6">
-    <div class="flex flex-col lg:flex-row lg:space-x-12 lg:items-start">
-      <aside class="w-full max-w-xl lg:w-48">
-        <nav class="flex flex-col space-y-3 rounded-xl border border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm min-h-[calc(100vh-12rem)]">
+  <div>
+    <div class="flex flex-col lg:flex-row lg:items-start">
+      <aside class="w-full lg:w-48">
+        <nav class="flex flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm min-h-screen">
           <div class="space-y-0.5">
             <h2 class="text-xl font-semibold tracking-tight">{{ t('工作台') }}</h2>
             <p class="text-sm text-muted-foreground">{{ t('查看和处理会话') }}</p>
@@ -158,8 +158,8 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
 
       <Separator class="my-6 lg:hidden" />
 
-      <div class="flex-1 md:max-w-2xl">
-        <section class="max-w-xl space-y-12">
+      <div class="flex-1 px-4 py-6">
+        <section class="max-w-2xl space-y-12">
           <slot />
         </section>
       </div>
