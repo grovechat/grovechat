@@ -158,4 +158,13 @@ export default {
   'GitHub仓库': 'Github Repo',
   '文档': 'Documentation',
   '系统设置': 'Settings',
+
+  // 系统设置页面
+  '管理系统的配置和设置': 'Manage system configurations and settings',
+  '基础设置': 'General Settings',
+  '存储设置': 'Storage Settings',
+  '邮箱服务器': 'Mail Server',
+  '集成': 'Integrations',
+  '安全': 'Security',
+  '维护': 'Maintenance',
 } as const;

@@ -14,21 +14,21 @@ const { tenantPath } = useTenant();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
-    title: t('基础设置'),
-    href: tenantPath.value ? systemSetting.getGeneralSettings.url(tenantPath.value) : '#',
+    title: t('集成'),
+    href: tenantPath.value ? systemSetting.getIntegrationSettings.url(tenantPath.value) : '#',
   },
 ]);
 </script>
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head :title="t('基础设置')" />
+    <Head :title="t('集成')" />
 
     <SystemSettingsLayout>
       <div class="space-y-6">
         <HeadingSmall
-          :title="t('基础设置')"
-          :description="t('这里是基础设置页面的内容。您可以在这里配置系统的基本参数和选项。')"
+          :title="t('集成')"
+          :description="t('这里是集成设置页面的内容。您可以在这里配置第三方服务、API集成等选项。')"
         />
       </div>
     </SystemSettingsLayout>

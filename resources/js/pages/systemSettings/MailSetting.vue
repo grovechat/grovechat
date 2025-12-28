@@ -14,21 +14,21 @@ const { tenantPath } = useTenant();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
-    title: t('基础设置'),
-    href: tenantPath.value ? systemSetting.getGeneralSettings.url(tenantPath.value) : '#',
+    title: t('邮箱服务器'),
+    href: tenantPath.value ? systemSetting.getMailSettings.url(tenantPath.value) : '#',
   },
 ]);
 </script>
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head :title="t('基础设置')" />
+    <Head :title="t('邮箱服务器')" />
 
     <SystemSettingsLayout>
       <div class="space-y-6">
         <HeadingSmall
-          :title="t('基础设置')"
-          :description="t('这里是基础设置页面的内容。您可以在这里配置系统的基本参数和选项。')"
+          :title="t('邮箱服务器')"
+          :description="t('这里是邮箱服务器设置页面的内容。您可以在这里配置SMTP服务器、邮件发送等选项。')"
         />
       </div>
     </SystemSettingsLayout>
