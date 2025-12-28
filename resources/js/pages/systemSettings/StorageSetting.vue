@@ -15,7 +15,9 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('存储设置'),
-    href: tenantPath.value ? systemSetting.getStorageSettings.url(tenantPath.value) : '#',
+    href: tenantPath.value
+      ? systemSetting.getStorageSettings.url(tenantPath.value)
+      : '#',
   },
 ]);
 </script>
@@ -28,7 +30,11 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
       <div class="space-y-6">
         <HeadingSmall
           :title="t('存储设置')"
-          :description="t('这里是存储设置页面的内容。您可以在这里配置文件存储、数据库等存储相关的选项。')"
+          :description="
+            t(
+              '这里是存储设置页面的内容。您可以在这里配置文件存储、数据库等存储相关的选项。',
+            )
+          "
         />
       </div>
     </SystemSettingsLayout>

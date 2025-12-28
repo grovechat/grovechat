@@ -15,7 +15,9 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('自定义属性'),
-    href: tenantPath.value ? tenantSetting.datas.attribute.url(tenantPath.value) : '#',
+    href: tenantPath.value
+      ? tenantSetting.datas.attribute.url(tenantPath.value)
+      : '#',
   },
 ]);
 </script>

@@ -15,7 +15,9 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('安全'),
-    href: tenantPath.value ? systemSetting.getSecuritySettings.url(tenantPath.value) : '#',
+    href: tenantPath.value
+      ? systemSetting.getSecuritySettings.url(tenantPath.value)
+      : '#',
   },
 ]);
 </script>
@@ -28,7 +30,11 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
       <div class="space-y-6">
         <HeadingSmall
           :title="t('安全')"
-          :description="t('这里是安全设置页面的内容。您可以在这里配置安全策略、访问控制等选项。')"
+          :description="
+            t(
+              '这里是安全设置页面的内容。您可以在这里配置安全策略、访问控制等选项。',
+            )
+          "
         />
       </div>
     </SystemSettingsLayout>

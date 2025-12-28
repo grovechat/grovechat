@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
@@ -70,56 +69,72 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
   ];
 });
 
-const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+const currentPath =
+  typeof window !== 'undefined' ? window.location.pathname : '';
 </script>
 
 <template>
   <div>
     <div class="flex flex-col lg:flex-row lg:items-start">
       <aside class="w-full lg:w-48">
-        <nav class="flex flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm min-h-screen">
+        <nav
+          class="flex min-h-screen flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm"
+        >
           <div class="space-y-0.5">
-            <h2 class="text-xl font-semibold tracking-tight">{{ t('管理中心') }}</h2>
-            <p class="text-sm text-muted-foreground">{{ t('管理工作区和团队设置') }}</p>
+            <h2 class="text-xl font-semibold tracking-tight">
+              {{ t('管理中心') }}
+            </h2>
+            <p class="text-sm text-muted-foreground">
+              {{ t('管理工作区和团队设置') }}
+            </p>
           </div>
 
           <div class="flex flex-col space-y-1">
             <template v-for="item in sidebarNavItems" :key="item.title">
-            <!-- 有子菜单的分组 -->
-            <div v-if="item.children" class="space-y-1">
-              <div class="px-2 py-2 text-sm font-semibold text-foreground">
-                {{ item.title }}
+              <!-- 有子菜单的分组 -->
+              <div v-if="item.children" class="space-y-1">
+                <div class="px-2 py-2 text-sm font-semibold text-foreground">
+                  {{ item.title }}
+                </div>
+                <Button
+                  v-for="child in item.children"
+                  :key="toUrl(child.href)"
+                  variant="ghost"
+                  :class="[
+                    'w-full justify-start pl-6 text-sm font-normal',
+                    { 'bg-muted': urlIsActive(child.href, currentPath) },
+                  ]"
+                  as-child
+                >
+                  <Link
+                    :href="
+                      typeof child.href === 'string' ? child.href : child.href
+                    "
+                  >
+                    {{ child.title }}
+                  </Link>
+                </Button>
               </div>
+
+              <!-- 无子菜单的单项 -->
               <Button
-                v-for="child in item.children"
-                :key="toUrl(child.href)"
+                v-else
                 variant="ghost"
                 :class="[
-                  'w-full justify-start pl-6 font-normal text-sm',
-                  { 'bg-muted': urlIsActive(child.href, currentPath) },
+                  'w-full justify-start',
+                  {
+                    'bg-muted':
+                      item.href && urlIsActive(item.href, currentPath),
+                  },
                 ]"
                 as-child
               >
-                <Link :href="typeof child.href === 'string' ? child.href : child.href">
-                  {{ child.title }}
+                <Link
+                  :href="typeof item.href === 'string' ? item.href : item.href"
+                >
+                  {{ item.title }}
                 </Link>
               </Button>
-            </div>
-
-            <!-- 无子菜单的单项 -->
-            <Button
-              v-else
-              variant="ghost"
-              :class="[
-                'w-full justify-start',
-                { 'bg-muted': item.href && urlIsActive(item.href, currentPath) },
-              ]"
-              as-child
-            >
-              <Link :href="typeof item.href === 'string' ? item.href : item.href">
-                {{ item.title }}
-              </Link>
-            </Button>
             </template>
           </div>
         </nav>

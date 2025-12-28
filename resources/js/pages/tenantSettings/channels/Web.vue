@@ -15,7 +15,9 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('网站'),
-    href: tenantPath.value ? tenantSetting.channels.web.url(tenantPath.value) : '#',
+    href: tenantPath.value
+      ? tenantSetting.channels.web.url(tenantPath.value)
+      : '#',
   },
 ]);
 </script>

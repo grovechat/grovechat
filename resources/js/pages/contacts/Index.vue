@@ -14,9 +14,16 @@ const { tenantPath } = useTenant();
 const page = usePage();
 
 // 从路由参数获取类型
-const type = computed(() => page.url.split('/').find((segment, index, arr) => 
-  arr[index - 1] === 'contacts' && ['all', 'customers', 'leads'].includes(segment)
-) || 'all');
+const type = computed(
+  () =>
+    page.url
+      .split('/')
+      .find(
+        (segment, index, arr) =>
+          arr[index - 1] === 'contacts' &&
+          ['all', 'customers', 'leads'].includes(segment),
+      ) || 'all',
+);
 
 const typeLabels: Record<string, string> = {
   all: t('全部'),
@@ -27,7 +34,9 @@ const typeLabels: Record<string, string> = {
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: typeLabels[type.value],
-    href: tenantPath.value ? contact.index.url({ tenant_path: tenantPath.value, type: type.value }) : '#',
+    href: tenantPath.value
+      ? contact.index.url({ tenant_path: tenantPath.value, type: type.value })
+      : '#',
   },
 ]);
 </script>

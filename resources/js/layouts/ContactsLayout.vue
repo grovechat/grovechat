@@ -31,15 +31,24 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('全部'),
-          href: contact.index.url({ tenant_path: tenantPath.value, type: 'all' }),
+          href: contact.index.url({
+            tenant_path: tenantPath.value,
+            type: 'all',
+          }),
         },
         {
           title: t('注册用户'),
-          href: contact.index.url({ tenant_path: tenantPath.value, type: 'customers' }),
+          href: contact.index.url({
+            tenant_path: tenantPath.value,
+            type: 'customers',
+          }),
         },
         {
           title: t('潜在客户'),
-          href: contact.index.url({ tenant_path: tenantPath.value, type: 'leads' }),
+          href: contact.index.url({
+            tenant_path: tenantPath.value,
+            type: 'leads',
+          }),
         },
       ],
     },
@@ -50,17 +59,24 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
   ];
 });
 
-const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+const currentPath =
+  typeof window !== 'undefined' ? window.location.pathname : '';
 </script>
 
 <template>
   <div>
     <div class="flex flex-col lg:flex-row lg:items-start">
       <aside class="w-full lg:w-48">
-        <nav class="flex flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm min-h-screen">
+        <nav
+          class="flex min-h-screen flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm"
+        >
           <div class="space-y-0.5">
-            <h2 class="text-xl font-semibold tracking-tight">{{ t('联系人') }}</h2>
-            <p class="text-sm text-muted-foreground">{{ t('管理您的联系人和会话') }}</p>
+            <h2 class="text-xl font-semibold tracking-tight">
+              {{ t('联系人') }}
+            </h2>
+            <p class="text-sm text-muted-foreground">
+              {{ t('管理您的联系人和会话') }}
+            </p>
           </div>
 
           <div class="flex flex-col space-y-1">
@@ -75,12 +91,16 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
                   :key="toUrl(child.href)"
                   variant="ghost"
                   :class="[
-                    'w-full justify-start pl-6 font-normal text-sm',
+                    'w-full justify-start pl-6 text-sm font-normal',
                     { 'bg-muted': urlIsActive(child.href, currentPath) },
                   ]"
                   as-child
                 >
-                  <Link :href="typeof child.href === 'string' ? child.href : child.href">
+                  <Link
+                    :href="
+                      typeof child.href === 'string' ? child.href : child.href
+                    "
+                  >
                     {{ child.title }}
                   </Link>
                 </Button>
@@ -92,11 +112,16 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
                 variant="ghost"
                 :class="[
                   'w-full justify-start',
-                  { 'bg-muted': item.href && urlIsActive(item.href, currentPath) },
+                  {
+                    'bg-muted':
+                      item.href && urlIsActive(item.href, currentPath),
+                  },
                 ]"
                 as-child
               >
-                <Link :href="typeof item.href === 'string' ? item.href : item.href">
+                <Link
+                  :href="typeof item.href === 'string' ? item.href : item.href"
+                >
                   {{ item.title }}
                 </Link>
               </Button>

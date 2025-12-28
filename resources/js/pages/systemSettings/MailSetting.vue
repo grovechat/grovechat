@@ -15,7 +15,9 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('邮箱服务器'),
-    href: tenantPath.value ? systemSetting.getMailSettings.url(tenantPath.value) : '#',
+    href: tenantPath.value
+      ? systemSetting.getMailSettings.url(tenantPath.value)
+      : '#',
   },
 ]);
 </script>
@@ -28,7 +30,11 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
       <div class="space-y-6">
         <HeadingSmall
           :title="t('邮箱服务器')"
-          :description="t('这里是邮箱服务器设置页面的内容。您可以在这里配置SMTP服务器、邮件发送等选项。')"
+          :description="
+            t(
+              '这里是邮箱服务器设置页面的内容。您可以在这里配置SMTP服务器、邮件发送等选项。',
+            )
+          "
         />
       </div>
     </SystemSettingsLayout>

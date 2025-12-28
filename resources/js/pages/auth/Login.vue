@@ -60,9 +60,7 @@ const { t } = useI18n();
 
         <div class="grid gap-2">
           <div class="flex items-center justify-between">
-            <Label for="password">{{
-              t('密码')
-            }}</Label>
+            <Label for="password">{{ t('密码') }}</Label>
             <TextLink
               v-if="canResetPassword"
               :href="request()"
@@ -105,9 +103,7 @@ const { t } = useI18n();
 
       <div class="text-center text-sm text-muted-foreground" v-if="canRegister">
         {{ t('还没有账户？') }}
-        <TextLink :href="register()" :tabindex="5">{{
-          t('注册')
-        }}</TextLink>
+        <TextLink :href="register()" :tabindex="5">{{ t('注册') }}</TextLink>
       </div>
     </Form>
   </AuthBase>

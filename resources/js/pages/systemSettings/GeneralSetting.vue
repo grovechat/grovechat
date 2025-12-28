@@ -15,7 +15,9 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: tenantPath.value ? systemSetting.getGeneralSettings.url(tenantPath.value) : '#',
+    href: tenantPath.value
+      ? systemSetting.getGeneralSettings.url(tenantPath.value)
+      : '#',
   },
 ]);
 </script>
@@ -28,7 +30,11 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
       <div class="space-y-6">
         <HeadingSmall
           :title="t('基础设置')"
-          :description="t('这里是基础设置页面的内容。您可以在这里配置系统的基本参数和选项。')"
+          :description="
+            t(
+              '这里是基础设置页面的内容。您可以在这里配置系统的基本参数和选项。',
+            )
+          "
         />
       </div>
     </SystemSettingsLayout>

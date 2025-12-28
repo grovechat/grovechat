@@ -39,7 +39,9 @@ const { tenantPath } = useTenant();
       </div>
 
       <!-- Actions -->
-      <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+      <div
+        class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+      >
         <Link
           v-if="$page.props.auth.user && tenantPath"
           :href="dashboard(tenantPath)"

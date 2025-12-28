@@ -15,7 +15,9 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('多客服'),
-    href: tenantPath.value ? tenantSetting.teammate.index.url(tenantPath.value) : '#',
+    href: tenantPath.value
+      ? tenantSetting.teammate.index.url(tenantPath.value)
+      : '#',
   },
 ]);
 </script>
