@@ -159,6 +159,18 @@ export default {
   '文档': 'Documentation',
   '系统设置': 'Settings',
 
+  // 租户设置(管理中心)页面
+  '管理工作区和团队设置': 'Manage workspace and team settings',
+  '工作区': 'Workspace',
+  '常规设置': 'General',
+  '客服': 'Support',
+  '多客服': 'Team',
+  '渠道': 'Channels',
+  '网站': 'Website',
+  '数据': 'Data',
+  '标签': 'Tags',
+  '自定义属性': 'Custom Attributes',
+
   // 系统设置页面
   '管理系统的配置和设置': 'Manage system configurations and settings',
   '基础设置': 'General Settings',
