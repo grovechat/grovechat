@@ -64,12 +64,11 @@ const currentPath =
 </script>
 
 <template>
-  <div>
-    <div class="flex flex-col lg:flex-row lg:items-start">
-      <aside class="w-full lg:w-48">
-        <nav
-          class="flex min-h-screen flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm"
-        >
+  <div class="flex flex-1 flex-col lg:flex-row">
+    <aside class="w-full lg:w-48 lg:self-stretch">
+      <nav
+        class="flex h-full flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm"
+      >
           <div class="space-y-0.5">
             <h2 class="text-xl font-semibold tracking-tight">
               {{ t('联系人') }}
@@ -127,16 +126,15 @@ const currentPath =
               </Button>
             </template>
           </div>
-        </nav>
-      </aside>
+      </nav>
+    </aside>
 
-      <Separator class="my-6 lg:hidden" />
+    <Separator class="my-6 lg:hidden" />
 
-      <div class="flex-1 px-4 py-6">
-        <section class="max-w-2xl space-y-12">
-          <slot />
-        </section>
-      </div>
+    <div class="flex-1 px-4 py-6">
+      <section class="max-w-2xl space-y-12">
+        <slot />
+      </section>
     </div>
   </div>
 </template>
