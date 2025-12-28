@@ -152,6 +152,9 @@ export default {
 
   // 侧边栏菜单
   '工作台': 'Dashboard',
+  '联系人': 'Contacts',
+  '统计': 'Statistics',
+  '管理中心': 'Admin Center',
   'GitHub仓库': 'Github Repo',
   '文档': 'Documentation',
   '系统设置': 'Settings',

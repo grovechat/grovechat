@@ -15,9 +15,13 @@ import {
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import { dashboard } from '@/routes';
+import contact from '@/routes/contact';
+import stats from '@/routes/stats';
+import tenantSetting from '@/routes/tenant-setting';
+import systemSetting from '@/routes/system-setting';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, GitBranch, LayoutGrid, Settings, Pin } from 'lucide-vue-next';
+import { BookOpen, GitBranch, LayoutGrid, Settings, Pin, Users, BarChart, Building2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 import { Button } from '@/components/ui/button';
@@ -33,9 +37,24 @@ const mainNavItems = computed<NavItem[]>(() => [
     href: tenantPath.value ? dashboard(tenantPath.value) : '/',
     icon: LayoutGrid,
   },
+  {
+    title: t('联系人'),
+    href: tenantPath.value ? contact.index.url({ tenant_path: tenantPath.value, type: 'all' }) : '/',
+    icon: Users,
+  },
+  {
+    title: t('统计'),
+    href: tenantPath.value ? stats.index.url(tenantPath.value) : '/',
+    icon: BarChart,
+  },
+  {
+    title: t('管理中心'),
+    href: tenantPath.value ? tenantSetting.tenant.general.url(tenantPath.value) : '/',
+    icon: Building2,
+  },
 ]);
 
-const footerNavItems: NavItem[] = [
+const footerNavItems = computed<NavItem[]>(() => [
   {
     title: t('GitHub仓库'),
     href: 'https://github.com/grovechat/grovechat',
@@ -48,10 +67,10 @@ const footerNavItems: NavItem[] = [
   },
   {
     title: t('系统设置'),
-    href: '#',
+    href: tenantPath.value ? systemSetting.getGeneralSettings.url(tenantPath.value) : '/',
     icon: Settings,
   },
-];
+]);
 </script>
 
 <template>
