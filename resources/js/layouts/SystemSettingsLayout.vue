@@ -49,7 +49,7 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
 
 <template>
   <div class="px-4 py-6">
-    <div class="flex flex-col lg:flex-row lg:space-x-12">
+    <div class="flex flex-col lg:flex-row lg:space-x-12 lg:items-start">
       <aside class="w-full max-w-xl lg:w-48">
         <nav class="flex flex-col space-y-3 rounded-xl border border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm min-h-[calc(100vh-12rem)]">
           <div class="space-y-0.5">

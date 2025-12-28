@@ -13,7 +13,7 @@ use Inertia\Inertia;
 Route::get('contacts/{type}/index', function () {
     return Inertia::render('contacts/Index');
 })
-->whereIn('type', ['all', 'users', 'leads'])
+->whereIn('type', ['all', 'customers', 'leads'])
 ->name('contact.index');
 
 /**
