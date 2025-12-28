@@ -37,7 +37,12 @@ const { tenantPath } = useTenant();
   <DropdownMenuSeparator />
   <DropdownMenuGroup>
     <DropdownMenuItem :as-child="true">
-      <Link class="block w-full" :href="tenantPath ? edit(tenantPath) : '#'" prefetch as="button">
+      <Link
+        class="block w-full"
+        :href="tenantPath ? edit(tenantPath) : '#'"
+        prefetch
+        as="button"
+      >
         <Settings class="mr-2 h-4 w-4" />
         {{ t('个人资料') }}
       </Link>

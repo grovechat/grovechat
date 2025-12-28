@@ -4,11 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { edit as editAppearance } from '@/routes/appearance';
-import { edit as editLanguage } from '@/routes/language';
-import { edit as editProfile } from '@/routes/profile';
-import { show } from '@/routes/two-factor';
-import { edit as editPassword } from '@/routes/user-password';
+import systemSetting from '@/routes/system-setting';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -21,29 +17,34 @@ const sidebarNavItems = computed<NavItem[]>(() => {
 
   return [
     {
-      title: t('个人资料'),
-      href: editProfile(tenantPath.value),
+      title: t('基础设置'),
+      href: systemSetting.getGeneralSettings.url(tenantPath.value),
     },
     {
-      title: t('密码'),
-      href: editPassword(tenantPath.value),
+      title: t('存储设置'),
+      href: systemSetting.getStorageSettings.url(tenantPath.value),
     },
     {
-      title: t('两步验证'),
-      href: show(tenantPath.value),
+      title: t('邮箱服务器'),
+      href: systemSetting.getMailSettings.url(tenantPath.value),
     },
     {
-      title: t('语言和时区'),
-      href: editLanguage(tenantPath.value),
+      title: t('集成'),
+      href: systemSetting.getIntegrationSettings.url(tenantPath.value),
     },
     {
-      title: t('外观'),
-      href: editAppearance(tenantPath.value),
+      title: t('安全'),
+      href: systemSetting.getSecuritySettings.url(tenantPath.value),
+    },
+    {
+      title: t('维护'),
+      href: systemSetting.getMaintenanceSettings.url(tenantPath.value),
     },
   ];
 });
 
-const currentPath = typeof window !== undefined ? window.location.pathname : '';
+const currentPath =
+  typeof window !== 'undefined' ? window.location.pathname : '';
 </script>
 
 <template>
@@ -54,10 +55,10 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
       >
           <div class="space-y-0.5">
             <h2 class="text-xl font-semibold tracking-tight">
-              {{ t('设置') }}
+              {{ t('系统设置') }}
             </h2>
             <p class="text-sm text-muted-foreground">
-              {{ t('管理你的个人资料和账户设置') }}
+              {{ t('管理系统的配置和设置') }}
             </p>
           </div>
 
@@ -75,7 +76,6 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
               <Link
                 :href="typeof item.href === 'string' ? item.href : item.href"
               >
-                <component :is="item.icon" class="h-4 w-4" />
                 {{ item.title }}
               </Link>
             </Button>

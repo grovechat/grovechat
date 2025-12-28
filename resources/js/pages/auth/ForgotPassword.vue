@@ -35,9 +35,7 @@ const { t } = useI18n();
     <div class="space-y-6">
       <Form v-bind="email.form()" v-slot="{ errors, processing }">
         <div class="grid gap-2">
-          <Label for="email">{{
-            t('电子邮件地址')
-          }}</Label>
+          <Label for="email">{{ t('电子邮件地址') }}</Label>
           <Input
             id="email"
             type="email"
@@ -63,9 +61,7 @@ const { t } = useI18n();
 
       <div class="space-x-1 text-center text-sm text-muted-foreground">
         <span>{{ t('或者，返回') }}</span>
-        <TextLink :href="login()">{{
-          t('登录')
-        }}</TextLink>
+        <TextLink :href="login()">{{ t('登录') }}</TextLink>
       </div>
     </div>
   </AuthLayout>

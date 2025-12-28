@@ -21,9 +21,7 @@ const isRecoveryCodesVisible = ref<boolean>(false);
 const recoveryCodeSectionRef = useTemplateRef('recoveryCodeSectionRef');
 
 const viewHideButtonText = computed(() =>
-  isRecoveryCodesVisible.value
-    ? t('隐藏恢复码')
-    : t('查看恢复码'),
+  isRecoveryCodesVisible.value ? t('隐藏恢复码') : t('查看恢复码'),
 );
 
 const toggleRecoveryCodesVisibility = async () => {
@@ -53,7 +51,11 @@ onMounted(async () => {
         <LockKeyhole class="size-4" />{{ t('两步验证恢复码') }}
       </CardTitle>
       <CardDescription>
-        {{ t('如果丢失两步验证设备，恢复码可以让你重新访问账户。请将它们存储在安全的密码管理器中。') }}
+        {{
+          t(
+            '如果丢失两步验证设备，恢复码可以让你重新访问账户。请将它们存储在安全的密码管理器中。',
+          )
+        }}
       </CardDescription>
     </CardHeader>
     <CardContent>
@@ -107,10 +109,12 @@ onMounted(async () => {
             </div>
           </div>
           <p class="text-xs text-muted-foreground select-none">
-            {{ t('每个恢复码只能使用一次来访问你的账户，使用后将被删除。如需更多恢复码，请点击上方的') }}
-            <span class="font-bold">{{
-              t('"重新生成恢复码"')
-            }}</span>
+            {{
+              t(
+                '每个恢复码只能使用一次来访问你的账户，使用后将被删除。如需更多恢复码，请点击上方的',
+              )
+            }}
+            <span class="font-bold">{{ t('"重新生成恢复码"') }}</span>
           </p>
         </div>
       </div>

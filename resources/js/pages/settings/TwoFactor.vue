@@ -57,12 +57,14 @@ onUnmounted(() => {
           v-if="!twoFactorEnabled"
           class="flex flex-col items-start justify-start space-y-4"
         >
-          <Badge variant="destructive">{{
-            t('已禁用')
-          }}</Badge>
+          <Badge variant="destructive">{{ t('已禁用') }}</Badge>
 
           <p class="text-muted-foreground">
-            {{ t('启用两步验证后，登录时将需要输入安全验证码。该验证码可以通过手机上支持 TOTP 的应用程序获取。') }}
+            {{
+              t(
+                '启用两步验证后，登录时将需要输入安全验证码。该验证码可以通过手机上支持 TOTP 的应用程序获取。',
+              )
+            }}
           </p>
 
           <div>
@@ -86,13 +88,20 @@ onUnmounted(() => {
           <Badge variant="default">{{ t('已启用') }}</Badge>
 
           <p class="text-muted-foreground">
-            {{ t('启用两步验证后，登录时将需要输入安全的随机验证码，你可以通过手机上支持 TOTP 的应用程序获取该验证码。') }}
+            {{
+              t(
+                '启用两步验证后，登录时将需要输入安全的随机验证码，你可以通过手机上支持 TOTP 的应用程序获取该验证码。',
+              )
+            }}
           </p>
 
           <TwoFactorRecoveryCodes />
 
           <div class="relative inline">
-            <Form v-bind="tenantPath ? disable.form(tenantPath) : {}" #default="{ processing }">
+            <Form
+              v-bind="tenantPath ? disable.form(tenantPath) : {}"
+              #default="{ processing }"
+            >
               <Button
                 variant="destructive"
                 type="submit"

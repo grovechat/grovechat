@@ -52,9 +52,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           v-slot="{ errors, processing, recentlySuccessful }"
         >
           <div class="grid gap-2">
-            <Label for="current_password">{{
-              t('当前密码')
-            }}</Label>
+            <Label for="current_password">{{ t('当前密码') }}</Label>
             <Input
               id="current_password"
               name="current_password"
@@ -67,9 +65,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           </div>
 
           <div class="grid gap-2">
-            <Label for="password">{{
-              t('新密码')
-            }}</Label>
+            <Label for="password">{{ t('新密码') }}</Label>
             <Input
               id="password"
               name="password"
@@ -82,9 +78,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           </div>
 
           <div class="grid gap-2">
-            <Label for="password_confirmation">{{
-              t('确认密码')
-            }}</Label>
+            <Label for="password_confirmation">{{ t('确认密码') }}</Label>
             <Input
               id="password_confirmation"
               name="password_confirmation"

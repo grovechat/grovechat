@@ -58,9 +58,7 @@ const { t } = useI18n();
         </div>
 
         <div class="grid gap-2">
-          <Label for="password">{{
-            t('密码')
-          }}</Label>
+          <Label for="password">{{ t('密码') }}</Label>
           <Input
             id="password"
             type="password"
@@ -74,9 +72,7 @@ const { t } = useI18n();
         </div>
 
         <div class="grid gap-2">
-          <Label for="password_confirmation">{{
-            t('确认密码')
-          }}</Label>
+          <Label for="password_confirmation">{{ t('确认密码') }}</Label>
           <Input
             id="password_confirmation"
             type="password"

@@ -1,37 +1,37 @@
 <?php
 
-use App\Models\User;
 use App\Settings\GeneralSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Tests\WithTenant;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\put;
 
-uses(RefreshDatabase::class);
+uses(RefreshDatabase::class, WithTenant::class);
 
 beforeEach(function () {
-    // 每个测试前创建认证用户
-    $this->user = User::factory()->create();
+    // 每个测试前创建认证用户和租户
+    $this->user = $this->createUserWithTenant();
 });
 
 test('authenticated user can view general settings page', function () {
     $this->withoutExceptionHandling();
 
     actingAs($this->user)
-        ->get('/system-settings/general')
+        ->get(route('system-setting.get-general-settings', ['tenant_path' => $this->tenantPath()]))
         ->assertOk()
         ->assertInertia(fn ($page) => $page->component('systemSettings/GeneralSetting'));
 });
 
 test('unauthenticated user cannot view general settings page', function () {
-    get('/system-settings/general')
+    get(route('system-setting.get-general-settings', ['tenant_path' => $this->tenantPath()]))
         ->assertRedirect('/login');
 });
 
 test('authenticated user can update general settings with all fields', function () {
     $response = actingAs($this->user)
-        ->put('/system-settings/general', [
+        ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
             'copyright' => '© 2026 GroveChat',
@@ -50,7 +50,7 @@ test('authenticated user can update general settings with all fields', function 
 
 test('authenticated user can update general settings with required fields only', function () {
     actingAs($this->user)
-        ->put('/system-settings/general', [
+        ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
         ])
@@ -63,7 +63,7 @@ test('authenticated user can update general settings with required fields only',
 
 test('baseUrl is required', function () {
     actingAs($this->user)
-        ->put('/system-settings/general', [
+        ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'name' => '客服系统',
         ])
         ->assertSessionHasErrors('baseUrl');
@@ -71,7 +71,7 @@ test('baseUrl is required', function () {
 
 test('name is required', function () {
     actingAs($this->user)
-        ->put('/system-settings/general', [
+        ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'https://app.grovechat.com',
         ])
         ->assertSessionHasErrors('name');
@@ -79,7 +79,7 @@ test('name is required', function () {
 
 test('baseUrl must be valid url', function () {
     actingAs($this->user)
-        ->put('/system-settings/general', [
+        ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'not-a-valid-url',
             'name' => 'GroveChat',
         ])
@@ -88,7 +88,7 @@ test('baseUrl must be valid url', function () {
 
 test('name cannot exceed 255 characters', function () {
     actingAs($this->user)
-        ->put('/system-settings/general', [
+        ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'https://app.grovechat.com',
             'name' => str_repeat('a', 256),
         ])
@@ -96,7 +96,7 @@ test('name cannot exceed 255 characters', function () {
 });
 
 test('unauthenticated user cannot update general settings', function () {
-    put('/system-settings/general', [
+    put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
         'baseUrl' => 'https://app.grovechat.com',
         'name' => 'GroveChat',
     ])
@@ -105,7 +105,7 @@ test('unauthenticated user cannot update general settings', function () {
 
 test('logo must be an image file', function () {
     actingAs($this->user)
-        ->put('/system-settings/general', [
+        ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
             'logo' => UploadedFile::fake()->create('document.pdf', 100),
@@ -115,7 +115,7 @@ test('logo must be an image file', function () {
 
 test('logo cannot exceed 4MB', function () {
     actingAs($this->user)
-        ->put('/system-settings/general', [
+        ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
             'logo' => UploadedFile::fake()->image('logo.png')->size(5000), // 5MB

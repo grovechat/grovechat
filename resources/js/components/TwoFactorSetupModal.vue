@@ -49,7 +49,9 @@ const modalConfig = computed<{
   if (props.twoFactorEnabled) {
     return {
       title: t('两步验证现已启用'),
-      description: t('两步验证现已启用。扫描二维码或在身份验证器应用中输入设置密钥。'),
+      description: t(
+        '两步验证现已启用。扫描二维码或在身份验证器应用中输入设置密钥。',
+      ),
       buttonText: t('关闭'),
     };
   }
@@ -64,7 +66,9 @@ const modalConfig = computed<{
 
   return {
     title: t('启用两步验证'),
-    description: t('要完成两步验证的启用，请扫描二维码或在身份验证器应用中输入设置密钥'),
+    description: t(
+      '要完成两步验证的启用，请扫描二维码或在身份验证器应用中输入设置密钥',
+    ),
     buttonText: t('继续'),
   };
 });

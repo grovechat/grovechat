@@ -18,7 +18,9 @@ const { t } = useI18n();
 <template>
   <AuthLayout
     :title="t('验证电子邮件')"
-    :description="t('请点击我们刚刚发送给你的电子邮件中的链接来验证你的电子邮件地址。')"
+    :description="
+      t('请点击我们刚刚发送给你的电子邮件中的链接来验证你的电子邮件地址。')
+    "
   >
     <Head :title="t('邮箱验证')" />
 

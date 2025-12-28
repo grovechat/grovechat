@@ -20,10 +20,7 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <AuthLayout
-    :title="t('重置密码')"
-    :description="t('请在下方输入你的新密码')"
-  >
+  <AuthLayout :title="t('重置密码')" :description="t('请在下方输入你的新密码')">
     <Head :title="t('重置密码')" />
 
     <Form
@@ -34,9 +31,7 @@ const { t } = useI18n();
     >
       <div class="grid gap-6">
         <div class="grid gap-2">
-          <Label for="email">{{
-            t('电子邮件')
-          }}</Label>
+          <Label for="email">{{ t('电子邮件') }}</Label>
           <Input
             id="email"
             type="email"
@@ -50,9 +45,7 @@ const { t } = useI18n();
         </div>
 
         <div class="grid gap-2">
-          <Label for="password">{{
-            t('密码')
-          }}</Label>
+          <Label for="password">{{ t('密码') }}</Label>
           <Input
             id="password"
             type="password"

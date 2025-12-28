@@ -10,7 +10,9 @@ export interface Tenant {
 export function useTenant() {
   const page = usePage();
 
-  const currentTenant = computed(() => page.props.currentTenant as Tenant | undefined);
+  const currentTenant = computed(
+    () => page.props.currentTenant as Tenant | undefined,
+  );
 
   const tenantPath = computed(() => currentTenant.value?.path);
 

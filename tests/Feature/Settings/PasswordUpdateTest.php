@@ -1,32 +1,27 @@
 <?php
 
-use App\Models\Tenant;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Tests\WithTenant;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(\Illuminate\Foundation\Testing\RefreshDatabase::class, WithTenant::class);
+
+beforeEach(function () {
+    $this->user = $this->createUserWithTenant();
+});
 
 test('password update page is displayed', function () {
-    $user = User::factory()->create();
-    $tenant = Tenant::factory()->create();
-    $user->tenants()->attach($tenant, ['role' => 'owner']);
-
     $response = $this
-        ->actingAs($user)
-        ->get(route('user-password.edit', ['tenant_path' => $tenant->path]));
+        ->actingAs($this->user)
+        ->get(route('user-password.edit', ['tenant_path' => $this->tenantPath()]));
 
     $response->assertStatus(200);
 });
 
 test('password can be updated', function () {
-    $user = User::factory()->create();
-    $tenant = Tenant::factory()->create();
-    $user->tenants()->attach($tenant, ['role' => 'owner']);
-
     $response = $this
-        ->actingAs($user)
-        ->from(route('user-password.edit', ['tenant_path' => $tenant->path]))
-        ->put(route('user-password.update', ['tenant_path' => $tenant->path]), [
+        ->actingAs($this->user)
+        ->from(route('user-password.edit', ['tenant_path' => $this->tenantPath()]))
+        ->put(route('user-password.update', ['tenant_path' => $this->tenantPath()]), [
             'current_password' => 'password',
             'password' => 'new-password',
             'password_confirmation' => 'new-password',
@@ -34,20 +29,16 @@ test('password can be updated', function () {
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('user-password.edit', ['tenant_path' => $tenant->path]));
+        ->assertRedirect(route('user-password.edit', ['tenant_path' => $this->tenantPath()]));
 
-    expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue();
+    expect(Hash::check('new-password', $this->user->refresh()->password))->toBeTrue();
 });
 
 test('correct password must be provided to update password', function () {
-    $user = User::factory()->create();
-    $tenant = Tenant::factory()->create();
-    $user->tenants()->attach($tenant, ['role' => 'owner']);
-
     $response = $this
-        ->actingAs($user)
-        ->from(route('user-password.edit', ['tenant_path' => $tenant->path]))
-        ->put(route('user-password.update', ['tenant_path' => $tenant->path]), [
+        ->actingAs($this->user)
+        ->from(route('user-password.edit', ['tenant_path' => $this->tenantPath()]))
+        ->put(route('user-password.update', ['tenant_path' => $this->tenantPath()]), [
             'current_password' => 'wrong-password',
             'password' => 'new-password',
             'password_confirmation' => 'new-password',
@@ -55,5 +46,5 @@ test('correct password must be provided to update password', function () {
 
     $response
         ->assertSessionHasErrors('current_password')
-        ->assertRedirect(route('user-password.edit', ['tenant_path' => $tenant->path]));
+        ->assertRedirect(route('user-password.edit', ['tenant_path' => $this->tenantPath()]));
 });
