@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { useTenant } from '@/composables/useTenant';
 import { dashboard, login, register } from '@/routes';
