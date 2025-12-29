@@ -190,8 +190,6 @@ export default {
   注册用户: 'Customers',
   潜在客户: 'Leads',
   会话记录: 'Conversations',
-  查看和管理联系人信息: 'View and manage contact information',
-  查看所有联系人的会话历史: 'View all contact conversation history',
 
   // 租户设置(管理中心)页面
   管理工作区和团队设置: 'Manage workspace and team settings',

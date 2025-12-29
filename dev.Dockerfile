@@ -29,7 +29,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     net-tools \
     curl \
+    jq \
     wget \
+    git \
+    openssh-client \
     && usermod -u ${UID} www-data \
     && groupmod -g ${GID} www-data \
     && mkdir /config/psysh \
@@ -44,6 +47,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
 RUN npm config set registry https://registry.npmmirror.com
+RUN npm install -g @anthropic-ai/claude-code 
 
 # 语言和时区
 RUN sed -i 's/# zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/' /etc/locale.gen \

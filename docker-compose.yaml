@@ -6,6 +6,8 @@ services:
     image: registry.cn-hangzhou.aliyuncs.com/grovechat/dev:latest
     volumes:
       - .:/app
+      - ~/.ssh:/root/.ssh:ro
+      - ~/.gitconfig:/root/.gitconfig:ro
     tty: true
     command: tail -f /dev/null
     working_dir: /app
