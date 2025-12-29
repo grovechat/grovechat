@@ -19,7 +19,8 @@
         "laravel/tinker": "^2.10.1",
         "laravel/wayfinder": "^0.1.9",
         "spatie/laravel-data": "^4.18",
-        "spatie/laravel-settings": "^3.6"
+        "spatie/laravel-settings": "^3.6",
+        "spatie/laravel-typescript-transformer": "^2.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -1,5 +1,7 @@
 <?php
 
+/**@typescript*/
+
 namespace App\Domain\SystemSettings\DTOs;
 
 use Spatie\LaravelData\Data;
