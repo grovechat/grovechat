@@ -20,7 +20,7 @@
 
       "settings": {
         // PHP
-        "intelephense.environment.phpVersion": "8.5.0",
+        "intelephense.environment.phpVersion": "8.5.1",
 
         // Tailwind
         "tailwindCSS.includeLanguages": {
