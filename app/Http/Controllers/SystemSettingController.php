@@ -6,6 +6,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\SystemSettings\Actions\GeneralSettingsData;
+use App\Domain\SystemSettings\Actions\UpdateSettingAction;
 use App\Domain\SystemSettings\Services\GeneralSettingService;
 use App\Http\Controllers\Controller;
 use App\Settings\GeneralSettings;
@@ -23,7 +25,7 @@ class SystemSettingController extends Controller
         return Inertia::render('systemSettings/GeneralSetting', $settings);
     }
 
-    public function updateGeneralSettings(Request $request)
+    public function updateGeneralSettings(Request $request, UpdateSettingAction $action)
     {
         $validated = $request->validate([
             'baseUrl' => 'required|string|max:255|url',
@@ -32,8 +34,9 @@ class SystemSettingController extends Controller
             'copyright' => 'nullable|string|max:255',
             'icpRecord' => 'nullable|string|max:255',
         ]);
-
-        $this->settingService->updateSettings($validated);
+        
+        $dto = GeneralSettingsData::from($validated);
+        $action->execute($dto);
 
         return back();
     }
