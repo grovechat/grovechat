@@ -1,5 +1,6 @@
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
+import type { GeneralSettingsData } from './generated';
 
 export interface Auth {
   user: User;
@@ -24,6 +25,7 @@ export type AppPageProps<
   quote: { message: string; author: string };
   auth: Auth;
   sidebarOpen: boolean;
+  generalSettings: GeneralSettingsData;
 };
 
 export interface User {

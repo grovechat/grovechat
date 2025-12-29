@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Domain\SystemSettings\DTOs\GeneralSettingsData;
+use App\Settings\GeneralSettings;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -46,6 +48,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'generalSettings' => GeneralSettingsData::from(app(GeneralSettings::class)),
         ];
     }
 }
