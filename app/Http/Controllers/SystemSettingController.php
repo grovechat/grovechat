@@ -10,7 +10,6 @@ use App\Domain\SystemSettings\DTOs\GeneralSettingsData;
 use App\Domain\SystemSettings\Actions\UpdateSettingAction;
 use App\Http\Controllers\Controller;
 use App\Settings\GeneralSettings;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class SystemSettingController extends Controller
@@ -20,18 +19,9 @@ class SystemSettingController extends Controller
         return Inertia::render('systemSettings/GeneralSetting', $settings);
     }
 
-    public function updateGeneralSettings(Request $request, UpdateSettingAction $action)
+    public function updateGeneralSettings(GeneralSettingsData $data, UpdateSettingAction $action)
     {
-        $validated = $request->validate([
-            'baseUrl' => 'required|string|max:255|url',
-            'name' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
-            'copyright' => 'nullable|string|max:255',
-            'icpRecord' => 'nullable|string|max:255',
-        ]);
-        
-        $dto = GeneralSettingsData::from($validated);
-        $action->execute($dto);
+        $action->execute($data);
 
         return back();
     }
