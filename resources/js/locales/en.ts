@@ -210,4 +210,21 @@ export default {
   集成: 'Integrations',
   安全: 'Security',
   维护: 'Maintenance',
+  配置系统的基本信息和全局设置:
+    'Configure basic system information and global settings',
+  主机地址: 'Host URL',
+  '请输入主机地址，例如：https://example.com':
+    'Please enter host URL, e.g.: https://example.com',
+  系统名称: 'System Name',
+  请输入系统名称: 'Please enter system name',
+  系统Logo: 'System Logo',
+  '上传中...': 'Uploading...',
+  '支持上传图片格式文件，选择后自动上传':
+    'Support image file upload, automatically uploaded after selection',
+  版权信息: 'Copyright',
+  请输入版权信息: 'Please enter copyright information',
+  备案信息: 'ICP Record',
+  请输入备案信息: 'Please enter ICP record information',
+  版本号: 'Version',
+  未设置: 'Not set',
 } as const;

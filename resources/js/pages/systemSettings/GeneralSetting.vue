@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SystemSettingController from '@/actions/App/Http/Controllers/SystemSettingController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import systemSetting from '@/routes/system-setting';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, ref } from 'vue';
 
@@ -37,15 +38,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   },
 ]);
 
-const form = useForm({
-  baseUrl: props.baseUrl || '',
-  name: props.name || '',
-  logo: props.logo || '',
-  copyright: props.copyright || '',
-  icpRecord: props.icpRecord || '',
-});
-
 const logoPreview = ref<string>(props.logo || '');
+const logoUrl = ref<string>(props.logo || '');
 const uploading = ref(false);
 
 const handleLogoChange = async (event: Event) => {
@@ -61,7 +55,7 @@ const handleLogoChange = async (event: Event) => {
   };
   reader.readAsDataURL(file);
 
-  // 立即上传文件
+  // 上传文件到服务器
   const formData = new FormData();
   formData.append('file', file);
 
@@ -72,8 +66,8 @@ const handleLogoChange = async (event: Event) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    // 上传成功后更新表单数据
-    form.logo = response.data.url;
+    // 上传成功后更新logo URL
+    logoUrl.value = response.data.url;
   } catch (error) {
     console.error('Logo upload failed:', error);
     // 上传失败，恢复原来的logo
@@ -81,14 +75,6 @@ const handleLogoChange = async (event: Event) => {
   } finally {
     uploading.value = false;
   }
-};
-
-const handleSubmit = () => {
-  if (!tenantPath.value) return;
-
-  form.put(systemSetting.updateGeneralSettings.url(tenantPath.value), {
-    preserveScroll: true,
-  });
 };
 </script>
 
@@ -103,30 +89,40 @@ const handleSubmit = () => {
           :description="t('配置系统的基本信息和全局设置')"
         />
 
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <Form
+          v-bind="
+            tenantPath
+              ? SystemSettingController.updateGeneralSettings.form(tenantPath)
+              : {}
+          "
+          class="space-y-6"
+          v-slot="{ errors, processing, recentlySuccessful }"
+        >
           <div class="grid gap-2">
             <Label for="baseUrl">{{ t('主机地址') }}</Label>
             <Input
               id="baseUrl"
-              v-model="form.baseUrl"
+              name="baseUrl"
               type="url"
               class="mt-1 block w-full"
+              :default-value="baseUrl || undefined"
               required
               :placeholder="t('请输入主机地址，例如：https://example.com')"
             />
-            <InputError class="mt-2" :message="form.errors.baseUrl" />
+            <InputError class="mt-2" :message="errors.baseUrl" />
           </div>
 
           <div class="grid gap-2">
             <Label for="name">{{ t('系统名称') }}</Label>
             <Input
               id="name"
-              v-model="form.name"
+              name="name"
               class="mt-1 block w-full"
+              :default-value="props.name || undefined"
               required
               :placeholder="t('请输入系统名称')"
             />
-            <InputError class="mt-2" :message="form.errors.name" />
+            <InputError class="mt-2" :message="errors.name" />
           </div>
 
           <div class="grid gap-2">
@@ -148,8 +144,14 @@ const handleSubmit = () => {
                   <span class="text-white text-sm">{{ t('上传中...') }}</span>
                 </div>
               </div>
-              <Input
+              <input
                 id="logo"
+                name="logo"
+                type="hidden"
+                :value="logoUrl"
+              />
+              <Input
+                id="logoFile"
                 type="file"
                 accept="image/*"
                 class="block w-full"
@@ -160,29 +162,31 @@ const handleSubmit = () => {
                 {{ t('支持上传图片格式文件，选择后自动上传') }}
               </p>
             </div>
-            <InputError class="mt-2" :message="form.errors.logo" />
+            <InputError class="mt-2" :message="errors.logo" />
           </div>
 
           <div class="grid gap-2">
             <Label for="copyright">{{ t('版权信息') }}</Label>
             <Input
               id="copyright"
-              v-model="form.copyright"
+              name="copyright"
               class="mt-1 block w-full"
+              :default-value="copyright || undefined"
               :placeholder="t('请输入版权信息')"
             />
-            <InputError class="mt-2" :message="form.errors.copyright" />
+            <InputError class="mt-2" :message="errors.copyright" />
           </div>
 
           <div class="grid gap-2">
             <Label for="icpRecord">{{ t('备案信息') }}</Label>
             <Input
               id="icpRecord"
-              v-model="form.icpRecord"
+              name="icpRecord"
               class="mt-1 block w-full"
+              :default-value="icpRecord || undefined"
               :placeholder="t('请输入备案信息')"
             />
-            <InputError class="mt-2" :message="form.errors.icpRecord" />
+            <InputError class="mt-2" :message="errors.icpRecord" />
           </div>
 
           <div class="grid gap-2">
@@ -195,7 +199,7 @@ const handleSubmit = () => {
           <div class="flex items-center gap-4">
             <Button
               type="submit"
-              :disabled="form.processing"
+              :disabled="processing"
               data-test="update-general-settings-button"
             >
               {{ t('保存') }}
@@ -207,12 +211,12 @@ const handleSubmit = () => {
               leave-active-class="transition ease-in-out"
               leave-to-class="opacity-0"
             >
-              <p v-show="form.recentlySuccessful" class="text-sm text-neutral-600">
+              <p v-show="recentlySuccessful" class="text-sm text-neutral-600">
                 {{ t('已保存。') }}
               </p>
             </Transition>
           </div>
-        </form>
+        </Form>
       </div>
     </SystemSettingsLayout>
   </AppLayout>
