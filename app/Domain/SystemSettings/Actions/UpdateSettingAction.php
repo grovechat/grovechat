@@ -2,6 +2,7 @@
 
 namespace App\Domain\SystemSettings\Actions;
 
+use App\Domain\SystemSettings\DTOs\GeneralSettingsData;
 use App\Settings\GeneralSettings;
 
 class UpdateSettingAction
