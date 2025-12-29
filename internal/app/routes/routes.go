@@ -58,7 +58,7 @@ func InitMercureHub(cfg *config.Config) error {
 var staticExts = map[string]struct{}{
 	".css": {}, ".js": {}, ".png": {}, ".jpg": {}, ".jpeg": {},
 	".gif": {}, ".svg": {}, ".ico": {}, ".woff": {}, ".woff2": {},
-	".ttf": {}, ".pdf": {}, ".txt": {},
+	".ttf": {}, ".pdf": {}, ".txt": {}, ".webp": {},
 }
 
 func HandlePHP(cfg *config.Config) http.HandlerFunc {

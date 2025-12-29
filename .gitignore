@@ -9,7 +9,7 @@
 /resources/js/actions
 /resources/js/routes
 /resources/js/wayfinder
-/resources/js/datatypes
+/resources/js/types/generated.d.ts
 /vendor
 .DS_Store
 .env

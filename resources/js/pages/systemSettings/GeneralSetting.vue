@@ -11,20 +11,12 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import systemSetting from '@/routes/system-setting';
 import { type BreadcrumbItem } from '@/types';
+import { type GeneralSettingsData } from '@/types/generated';
 import { Form, Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, ref } from 'vue';
 
-interface Props {
-  baseUrl: string | null;
-  name: string | null;
-  logo: string | null;
-  copyright: string | null;
-  icpRecord: string | null;
-  version: string | null;
-}
-
-const props = defineProps<Props>();
+const props = defineProps<GeneralSettingsData>();
 
 const { t } = useI18n();
 const { tenantPath } = useTenant();

@@ -14,6 +14,7 @@ class GeneralSettingsData extends Data
         public ?string $logo = "",
         public ?string $copyright = "",
         public ?string $icpRecord = "",
+        public readonly ?string $version = "",
     )
     {}
 
@@ -25,6 +26,7 @@ class GeneralSettingsData extends Data
             'logo' => 'nullable|string|max:500',
             'copyright' => 'nullable|string|max:255',
             'icpRecord' => 'nullable|string|max:255',
+            // version 是只读字段，不需要验证
         ];
     }
 }
