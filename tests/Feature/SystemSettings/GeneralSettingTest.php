@@ -2,7 +2,6 @@
 
 use App\Settings\GeneralSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Tests\WithTenant;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -34,6 +33,7 @@ test('authenticated user can update general settings with all fields', function 
         ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
+            'logo' => 'https://cdn.example.com/logo.png',
             'copyright' => '© 2026 GroveChat',
             'icpRecord' => '京ICP备12345678号',
         ]);
@@ -44,6 +44,7 @@ test('authenticated user can update general settings with all fields', function 
     $settings = app(GeneralSettings::class);
     expect($settings->baseUrl)->toBe('https://app.grovechat.com');
     expect($settings->name)->toBe('GroveChat');
+    expect($settings->logo)->toBe('https://cdn.example.com/logo.png');
     expect($settings->copyright)->toBe('© 2026 GroveChat');
     expect($settings->icpRecord)->toBe('京ICP备12345678号');
 });
@@ -103,22 +104,22 @@ test('unauthenticated user cannot update general settings', function () {
     ->assertRedirect('/login');
 });
 
-test('logo must be an image file', function () {
+test('logo must be a valid url', function () {
     actingAs($this->user)
         ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
-            'logo' => UploadedFile::fake()->create('document.pdf', 100),
+            'logo' => 'not-a-valid-url',
         ])
         ->assertSessionHasErrors('logo');
 });
 
-test('logo cannot exceed 4MB', function () {
+test('logo url cannot exceed 500 characters', function () {
     actingAs($this->user)
         ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
             'baseUrl' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
-            'logo' => UploadedFile::fake()->image('logo.png')->size(5000), // 5MB
+            'logo' => 'https://example.com/' . str_repeat('a', 500),
         ])
         ->assertSessionHasErrors('logo');
 });
