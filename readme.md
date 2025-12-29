@@ -75,10 +75,58 @@ artisan tinker                 # 启动 Tinker（可以安装 rlwrap，用 rlwra
 
 ### 环境要求
 
-- Docker & Docker Compose
-- Go 1.25+
+- **推荐方式**: VS Code + Dev Containers 扩展
+- 或者：Docker & Docker Compose + Go 1.25+
 
-### 启动开发环境
+### 方式一：使用 VS Code Dev Container（推荐）
+
+这是最简单的开发方式，提供完整的 IDE 集成和自动化环境配置。
+
+#### 前置要求
+
+1. 安装 [VS Code](https://code.visualstudio.com/)
+2. 安装 [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+3. 安装 VS Code 扩展：[Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+#### 快速开始
+
+1. 用 VS Code 打开项目文件夹
+2. 按 `F1` 或 `Cmd/Ctrl+Shift+P` 打开命令面板
+3. 输入并选择 `Dev Containers: Reopen in Container`
+4. 等待容器构建和初始化（首次需要几分钟，会自动安装所有依赖）
+5. 初始化完成后，打开两个终端：
+   - 终端 1: 运行 `npm run dev` 启动前端
+   - 终端 2: 运行 `make run` 启动后端
+6. 访问 http://localhost
+
+#### Dev Container 特性
+
+- 自动安装所有开发依赖（Composer、npm、Go modules）
+- 自动配置数据库和环境变量
+- 内置 PHP、Go、Vue 等语言服务和智能提示
+- 持久化缓存（依赖、bash历史等），重建容器不丢失
+- 集成调试配置，支持断点调试 PHP 和 Go
+- 预配置的任务运行器和代码格式化
+
+#### 常用操作
+
+```bash
+# 运行 Laravel Artisan 命令
+php artisan migrate
+php artisan tinker
+
+# 运行测试
+php artisan test
+
+# 格式化代码
+npm run format
+composer pint
+
+# 清除缓存
+php artisan cache:clear
+```
+
+### 方式二：传统 Docker Compose 方式
 
 1. 启动 Docker 容器
 
