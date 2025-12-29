@@ -20,7 +20,7 @@ class GeneralSettingsData extends Data
         return [
             'baseUrl' => 'required|string|max:255|url',
             'name' => 'required|string|max:255',
-            'logo' => 'nullable|string|max:500|url',
+            'logo' => 'nullable|string|max:500',
             'copyright' => 'nullable|string|max:255',
             'icpRecord' => 'nullable|string|max:255',
         ];

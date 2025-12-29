@@ -21,9 +21,9 @@ class CommonController extends Controller
         if (strpos((string) $uploaded->getMimeType(), 'image/') !== 0) {
             return response()->json(['message' => 'Only image upload is supported'], 400);
         }
-        
-        $path = $request->file('file')->store('uploads', 'local');
-        
+
+        $path = $request->file('file')->store('uploads', 'public');
+
         $url = Storage::url($path);
 
         return response()->json(['path' => $path, 'url' => $url]);

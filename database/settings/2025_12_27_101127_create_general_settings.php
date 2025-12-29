@@ -6,7 +6,7 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('general.baseUrl', 'app.grovechat.com');
+        $this->migrator->add('general.baseUrl', 'https://app.grovechat.com');
         $this->migrator->add('general.name', 'GroveChat');
         $this->migrator->add('general.logo', '');
         $this->migrator->add('general.copyright', 'Copyright © 2026 GroveChat');
