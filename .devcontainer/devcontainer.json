@@ -22,6 +22,21 @@
         // PHP
         "intelephense.environment.phpVersion": "8.5.1",
 
+        // Go
+        "[go]": {
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+          }
+        },
+        "gopls": {
+          "build.buildFlags": ["-mod=mod"],
+          "build.directoryFilters": [
+            "-vendor",
+            "-node_modules"
+          ]
+        },
+
         // Tailwind
         "tailwindCSS.includeLanguages": {
           "blade": "html"

@@ -47,7 +47,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
 RUN npm config set registry https://registry.npmmirror.com
-RUN npm install -g @anthropic-ai/claude-code 
+RUN npm install -g @anthropic-ai/claude-code
 
 # 语言和时区
 RUN sed -i 's/# zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/' /etc/locale.gen \
@@ -60,6 +60,8 @@ ENV LANG=zh_CN.UTF-8 \
 # Go 配置
 ENV GOPROXY=https://goproxy.cn,direct \
     GO111MODULE=on
+RUN CGO_ENABLED=0 go install -v -ldflags="-s -w" golang.org/x/tools/gopls@latest
+RUN CGO_ENABLED=0 go install -v -ldflags="-s -w" honnef.co/go/tools/cmd/staticcheck@latest
 COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
