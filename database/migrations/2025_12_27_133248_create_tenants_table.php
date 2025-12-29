@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('tenants', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('name')->default('')->comment('租户名');
-            $table->string('slug')->default('')->comment('租户标识');
-            $table->string('logo')->default('')->comment('租户logo');
-            $table->string('path')->default('')->comment('租户路径');
+            $table->string('name')->comment('租户名');
+            $table->string('slug')->comment('租户标识');
+            $table->string('logo')->nullable()->comment('租户logo');
+            $table->string('path')->comment('租户路径');
         });
     }
 

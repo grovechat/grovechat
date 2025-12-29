@@ -69,11 +69,11 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
-            "@php artisan typescript:transform",
             "@php -r \"file_exists('storage/database/main.sqlite') || touch('storage/database/main.sqlite');\"",
             "@php -r \"file_exists('storage/database/session.sqlite') || touch('storage/database/session.sqlite');\"",
             "@php -r \"file_exists('storage/database/cache.sqlite') || touch('storage/database/cache.sqlite');\"",
-            "@php -r \"file_exists('storage/database/jobs.sqlite') || touch('storage/database/jobs.sqlite');\""
+            "@php -r \"file_exists('storage/database/jobs.sqlite') || touch('storage/database/jobs.sqlite');\"",
+            "@php artisan typescript:transform"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

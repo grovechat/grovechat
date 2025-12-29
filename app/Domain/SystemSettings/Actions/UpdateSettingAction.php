@@ -10,7 +10,7 @@ class UpdateSettingAction
     public function __construct(
         private GeneralSettings $settings
     ) {}
-    
+
     /**
      * 执行更新设置的操作
      *
@@ -24,9 +24,9 @@ class UpdateSettingAction
         $this->settings->logo = $data->logo;
         $this->settings->copyright = $data->copyright;
         $this->settings->icpRecord = $data->icpRecord;
-        
+
         $this->settings->save();
-    
+
         return $this->settings;
     }
 }
