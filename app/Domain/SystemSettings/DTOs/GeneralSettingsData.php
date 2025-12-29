@@ -11,10 +11,10 @@ class GeneralSettingsData extends Data
     public function __construct(
         public string $baseUrl,
         public string $name,
-        public ?string $logo = "",
-        public ?string $copyright = "",
-        public ?string $icpRecord = "",
-        public readonly ?string $version = "",
+        public string $logo = "",
+        public string $copyright = "",
+        public string $icpRecord = "",
+        public readonly string $version = "",
     )
     {}
 
