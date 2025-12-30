@@ -20,6 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        app(GeneralSettings::class)->lock('version');
+        //    
     }
 }

@@ -19,6 +19,7 @@ class UpdateSettingAction
      */
     public function execute(GeneralSettingsData $data): GeneralSettings
     {
+        $this->settings->lock('version');
         $this->settings->fill($data)->save();
 
         return $this->settings;
