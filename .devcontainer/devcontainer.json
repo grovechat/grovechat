@@ -15,8 +15,7 @@
         "bradlc.vscode-tailwindcss",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "Anthropic.claude-code",
-        "damms005.devdb"
+        "Anthropic.claude-code"
       ],
 
       "settings": {

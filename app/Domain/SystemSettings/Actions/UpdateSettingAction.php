@@ -19,13 +19,7 @@ class UpdateSettingAction
      */
     public function execute(GeneralSettingsData $data): GeneralSettings
     {
-        $this->settings->baseUrl = $data->baseUrl;
-        $this->settings->name = $data->name;
-        $this->settings->logo = $data->logo;
-        $this->settings->copyright = $data->copyright;
-        $this->settings->icpRecord = $data->icpRecord;
-
-        $this->settings->save();
+        $this->settings->fill($data)->save();
 
         return $this->settings;
     }
