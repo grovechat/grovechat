@@ -1,0 +1,56 @@
+{
+  "name": "GroveChat Development",
+  "dockerComposeFile": "../docker-compose.yaml",
+  "service": "dev",
+  "workspaceFolder": "/app",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "onecentlin.laravel-blade",
+        "golang.go",
+        "vue.volar",
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "Anthropic.claude-code"
+      ],
+
+      "settings": {
+        // PHP
+        "intelephense.environment.phpVersion": "8.5.1",
+
+        // Go
+        "[go]": {
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+          }
+        },
+        "gopls": {
+          "build.buildFlags": ["-mod=mod"],
+          "build.directoryFilters": [
+            "-vendor",
+            "-node_modules"
+          ]
+        },
+
+        // Tailwind
+        "tailwindCSS.includeLanguages": {
+          "blade": "html"
+        },
+
+        // 文件关联
+        "files.associations": {
+          "*.blade.php": "blade"
+        }
+      }
+    }
+  },
+
+  "forwardPorts": [80, 443, 5173],
+
+  "remoteUser": "root"
+}
