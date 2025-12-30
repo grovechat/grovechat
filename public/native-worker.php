@@ -25,7 +25,7 @@ $handler = static function (array $request): array  {
     $method = $request['method'] ?? '';
     $params = $request['params'] ?? [];
 
-    $result = ['success' => false, 'data' => null, 'error' => null];
+    $result = ['data' => null, 'error' => null];
 
     if (empty($class) || empty($method)) {
         $result['error'] = 'Missing class or method parameter';
@@ -33,29 +33,10 @@ $handler = static function (array $request): array  {
     }
 
     try {
-        // 检查类是否存在
-        if (!class_exists($class)) {
-            $result['error'] = "Class not found: {$class}";
-            return $result;
-        }
-
-        // 实例化类（通过 Laravel 容器）
-        $instance = app($class);
-
-        // 检查方法是否存在
-        if (!method_exists($instance, $method)) {
-            $result['error'] = "Method not found: {$class}::{$method}";
-            return $result;
-        }
-
-        // 调用方法
-        $data = call_user_func_array([$instance, $method], $params);
-
-        $result['success'] = true;
-        $result['data'] = $data;
+        $result['data'] = app($class)->$method(...$params);
     } catch (Throwable $e) {
         $result['error'] = $e->getMessage();
-        $result['trace'] = $e->getTraceAsString();
+        app()->make(\Psr\Log\LoggerInterface::class)->error($e->getMessage(), ['exception' => $e]);
     }
 
     return $result;

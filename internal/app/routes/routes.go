@@ -108,6 +108,10 @@ func Register(router *gin.Engine, cfg *config.Config) {
 	if err := InitMercureHub(cfg); err != nil {
 		log.Fatalf("初始化 Mercure Hub 失败: %v", err)
 	}
+	// Mercure 路由
+	router.Any("/.well-known/mercure", func(c *gin.Context) {
+		globalHub.ServeHTTP(c.Writer, c.Request)
+	})
 
 	// Go 路由
 	router.GET("/ping", func(c *gin.Context) {
@@ -117,14 +121,6 @@ func Register(router *gin.Engine, cfg *config.Config) {
 	// Native 路由（调用 PHP 方法）
 	router.GET("/native/example", func(c *gin.Context) {
 		native.ExampleHandler(cfg)(c.Writer, c.Request)
-	})
-	router.GET("/native/call", func(c *gin.Context) {
-		native.CustomHandler(cfg)(c.Writer, c.Request)
-	})
-
-	// Mercure 路由
-	router.Any("/.well-known/mercure", func(c *gin.Context) {
-		globalHub.ServeHTTP(c.Writer, c.Request)
 	})
 
 	// PHP 路由（处理所有其他请求）

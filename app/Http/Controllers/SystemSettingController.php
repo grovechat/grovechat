@@ -6,25 +6,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\SystemSettings\DTOs\GeneralSettingsData;
+use App\Domain\SystemSettings\Actions\GetSettingAction;
 use App\Domain\SystemSettings\Actions\UpdateSettingAction;
 use App\Http\Controllers\Controller;
-use App\Settings\GeneralSettings;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class SystemSettingController extends Controller
 {
-    public function getGeneralSettings(GeneralSettings $settings)
+    public function getGeneralSettings()
     {
-        return Inertia::render('systemSettings/GeneralSetting',
-            GeneralSettingsData::from($settings)
-        );
+        $action = app(GetSettingAction::class); 
+        return Inertia::render('systemSettings/GeneralSetting', $action->execute());
     }
 
-    public function updateGeneralSettings(GeneralSettingsData $data, UpdateSettingAction $action)
+    public function updateGeneralSettings(Request $request, UpdateSettingAction $action)
     {
-        $action->execute($data);
-
+        try {
+            $action->execute($request->all());
+        } catch (\Exception $e) {
+            return back()->withErrors(['msg' => $e->getMessage()]);
+        }
         return back();
     }
 }
