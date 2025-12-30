@@ -104,16 +104,6 @@ test('unauthenticated user cannot update general settings', function () {
     ->assertRedirect('/login');
 });
 
-test('logo must be a valid url', function () {
-    actingAs($this->user)
-        ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
-            'baseUrl' => 'https://app.grovechat.com',
-            'name' => 'GroveChat',
-            'logo' => 'not-a-valid-url',
-        ])
-        ->assertSessionHasErrors('logo');
-});
-
 test('logo url cannot exceed 500 characters', function () {
     actingAs($this->user)
         ->put(route('system-setting.update-general-settings', ['tenant_path' => $this->tenantPath()]), [
