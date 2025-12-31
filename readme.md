@@ -93,10 +93,8 @@ artisan tinker                 # 启动 Tinker（可以安装 rlwrap，用 rlwra
 1. 用 VS Code 打开项目文件夹
 2. 按 `F1` 或 `Cmd/Ctrl+Shift+P` 打开命令面板
 3. 输入并选择 `Dev Containers: Reopen in Container`
-4. 等待容器构建和初始化（首次需要几分钟，会自动安装所有依赖）
-5. 初始化完成后，打开两个终端：
-   - 终端 1: 运行 `npm run dev` 启动前端
-   - 终端 2: 运行 `make run` 启动后端
+4. 等待容器构建和初始化（首次需要几分钟，会自动安装所有依赖插件）
+5. 初始化完成后，打开一个终端，安装 php 依赖：`composer install`, 安装 node 依赖：`npm i`，然后运行 `make run` 启动后端，再开一个终端运行前端：`npm run dev` 
 6. 访问 http://localhost
 
 #### Dev Container 特性
