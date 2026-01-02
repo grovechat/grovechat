@@ -52,6 +52,7 @@ const { tenantPath } = useTenant();
     <Link
       class="block w-full"
       :href="logout.url()"
+      method="post"
       @click="handleLogout"
       as="button"
       data-test="logout-button"

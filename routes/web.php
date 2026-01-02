@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
+// 引入认证路由 (基于 DDD 架构)
+require __DIR__.'/auth.php';
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),

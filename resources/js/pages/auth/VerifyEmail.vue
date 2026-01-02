@@ -40,7 +40,7 @@ const { t } = useI18n();
         {{ t('重新发送验证邮件') }}
       </Button>
 
-      <TextLink :href="logout.url()" as="button" class="mx-auto block text-sm">
+      <TextLink :href="logout.url()" method="post" as="button" class="mx-auto block text-sm">
         {{ t('退出登录') }}
       </TextLink>
     </Form>

@@ -170,13 +170,13 @@ export const appearanceEdit = route('/w/{tenant_path}/settings/appearance', 'get
 export const languageEdit = route('/w/{tenant_path}/settings/language', 'get');
 
 export const twoFactorShow = route('/w/{tenant_path}/settings/two-factor', 'get');
-export const twoFactorEnable = route('/user/two-factor-authentication', 'post');
-export const twoFactorDisable = route('/user/two-factor-authentication', 'delete');
-export const twoFactorConfirm = route('/user/confirmed-two-factor-authentication', 'post');
-export const twoFactorQrCode = route('/user/two-factor-qr-code', 'get');
-export const twoFactorRecoveryCodes = route('/user/two-factor-recovery-codes', 'get');
-export const twoFactorRegenerateRecoveryCodes = route('/user/two-factor-recovery-codes', 'post');
-export const twoFactorSecretKey = route('/user/two-factor-secret-key', 'get');
+export const twoFactorEnable = route('/w/{tenant_path}/settings/two-factor', 'post');
+export const twoFactorDisable = route('/w/{tenant_path}/settings/two-factor', 'delete');
+export const twoFactorConfirm = route('/w/{tenant_path}/settings/two-factor/confirm', 'post');
+export const twoFactorQrCode = route('/w/{tenant_path}/settings/two-factor/qr-code', 'get');
+export const twoFactorRecoveryCodes = route('/w/{tenant_path}/settings/two-factor/recovery-codes', 'get');
+export const twoFactorRegenerateRecoveryCodes = route('/w/{tenant_path}/settings/two-factor/recovery-codes', 'post');
+export const twoFactorSecretKey = route('/w/{tenant_path}/settings/two-factor/secret-key', 'get');
 
 // ==================== 联系人路由 ====================
 

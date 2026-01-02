@@ -2,15 +2,11 @@
 
 namespace App\Providers;
 
-use App\Actions\Fortify\CreateNewUser;
-use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
-use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -20,7 +16,8 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // 忽略 Fortify 的默认路由，使用我们自己的 DDD 架构路由
+        Fortify::ignoreRoutes();
     }
 
     /**
@@ -29,48 +26,19 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureActions();
-        $this->configureViews();
         $this->configureRateLimiting();
     }
 
     /**
-     * Configure Fortify actions.
+     * Configure Fortify actions - 使用 DDD Actions (通过 Adapter 桥接)
      */
     private function configureActions(): void
     {
-        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
-        Fortify::createUsersUsing(CreateNewUser::class);
-    }
+        // 注册用户创建 Action (使用 Adapter 桥接到 DDD Actions)
+        Fortify::createUsersUsing(\App\Actions\Fortify\CreateNewUserAdapter::class);
 
-    /**
-     * Configure Fortify views.
-     */
-    private function configureViews(): void
-    {
-        Fortify::loginView(fn (Request $request) => Inertia::render('auth/Login', [
-            'canResetPassword' => Features::enabled(Features::resetPasswords()),
-            'canRegister' => Features::enabled(Features::registration()),
-            'status' => $request->session()->get('status'),
-        ]));
-
-        Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/ResetPassword', [
-            'email' => $request->email,
-            'token' => $request->route('token'),
-        ]));
-
-        Fortify::requestPasswordResetLinkView(fn (Request $request) => Inertia::render('auth/ForgotPassword', [
-            'status' => $request->session()->get('status'),
-        ]));
-
-        Fortify::verifyEmailView(fn (Request $request) => Inertia::render('auth/VerifyEmail', [
-            'status' => $request->session()->get('status'),
-        ]));
-
-        Fortify::registerView(fn () => Inertia::render('auth/Register'));
-
-        Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/TwoFactorChallenge'));
-
-        Fortify::confirmPasswordView(fn () => Inertia::render('auth/ConfirmPassword'));
+        // 密码重置 Action (使用 Adapter 桥接到 DDD Actions)
+        Fortify::resetUserPasswordsUsing(\App\Actions\Fortify\ResetUserPasswordAdapter::class);
     }
 
     /**

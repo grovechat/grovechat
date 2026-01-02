@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Domain\Authentication\Actions\DeleteAccountAction;
+use App\Domain\Authentication\Actions\UpdateProfileAction;
+use App\Domain\Authentication\DTOs\ConfirmPasswordData;
+use App\Domain\Authentication\DTOs\UpdateProfileData;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -27,15 +29,16 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
+    public function update(
+        Request $request,
+        UpdateProfileAction $updateProfileAction
+    ): RedirectResponse {
+        $data = UpdateProfileData::validateAndCreate([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+        ], UpdateProfileData::rulesForUser($request->user()->id));
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
+        $updateProfileAction->execute($request->user(), $data);
 
         $tenantPath = $request->route('tenant_path');
         return to_route('profile.edit', ['tenant_path' => $tenantPath]);
@@ -44,17 +47,13 @@ class ProfileController extends Controller
     /**
      * Delete the user's profile.
      */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+    public function destroy(
+        Request $request,
+        DeleteAccountAction $deleteAccountAction
+    ): RedirectResponse {
+        $passwordData = ConfirmPasswordData::from($request->all());
 
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
+        $deleteAccountAction->execute($request->user());
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
