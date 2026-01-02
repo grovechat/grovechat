@@ -18,14 +18,8 @@ Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('
 Route::get('settings/password', [PasswordController::class, 'edit'])->name('user-password.edit');
 Route::put('settings/password', [PasswordController::class, 'update'])->middleware('throttle:6,1')->name('user-password.update');
 
-// 双因素认证设置 (使用新的 DDD 控制器)
+// 双因素认证设置页面 (仅显示页面)
 Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])->name('two-factor.show');
-Route::post('settings/two-factor', [TwoFactorAuthenticationController::class, 'store'])->name('two-factor.enable');
-Route::post('settings/two-factor/confirm', [TwoFactorAuthenticationController::class, 'confirm'])->name('two-factor.confirm');
-Route::delete('settings/two-factor', [TwoFactorAuthenticationController::class, 'destroy'])->name('two-factor.disable');
-Route::get('settings/two-factor/qr-code', [TwoFactorAuthenticationController::class, 'qrCode'])->name('two-factor.qr-code');
-Route::get('settings/two-factor/recovery-codes', [TwoFactorAuthenticationController::class, 'recoveryCodes'])->name('two-factor.recovery-codes');
-Route::post('settings/two-factor/recovery-codes', [TwoFactorAuthenticationController::class, 'generateRecoveryCodes'])->name('two-factor.recovery-codes.generate');
 
 // 外观和语言设置
 Route::get('settings/appearance', [AppearanceController::class, 'edit'])->name('appearance.edit');

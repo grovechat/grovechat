@@ -20,6 +20,6 @@ class ConfirmTwoFactorAction
      */
     public function execute(User $user, string $code): void
     {
-        $this->confirm($user, $code);
+        ($this->confirm)($user, $code);
     }
 }

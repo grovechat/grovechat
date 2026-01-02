@@ -19,6 +19,6 @@ class EnableTwoFactorAction
      */
     public function execute(User $user): void
     {
-        $this->enable($user);
+        ($this->enable)($user);
     }
 }

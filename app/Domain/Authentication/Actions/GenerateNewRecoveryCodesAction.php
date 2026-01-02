@@ -19,6 +19,6 @@ class GenerateNewRecoveryCodesAction
      */
     public function execute(User $user): void
     {
-        $this->generate($user);
+        ($this->generate)($user);
     }
 }

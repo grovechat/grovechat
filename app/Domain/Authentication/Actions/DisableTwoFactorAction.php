@@ -19,6 +19,6 @@ class DisableTwoFactorAction
      */
     public function execute(User $user): void
     {
-        $this->disable($user);
+        ($this->disable)($user);
     }
 }

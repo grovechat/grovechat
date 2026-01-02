@@ -35,10 +35,10 @@ class TwoFactorAuthenticationController extends Controller
     public function store(
         Request $request,
         EnableTwoFactorAction $enableTwoFactorAction
-    ): JsonResponse {
+    ): RedirectResponse {
         $enableTwoFactorAction->execute($request->user());
 
-        return response()->json(['two_factor_secret' => $request->user()->two_factor_secret]);
+        return back();
     }
 
     /**
@@ -47,18 +47,14 @@ class TwoFactorAuthenticationController extends Controller
     public function confirm(
         Request $request,
         ConfirmTwoFactorAction $confirmTwoFactorAction
-    ): JsonResponse {
+    ): RedirectResponse {
         $request->validate([
             'code' => 'required|string',
         ]);
 
-        try {
-            $confirmTwoFactorAction->execute($request->user(), $request->input('code'));
+        $confirmTwoFactorAction->execute($request->user(), $request->input('code'));
 
-            return response()->json(['confirmed' => true]);
-        } catch (ValidationException $e) {
-            return response()->json(['confirmed' => false], 422);
-        }
+        return back();
     }
 
     /**
@@ -67,10 +63,20 @@ class TwoFactorAuthenticationController extends Controller
     public function destroy(
         Request $request,
         DisableTwoFactorAction $disableTwoFactorAction
-    ): JsonResponse {
+    ): RedirectResponse {
         $disableTwoFactorAction->execute($request->user());
 
-        return response()->json(['disabled' => true]);
+        return back();
+    }
+
+    /**
+     * 获取设置密钥
+     */
+    public function secretKey(Request $request): JsonResponse
+    {
+        return response()->json([
+            'secretKey' => decrypt($request->user()->two_factor_secret),
+        ]);
     }
 
     /**
@@ -99,11 +105,9 @@ class TwoFactorAuthenticationController extends Controller
     public function generateRecoveryCodes(
         Request $request,
         GenerateNewRecoveryCodesAction $generateNewRecoveryCodesAction
-    ): JsonResponse {
+    ): RedirectResponse {
         $generateNewRecoveryCodesAction->execute($request->user());
 
-        return response()->json([
-            'recovery_codes' => json_decode(decrypt($request->user()->two_factor_recovery_codes), true),
-        ]);
+        return back();
     }
 }

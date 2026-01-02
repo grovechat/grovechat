@@ -89,4 +89,15 @@ if (Features::enabled(Features::twoFactorAuthentication())) {
 
         // Fortify 会处理 POST 请求
     });
+
+    // 双因素认证管理 API (全局路由,不需要租户)
+    Route::middleware('auth')->prefix('user')->group(function () {
+        Route::post('/two-factor-authentication', [TwoFactorAuthenticationController::class, 'store'])->name('two-factor.enable');
+        Route::delete('/two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy'])->name('two-factor.disable');
+        Route::post('/confirmed-two-factor-authentication', [TwoFactorAuthenticationController::class, 'confirm'])->name('two-factor.confirm');
+        Route::get('/two-factor-qr-code', [TwoFactorAuthenticationController::class, 'qrCode'])->name('two-factor.qr-code');
+        Route::get('/two-factor-secret-key', [TwoFactorAuthenticationController::class, 'secretKey'])->name('two-factor.secret-key');
+        Route::get('/two-factor-recovery-codes', [TwoFactorAuthenticationController::class, 'recoveryCodes'])->name('two-factor.recovery-codes');
+        Route::post('/two-factor-recovery-codes', [TwoFactorAuthenticationController::class, 'generateRecoveryCodes'])->name('two-factor.recovery-codes.generate');
+    });
 }
