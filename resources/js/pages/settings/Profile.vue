@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import { edit } from '@/routes/profile';
-import { send } from '@/routes/verification';
+import { ProfileController, profile, verification } from '@/utils/route';
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -32,7 +30,7 @@ const user = page.props.auth.user;
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('个人资料设置'),
-    href: tenantPath.value ? edit(tenantPath.value).url : '#',
+    href: tenantPath.value ? profile.edit.url({ tenant_path: tenantPath.value }) : '#',
   },
 ]);
 </script>
@@ -49,7 +47,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="tenantPath ? ProfileController.update.form(tenantPath) : {}"
+          v-bind="tenantPath ? ProfileController.update.form({ tenant_path: tenantPath }) : {}"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
@@ -86,7 +84,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             <p class="-mt-4 text-sm text-muted-foreground">
               {{ t('你的电子邮件地址未验证。') }}
               <Link
-                :href="tenantPath ? send(tenantPath) : '#'"
+                :href="tenantPath ? verification.send.url() : '#'"
                 as="button"
                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
               >

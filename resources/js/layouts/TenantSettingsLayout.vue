@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import tenantSetting from '@/routes/tenant-setting';
+import { tenantSetting } from '@/utils/route';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -31,7 +31,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('常规设置'),
-          href: tenantSetting.tenant.general.url(tenantPath.value),
+          href: tenantSetting.tenant.general.url({ tenant_path: tenantPath.value }),
         },
       ],
     },
@@ -40,7 +40,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('多客服'),
-          href: tenantSetting.teammate.index.url(tenantPath.value),
+          href: tenantSetting.teammate.index.url({ tenant_path: tenantPath.value }),
         },
       ],
     },
@@ -49,7 +49,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('网站'),
-          href: tenantSetting.channels.web.url(tenantPath.value),
+          href: tenantSetting.channels.web.url({ tenant_path: tenantPath.value }),
         },
       ],
     },
@@ -58,11 +58,11 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('标签'),
-          href: tenantSetting.datas.tag.url(tenantPath.value),
+          href: tenantSetting.datas.tag.url({ tenant_path: tenantPath.value }),
         },
         {
           title: t('自定义属性'),
-          href: tenantSetting.datas.attribute.url(tenantPath.value),
+          href: tenantSetting.datas.attribute.url({ tenant_path: tenantPath.value }),
         },
       ],
     },

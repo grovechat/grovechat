@@ -4,7 +4,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import ContactsLayout from '@/layouts/ContactsLayout.vue';
-import contact from '@/routes/contact';
+import { contact } from '@/utils/route';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -15,7 +15,7 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('会话记录'),
-    href: tenantPath.value ? contact.conversations.url(tenantPath.value) : '#',
+    href: tenantPath.value ? contact.conversations.url({ tenant_path: tenantPath.value }) : '#',
   },
 ]);
 </script>

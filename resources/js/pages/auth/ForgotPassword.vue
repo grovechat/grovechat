@@ -7,8 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/composables/useI18n';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { login } from '@/routes';
-import { email } from '@/routes/password';
+import { login, password } from '@/utils/route';
 import { Form, Head } from '@inertiajs/vue3';
 
 defineProps<{
@@ -33,7 +32,7 @@ const { t } = useI18n();
     </div>
 
     <div class="space-y-6">
-      <Form v-bind="email.form()" v-slot="{ errors, processing }">
+      <Form v-bind="password.email.form()" v-slot="{ errors, processing }">
         <div class="grid gap-2">
           <Label for="email">{{ t('电子邮件地址') }}</Label>
           <Input
@@ -61,7 +60,7 @@ const { t } = useI18n();
 
       <div class="space-x-1 text-center text-sm text-muted-foreground">
         <span>{{ t('或者，返回') }}</span>
-        <TextLink :href="login()">{{ t('登录') }}</TextLink>
+        <TextLink :href="login.url()">{{ t('登录') }}</TextLink>
       </div>
     </div>
   </AuthLayout>

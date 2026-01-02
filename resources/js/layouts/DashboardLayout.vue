@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/utils/route';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -31,7 +31,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('我负责的'),
-          href: dashboard(tenantPath.value),
+          href: dashboard.url({ tenant_path: tenantPath.value }),
         },
         {
           title: t('提到我的'),

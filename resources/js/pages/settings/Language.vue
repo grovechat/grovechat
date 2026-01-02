@@ -18,7 +18,7 @@ import { useTimezone, type Timezone } from '@/composables/useTimezone';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { availableLocales, type Locale } from '@/locales';
-import { edit } from '@/routes/language';
+import { language } from '@/utils/route';
 import { type BreadcrumbItem } from '@/types';
 
 const { locale, updateLocale, t } = useI18n();
@@ -29,7 +29,7 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('语言和时区设置'),
-    href: tenantPath.value ? edit(tenantPath.value).url : '#',
+    href: tenantPath.value ? language.edit.url({ tenant_path: tenantPath.value }) : '#',
   },
 ]);
 

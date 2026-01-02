@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTenant } from '@/composables/useTenant';
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login, register } from '@/utils/route';
 import { Head, Link } from '@inertiajs/vue3';
 
 withDefaults(
@@ -44,21 +44,21 @@ const { tenantPath } = useTenant();
       >
         <Link
           v-if="$page.props.auth.user && tenantPath"
-          :href="dashboard(tenantPath)"
+          :href="dashboard.url({ tenant_path: tenantPath })"
           class="inline-flex w-full items-center justify-center rounded-lg bg-gray-900 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 sm:w-auto dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
         >
           进入控制台
         </Link>
         <template v-else>
           <Link
-            :href="login()"
+            :href="login.url()"
             class="inline-flex w-full items-center justify-center rounded-lg bg-gray-900 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 sm:w-auto dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
           >
             登录
           </Link>
           <Link
             v-if="canRegister"
-            :href="register()"
+            :href="register.url()"
             class="inline-flex w-full items-center justify-center rounded-lg border-2 border-gray-300 px-8 py-3 text-base font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 sm:w-auto dark:border-gray-600 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-800"
           >
             注册

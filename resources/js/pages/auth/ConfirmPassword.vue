@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/composables/useI18n';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { store } from '@/routes/password/confirm';
+import { password } from '@/utils/route';
 import { Form, Head } from '@inertiajs/vue3';
 
 const { t } = useI18n();
@@ -20,7 +20,7 @@ const { t } = useI18n();
     <Head :title="t('确认密码页面')" />
 
     <Form
-      v-bind="store.form()"
+      v-bind="password.confirmStore.form()"
       reset-on-success
       v-slot="{ errors, processing }"
     >

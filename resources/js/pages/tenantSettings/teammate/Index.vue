@@ -4,7 +4,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import TenantSettingsLayout from '@/layouts/TenantSettingsLayout.vue';
-import tenantSetting from '@/routes/tenant-setting';
+import { tenantSetting } from '@/utils/route';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -16,7 +16,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('多客服'),
     href: tenantPath.value
-      ? tenantSetting.teammate.index.url(tenantPath.value)
+      ? tenantSetting.teammate.index.url({ tenant_path: tenantPath.value })
       : '#',
   },
 ]);

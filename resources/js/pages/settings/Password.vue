@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import InputError from '@/components/InputError.vue';
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit } from '@/routes/user-password';
+import { PasswordController, userPassword } from '@/utils/route';
 import { Form, Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -21,7 +20,7 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('密码设置'),
-    href: tenantPath.value ? edit(tenantPath.value).url : '#',
+    href: tenantPath.value ? userPassword.edit.url({ tenant_path: tenantPath.value }) : '#',
   },
 ]);
 </script>

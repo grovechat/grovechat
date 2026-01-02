@@ -8,9 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/composables/useI18n';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
+import { register, login, password } from '@/utils/route';
 import { Form, Head } from '@inertiajs/vue3';
 
 defineProps<{
@@ -37,7 +35,7 @@ const { t } = useI18n();
     </div>
 
     <Form
-      v-bind="store.form()"
+      v-bind="login.post.form()"
       :reset-on-success="['password']"
       v-slot="{ errors, processing }"
       class="flex flex-col gap-6"
@@ -63,7 +61,7 @@ const { t } = useI18n();
             <Label for="password">{{ t('密码') }}</Label>
             <TextLink
               v-if="canResetPassword"
-              :href="request()"
+              :href="password.request.url()"
               class="text-sm"
               :tabindex="5"
             >
@@ -103,7 +101,7 @@ const { t } = useI18n();
 
       <div class="text-center text-sm text-muted-foreground" v-if="canRegister">
         {{ t('还没有账户？') }}
-        <TextLink :href="register()" :tabindex="5">{{ t('注册') }}</TextLink>
+        <TextLink :href="register.url()" :tabindex="5">{{ t('注册') }}</TextLink>
       </div>
     </Form>
   </AuthBase>

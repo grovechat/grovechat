@@ -4,7 +4,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/utils/route';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -15,7 +15,7 @@ const { tenantPath } = useTenant();
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('我负责的'),
-    href: tenantPath.value ? dashboard(tenantPath.value).url : '#',
+    href: tenantPath.value ? dashboard.url({ tenant_path: tenantPath.value }) : '#',
   },
 ]);
 </script>

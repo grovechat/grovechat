@@ -10,7 +10,7 @@ import { type BreadcrumbItem } from '@/types';
 
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit } from '@/routes/appearance';
+import { appearance } from '@/utils/route';
 
 const { t } = useI18n();
 const { tenantPath } = useTenant();
@@ -18,7 +18,7 @@ const { tenantPath } = useTenant();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('外观设置'),
-    href: tenantPath.value ? edit(tenantPath.value).url : '#',
+    href: tenantPath.value ? appearance.edit.url({ tenant_path: tenantPath.value }) : '#',
   },
 ]);
 </script>

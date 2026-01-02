@@ -2,7 +2,7 @@
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
-import stats from '@/routes/stats';
+import { stats } from '@/utils/route';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -12,7 +12,7 @@ const { tenantPath } = useTenant();
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: '统计',
-    href: tenantPath.value ? stats.index(tenantPath.value).url : '#',
+    href: tenantPath.value ? stats.index.url({ tenant_path: tenantPath.value }) : '#',
   },
 ]);
 </script>

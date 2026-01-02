@@ -4,11 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { edit as editAppearance } from '@/routes/appearance';
-import { edit as editLanguage } from '@/routes/language';
-import { edit as editProfile } from '@/routes/profile';
-import { show } from '@/routes/two-factor';
-import { edit as editPassword } from '@/routes/user-password';
+import { appearance, language, profile, twoFactor, userPassword } from '@/utils/route';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -22,23 +18,23 @@ const sidebarNavItems = computed<NavItem[]>(() => {
   return [
     {
       title: t('个人资料'),
-      href: editProfile(tenantPath.value),
+      href: profile.edit.url({ tenant_path: tenantPath.value }),
     },
     {
       title: t('密码'),
-      href: editPassword(tenantPath.value),
+      href: userPassword.edit.url({ tenant_path: tenantPath.value }),
     },
     {
       title: t('两步验证'),
-      href: show(tenantPath.value),
+      href: twoFactor.show.url({ tenant_path: tenantPath.value }),
     },
     {
       title: t('语言和时区'),
-      href: editLanguage(tenantPath.value),
+      href: language.edit.url({ tenant_path: tenantPath.value }),
     },
     {
       title: t('外观'),
-      href: editAppearance(tenantPath.value),
+      href: appearance.edit.url({ tenant_path: tenantPath.value }),
     },
   ];
 });

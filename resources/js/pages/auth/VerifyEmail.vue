@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/composables/useI18n';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { logout } from '@/routes';
-import { send } from '@/routes/verification';
+import { logout, verification } from '@/utils/route';
 import { Form, Head } from '@inertiajs/vue3';
 
 defineProps<{
@@ -32,7 +31,7 @@ const { t } = useI18n();
     </div>
 
     <Form
-      v-bind="send.form()"
+      v-bind="verification.send.form()"
       class="space-y-6 text-center"
       v-slot="{ processing }"
     >
@@ -41,7 +40,7 @@ const { t } = useI18n();
         {{ t('重新发送验证邮件') }}
       </Button>
 
-      <TextLink :href="logout()" as="button" class="mx-auto block text-sm">
+      <TextLink :href="logout.url()" as="button" class="mx-auto block text-sm">
         {{ t('退出登录') }}
       </TextLink>
     </Form>

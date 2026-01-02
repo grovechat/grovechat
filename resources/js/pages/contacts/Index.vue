@@ -4,7 +4,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import ContactsLayout from '@/layouts/ContactsLayout.vue';
-import contact from '@/routes/contact';
+import { contact } from '@/utils/route';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';

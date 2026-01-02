@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card';
 import { useI18n } from '@/composables/useI18n';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { regenerateRecoveryCodes } from '@/routes/two-factor';
+import { twoFactor } from '@/utils/route';
 import { Form } from '@inertiajs/vue3';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from 'lucide-vue-next';
 import { computed, nextTick, onMounted, ref, useTemplateRef } from 'vue';
@@ -72,7 +72,7 @@ onMounted(async () => {
 
         <Form
           v-if="isRecoveryCodesVisible && recoveryCodesList.length"
-          v-bind="regenerateRecoveryCodes.form()"
+          v-bind="twoFactor.regenerateRecoveryCodes.form()"
           method="post"
           :options="{ preserveScroll: true }"
           @success="fetchRecoveryCodes"

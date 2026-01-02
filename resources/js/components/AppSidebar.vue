@@ -16,11 +16,7 @@ import {
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import { cn } from '@/lib/utils';
-import { dashboard } from '@/routes';
-import contact from '@/routes/contact';
-import stats from '@/routes/stats';
-import systemSetting from '@/routes/system-setting';
-import tenantSetting from '@/routes/tenant-setting';
+import { contact, dashboard, stats, systemSetting, tenantSetting } from '@/utils/route';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
@@ -43,7 +39,7 @@ const { toggleSidebar, state } = useSidebar();
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('工作台'),
-    href: tenantPath.value ? dashboard(tenantPath.value) : '/',
+    href: tenantPath.value ? dashboard.url({ tenant_path: tenantPath.value }) : '/',
     icon: LayoutGrid,
   },
   {
@@ -55,13 +51,13 @@ const mainNavItems = computed<NavItem[]>(() => [
   },
   {
     title: t('统计'),
-    href: tenantPath.value ? stats.index.url(tenantPath.value) : '/',
+    href: tenantPath.value ? stats.index.url({ tenant_path: tenantPath.value }) : '/',
     icon: BarChart,
   },
   {
     title: t('管理中心'),
     href: tenantPath.value
-      ? tenantSetting.tenant.general.url(tenantPath.value)
+      ? tenantSetting.tenant.general.url({ tenant_path: tenantPath.value })
       : '/',
     icon: Building2,
   },
@@ -81,7 +77,7 @@ const footerNavItems = computed<NavItem[]>(() => [
   {
     title: t('系统设置'),
     href: tenantPath.value
-      ? systemSetting.getGeneralSettings.url(tenantPath.value)
+      ? systemSetting.getGeneralSettings.url({ tenant_path: tenantPath.value })
       : '/',
     icon: Settings,
   },
@@ -97,7 +93,7 @@ const footerNavItems = computed<NavItem[]>(() => [
         <SidebarMenu class="group-data-[collapsible=icon]:!p-2">
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" as-child>
-              <Link :href="tenantPath ? dashboard(tenantPath) : '/'">
+              <Link :href="tenantPath ? dashboard.url({ tenant_path: tenantPath }) : '/'">
                 <AppLogo />
               </Link>
             </SidebarMenuButton>

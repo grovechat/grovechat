@@ -8,8 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
-import { logout } from '@/routes';
-import { edit } from '@/routes/profile';
+import { logout, profile } from '@/utils/route';
 import type { User } from '@/types';
 import { Link, router } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
@@ -39,7 +38,7 @@ const { tenantPath } = useTenant();
     <DropdownMenuItem :as-child="true">
       <Link
         class="block w-full"
-        :href="tenantPath ? edit(tenantPath) : '#'"
+        :href="tenantPath ? profile.edit.url({ tenant_path: tenantPath }) : '#'"
         prefetch
         as="button"
       >
@@ -52,7 +51,7 @@ const { tenantPath } = useTenant();
   <DropdownMenuItem :as-child="true">
     <Link
       class="block w-full"
-      :href="logout()"
+      :href="logout.url()"
       @click="handleLogout"
       as="button"
       data-test="logout-button"

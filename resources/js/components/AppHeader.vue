@@ -32,7 +32,7 @@ import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
 import { useTenant } from '@/composables/useTenant';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/utils/route';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { InertiaLinkProps, Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
@@ -65,7 +65,7 @@ const activeItemStyles = computed(
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: 'Dashboard',
-    href: tenantPath.value ? dashboard(tenantPath.value) : '/',
+    href: tenantPath.value ? dashboard.url({ tenant_path: tenantPath.value }) : '/',
     icon: LayoutGrid,
   },
 ]);
@@ -145,7 +145,7 @@ const rightNavItems: NavItem[] = [
         </div>
 
         <Link
-          :href="tenantPath ? dashboard(tenantPath) : '/'"
+          :href="tenantPath ? dashboard.url({ tenant_path: tenantPath }) : '/'"
           class="flex items-center gap-x-2"
         >
           <AppLogo />

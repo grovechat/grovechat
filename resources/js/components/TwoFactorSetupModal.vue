@@ -17,7 +17,7 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/composables/useI18n';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { confirm } from '@/routes/two-factor';
+import { twoFactor } from '@/utils/route';
 import { Form } from '@inertiajs/vue3';
 import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
@@ -217,7 +217,7 @@ watch(
 
         <template v-else>
           <Form
-            v-bind="confirm.form()"
+            v-bind="twoFactor.confirm.form()"
             reset-on-error
             @finish="code = ''"
             @success="isOpen = false"

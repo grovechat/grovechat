@@ -4,7 +4,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
-import systemSetting from '@/routes/system-setting';
+import { systemSetting } from '@/utils/route';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -16,7 +16,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('存储设置'),
     href: tenantPath.value
-      ? systemSetting.getStorageSettings.url(tenantPath.value)
+      ? systemSetting.getStorageSettings.url({ tenant_path: tenantPath.value })
       : '#',
   },
 ]);

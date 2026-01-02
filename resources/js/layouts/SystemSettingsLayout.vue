@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import systemSetting from '@/routes/system-setting';
+import { systemSetting } from '@/utils/route';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -18,27 +18,27 @@ const sidebarNavItems = computed<NavItem[]>(() => {
   return [
     {
       title: t('基础设置'),
-      href: systemSetting.getGeneralSettings.url(tenantPath.value),
+      href: systemSetting.getGeneralSettings.url({ tenant_path: tenantPath.value }),
     },
     {
       title: t('存储设置'),
-      href: systemSetting.getStorageSettings.url(tenantPath.value),
+      href: systemSetting.getStorageSettings.url({ tenant_path: tenantPath.value }),
     },
     {
       title: t('邮箱服务器'),
-      href: systemSetting.getMailSettings.url(tenantPath.value),
+      href: systemSetting.getMailSettings.url({ tenant_path: tenantPath.value }),
     },
     {
       title: t('集成'),
-      href: systemSetting.getIntegrationSettings.url(tenantPath.value),
+      href: systemSetting.getIntegrationSettings.url({ tenant_path: tenantPath.value }),
     },
     {
       title: t('安全'),
-      href: systemSetting.getSecuritySettings.url(tenantPath.value),
+      href: systemSetting.getSecuritySettings.url({ tenant_path: tenantPath.value }),
     },
     {
       title: t('维护'),
-      href: systemSetting.getMaintenanceSettings.url(tenantPath.value),
+      href: systemSetting.getMaintenanceSettings.url({ tenant_path: tenantPath.value }),
     },
   ];
 });

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SystemSettingController from '@/actions/App/Http/Controllers/SystemSettingController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
-import systemSetting from '@/routes/system-setting';
+import { systemSetting } from '@/utils/route';
 import { type BreadcrumbItem } from '@/types';
 import { type GeneralSettingsData } from '@/types/generated';
 import { Form, Head } from '@inertiajs/vue3';
@@ -25,7 +24,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
     href: tenantPath.value
-      ? systemSetting.getGeneralSettings.url(tenantPath.value)
+      ? systemSetting.getGeneralSettings.url({ tenant_path: tenantPath.value })
       : '#',
   },
 ]);
@@ -84,7 +83,7 @@ const handleLogoChange = async (event: Event) => {
         <Form
           v-bind="
             tenantPath
-              ? SystemSettingController.updateGeneralSettings.form(tenantPath)
+              ? systemSetting.updateGeneralSettings.form({ tenant_path: tenantPath })
               : {}
           "
           class="space-y-6"

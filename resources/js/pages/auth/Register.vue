@@ -7,8 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/composables/useI18n';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { login } from '@/routes';
-import { store } from '@/routes/register';
+import { login, register } from '@/utils/route';
 import { Form, Head } from '@inertiajs/vue3';
 
 const { t } = useI18n();
@@ -22,7 +21,7 @@ const { t } = useI18n();
     <Head :title="t('注册')" />
 
     <Form
-      v-bind="store.form()"
+      v-bind="register.post.form()"
       :reset-on-success="['password', 'password_confirmation']"
       v-slot="{ errors, processing }"
       class="flex flex-col gap-6"
@@ -100,7 +99,7 @@ const { t } = useI18n();
       <div class="text-center text-sm text-muted-foreground">
         {{ t('已有账户？') }}
         <TextLink
-          :href="login()"
+          :href="login.url()"
           class="underline underline-offset-4"
           :tabindex="6"
           >{{ t('登录') }}</TextLink

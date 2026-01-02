@@ -9,7 +9,7 @@ import { useTenant } from '@/composables/useTenant';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { disable, enable, show } from '@/routes/two-factor';
+import { twoFactor } from '@/utils/route';
 import { BreadcrumbItem } from '@/types';
 import { Form, Head } from '@inertiajs/vue3';
 import { ShieldBan, ShieldCheck } from 'lucide-vue-next';
@@ -31,7 +31,7 @@ const { tenantPath } = useTenant();
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('两步验证'),
-    href: tenantPath.value ? show(tenantPath.value).url : '#',
+    href: tenantPath.value ? twoFactor.show.url({ tenant_path: tenantPath.value }) : '#',
   },
 ]);
 
@@ -73,7 +73,7 @@ onUnmounted(() => {
             </Button>
             <Form
               v-else
-              v-bind="tenantPath ? enable.form(tenantPath) : {}"
+              v-bind="twoFactor.enable.form()"
               @success="showSetupModal = true"
               #default="{ processing }"
             >
@@ -99,7 +99,7 @@ onUnmounted(() => {
 
           <div class="relative inline">
             <Form
-              v-bind="tenantPath ? disable.form(tenantPath) : {}"
+              v-bind="twoFactor.disable.form()"
               #default="{ processing }"
             >
               <Button
