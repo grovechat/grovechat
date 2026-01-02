@@ -72,12 +72,14 @@ if (Features::enabled(Features::emailVerification())) {
 }
 
 // 密码确认路由
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->prefix('user')->group(function () {
     Route::get('/confirm-password', function () {
         return inertia('auth/ConfirmPassword');
     })->name('password.confirm');
 
-    // Fortify 会处理 POST 请求
+    Route::post('/confirm-password', [PasswordController::class, 'confirmPassword'])
+        ->middleware('throttle:6,1')
+        ->name('password.confirm.post');
 });
 
 // 双因素认证挑战路由
@@ -90,8 +92,8 @@ if (Features::enabled(Features::twoFactorAuthentication())) {
         // Fortify 会处理 POST 请求
     });
 
-    // 双因素认证管理 API (全局路由,不需要租户)
-    Route::middleware('auth')->prefix('user')->group(function () {
+    // 双因素认证管理 API (全局路由,不需要租户,需要确认密码)
+    Route::middleware(['auth', 'password.confirm'])->prefix('user')->group(function () {
         Route::post('/two-factor-authentication', [TwoFactorAuthenticationController::class, 'store'])->name('two-factor.enable');
         Route::delete('/two-factor-authentication', [TwoFactorAuthenticationController::class, 'destroy'])->name('two-factor.disable');
         Route::post('/confirmed-two-factor-authentication', [TwoFactorAuthenticationController::class, 'confirm'])->name('two-factor.confirm');

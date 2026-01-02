@@ -26,7 +26,12 @@ class TwoFactorAuthenticationController extends Controller
             return redirect()->route('profile.edit', ['tenant_path' => $request->route('tenant_path')]);
         }
 
-        return Inertia::render('settings/TwoFactor');
+        $user = $request->user();
+
+        return Inertia::render('settings/TwoFactor', [
+            'requiresConfirmation' => Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm'),
+            'twoFactorEnabled' => !is_null($user->two_factor_confirmed_at),
+        ]);
     }
 
     /**
@@ -94,9 +99,9 @@ class TwoFactorAuthenticationController extends Controller
      */
     public function recoveryCodes(Request $request): JsonResponse
     {
-        return response()->json([
-            'recovery_codes' => json_decode(decrypt($request->user()->two_factor_recovery_codes), true),
-        ]);
+        return response()->json(
+            json_decode(decrypt($request->user()->two_factor_recovery_codes), true)
+        );
     }
 
     /**

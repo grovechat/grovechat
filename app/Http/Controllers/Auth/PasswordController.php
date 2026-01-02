@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Domain\Authentication\Actions\ConfirmPasswordAction;
 use App\Domain\Authentication\Actions\ResetPasswordAction;
 use App\Domain\Authentication\Actions\SendPasswordResetLinkAction;
+use App\Domain\Authentication\DTOs\ConfirmPasswordData;
 use App\Domain\Authentication\DTOs\ForgotPasswordData;
 use App\Domain\Authentication\DTOs\ResetPasswordData;
 use App\Http\Controllers\Controller;
@@ -70,5 +72,21 @@ class PasswordController extends Controller
         } catch (ValidationException $e) {
             throw $e;
         }
+    }
+
+    /**
+     * 确认用户密码
+     */
+    public function confirmPassword(
+        Request $request,
+        ConfirmPasswordAction $confirmPasswordAction
+    ): RedirectResponse {
+        $data = ConfirmPasswordData::from($request->all());
+
+        $confirmPasswordAction->execute($request->user(), $data);
+
+        $request->session()->put('auth.password_confirmed_at', time());
+
+        return redirect()->intended();
     }
 }

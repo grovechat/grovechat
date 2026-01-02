@@ -18,8 +18,10 @@ Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('
 Route::get('settings/password', [PasswordController::class, 'edit'])->name('user-password.edit');
 Route::put('settings/password', [PasswordController::class, 'update'])->middleware('throttle:6,1')->name('user-password.update');
 
-// 双因素认证设置页面 (仅显示页面)
-Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])->name('two-factor.show');
+// 双因素认证设置页面 (仅显示页面，需要确认密码)
+Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
+    ->middleware(['password.confirm'])
+    ->name('two-factor.show');
 
 // 外观和语言设置
 Route::get('settings/appearance', [AppearanceController::class, 'edit'])->name('appearance.edit');
