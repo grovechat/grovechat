@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Domain\Authentication\Actions\DeleteAccountAction;
-use App\Domain\Authentication\Actions\UpdateProfileAction;
-use App\Domain\Authentication\DTOs\ConfirmPasswordData;
-use App\Domain\Authentication\DTOs\UpdateProfileData;
+use App\Domain\User\Actions\DeleteAccountAction;
+use App\Domain\User\Actions\UpdateProfileAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -33,12 +31,7 @@ class ProfileController extends Controller
         Request $request,
         UpdateProfileAction $updateProfileAction
     ): RedirectResponse {
-        $data = UpdateProfileData::validateAndCreate([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-        ], UpdateProfileData::rulesForUser($request->user()->id));
-
-        $updateProfileAction->execute($request->user(), $data);
+        $updateProfileAction->execute($request->user()->id, $request->only(['name', 'email']));
 
         $tenantPath = $request->route('tenant_path');
         return to_route('profile.edit', ['tenant_path' => $tenantPath]);
@@ -51,9 +44,7 @@ class ProfileController extends Controller
         Request $request,
         DeleteAccountAction $deleteAccountAction
     ): RedirectResponse {
-        $passwordData = ConfirmPasswordData::from($request->all());
-
-        $deleteAccountAction->execute($request->user());
+        $deleteAccountAction->execute($request->user()->id);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

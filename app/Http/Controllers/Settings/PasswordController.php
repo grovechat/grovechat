@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Domain\Authentication\Actions\UpdatePasswordAction;
-use App\Domain\Authentication\DTOs\UpdatePasswordData;
+use App\Domain\User\Actions\UpdatePasswordAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,9 +26,7 @@ class PasswordController extends Controller
         Request $request,
         UpdatePasswordAction $updatePasswordAction
     ): RedirectResponse {
-        $data = UpdatePasswordData::from($request->all());
-
-        $updatePasswordAction->execute($request->user(), $data);
+        $updatePasswordAction->execute($request->user()->id, $request->all());
 
         return back();
     }

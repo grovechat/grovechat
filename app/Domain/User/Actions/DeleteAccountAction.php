@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Authentication\Actions;
+namespace App\Domain\User\Actions;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -10,11 +10,13 @@ class DeleteAccountAction
     /**
      * 删除用户账户
      *
-     * @param User $user
+     * @param int $userId
      * @return void
      */
-    public function execute(User $user): void
+    public function execute(int $userId): void
     {
+        $user = User::findOrFail($userId);
+
         // 登出用户
         Auth::logout();
 

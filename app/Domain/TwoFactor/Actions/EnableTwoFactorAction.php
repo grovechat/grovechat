@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Authentication\Actions;
+namespace App\Domain\TwoFactor\Actions;
 
 use App\Models\User;
 use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
@@ -14,11 +14,12 @@ class EnableTwoFactorAction
     /**
      * 启用双因素认证
      *
-     * @param User $user
+     * @param int $userId
      * @return void
      */
-    public function execute(User $user): void
+    public function execute(int $userId): void
     {
+        $user = User::findOrFail($userId);
         ($this->enable)($user);
     }
 }

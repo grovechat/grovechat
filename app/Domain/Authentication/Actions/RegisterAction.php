@@ -14,23 +14,25 @@ class RegisterAction
     /**
      * 执行用户注册操作
      *
-     * @param RegisterData $data
-     * @return User
+     * @param array $data
+     * @return array
      */
-    public function execute(RegisterData $data): User
+    public function execute(array $data): array
     {
-        return DB::transaction(function () use ($data) {
+        $validatedData = RegisterData::from($data);
+
+        $user = DB::transaction(function () use ($validatedData) {
             // 创建用户
             $user = User::create([
-                'name' => $data->name,
-                'email' => $data->email,
-                'password' => $data->password,
+                'name' => $validatedData->name,
+                'email' => $validatedData->email,
+                'password' => $validatedData->password,
             ]);
 
             // 创建租户
             $tenant = Tenant::create([
                 'name' => $user->name, // 以用户名作为默认租户名
-                'slug' => Str::lower($data->name) . '-' . Str::lower(Str::random(4)),
+                'slug' => Str::lower($validatedData->name) . '-' . Str::lower(Str::random(4)),
                 'path' => strtolower($user->name), // 路径强制小写
             ]);
 
@@ -39,5 +41,10 @@ class RegisterAction
 
             return $user;
         });
+
+        return [
+            'user_id' => $user->id,
+            'email' => $user->email,
+        ];
     }
 }

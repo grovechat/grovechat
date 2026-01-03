@@ -11,14 +11,16 @@ class SendPasswordResetLinkAction
     /**
      * 发送密码重置链接
      *
-     * @param ForgotPasswordData $data
-     * @return string 状态消息
+     * @param array $data
+     * @return array
      * @throws ValidationException
      */
-    public function execute(ForgotPasswordData $data): string
+    public function execute(array $data): array
     {
+        $validatedData = ForgotPasswordData::from($data);
+
         $status = Password::sendResetLink(
-            ['email' => $data->email]
+            ['email' => $validatedData->email]
         );
 
         if ($status !== Password::RESET_LINK_SENT) {
@@ -27,6 +29,6 @@ class SendPasswordResetLinkAction
             ]);
         }
 
-        return __($status);
+        return ['status' => __($status)];
     }
 }

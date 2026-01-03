@@ -2,7 +2,7 @@
 
 /**@typescript*/
 
-namespace App\Domain\Authentication\DTOs;
+namespace App\Domain\User\DTOs;
 
 use Illuminate\Validation\Rules\Password;
 use Spatie\LaravelData\Data;

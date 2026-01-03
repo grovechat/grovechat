@@ -13,18 +13,20 @@ class ResetPasswordAction
     /**
      * 重置用户密码
      *
-     * @param ResetPasswordData $data
-     * @return string 状态消息
+     * @param array $data
+     * @return array
      * @throws ValidationException
      */
-    public function execute(ResetPasswordData $data): string
+    public function execute(array $data): array
     {
+        $validatedData = ResetPasswordData::from($data);
+
         $status = Password::reset(
             [
-                'email' => $data->email,
-                'password' => $data->password,
-                'password_confirmation' => $data->password_confirmation,
-                'token' => $data->token,
+                'email' => $validatedData->email,
+                'password' => $validatedData->password,
+                'password_confirmation' => $validatedData->password_confirmation,
+                'token' => $validatedData->token,
             ],
             function ($user, $password) {
                 $user->forceFill([
@@ -43,6 +45,6 @@ class ResetPasswordAction
             ]);
         }
 
-        return __($status);
+        return ['status' => __($status)];
     }
 }

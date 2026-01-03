@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Domain\Authentication\Actions\LoginAction;
 use App\Domain\Authentication\Actions\LogoutAction;
 use App\Domain\Authentication\Actions\RegisterAction;
-use App\Domain\Authentication\DTOs\LoginData;
-use App\Domain\Authentication\DTOs\RegisterData;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,17 +35,11 @@ class AuthenticationController extends Controller
         Request $request,
         LoginAction $loginAction
     ): RedirectResponse {
-        $data = LoginData::from($request->all());
+        $loginAction->execute($request->all());
 
-        try {
-            $loginAction->execute($data);
+        $request->session()->regenerate();
 
-            $request->session()->regenerate();
-
-            return redirect()->intended(config('fortify.home'));
-        } catch (ValidationException $e) {
-            throw $e;
-        }
+        return redirect()->intended(config('fortify.home'));
     }
 
     /**
@@ -65,11 +57,9 @@ class AuthenticationController extends Controller
         Request $request,
         RegisterAction $registerAction
     ): RedirectResponse {
-        $data = RegisterData::from($request->all());
+        $result = $registerAction->execute($request->all());
 
-        $user = $registerAction->execute($data);
-
-        Auth::login($user);
+        Auth::loginUsingId($result['user_id']);
 
         $request->session()->regenerate();
 

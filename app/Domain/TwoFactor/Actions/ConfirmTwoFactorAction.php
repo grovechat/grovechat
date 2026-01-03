@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Authentication\Actions;
+namespace App\Domain\TwoFactor\Actions;
 
 use App\Models\User;
 use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
@@ -14,12 +14,13 @@ class ConfirmTwoFactorAction
     /**
      * 确认双因素认证
      *
-     * @param User $user
-     * @param string $code
+     * @param int $userId
+     * @param array $data
      * @return void
      */
-    public function execute(User $user, string $code): void
+    public function execute(int $userId, array $data): void
     {
-        ($this->confirm)($user, $code);
+        $user = User::findOrFail($userId);
+        ($this->confirm)($user, $data['code']);
     }
 }

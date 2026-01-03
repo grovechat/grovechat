@@ -2,7 +2,7 @@
 
 /**@typescript*/
 
-namespace App\Domain\Authentication\DTOs;
+namespace App\Domain\TwoFactor\DTOs;
 
 use Spatie\LaravelData\Data;
 

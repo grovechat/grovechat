@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Authentication\Actions;
+namespace App\Domain\TwoFactor\Actions;
 
 use App\Models\User;
 use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
@@ -14,11 +14,12 @@ class GenerateNewRecoveryCodesAction
     /**
      * 生成新的恢复码
      *
-     * @param User $user
+     * @param int $userId
      * @return void
      */
-    public function execute(User $user): void
+    public function execute(int $userId): void
     {
+        $user = User::findOrFail($userId);
         ($this->generate)($user);
     }
 }

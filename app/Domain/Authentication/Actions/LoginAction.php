@@ -11,23 +11,25 @@ class LoginAction
     /**
      * 执行用户登录操作
      *
-     * @param LoginData $data
-     * @return bool
+     * @param array $data
+     * @return array
      * @throws ValidationException
      */
-    public function execute(LoginData $data): bool
+    public function execute(array $data): array
     {
+        $validatedData = LoginData::from($data);
+
         $credentials = [
-            'email' => $data->email,
-            'password' => $data->password,
+            'email' => $validatedData->email,
+            'password' => $validatedData->password,
         ];
 
-        if (!Auth::attempt($credentials, $data->remember)) {
+        if (!Auth::attempt($credentials, $validatedData->remember)) {
             throw ValidationException::withMessages([
                 'email' => [__('auth.failed')],
             ]);
         }
 
-        return true;
+        return ['success' => true];
     }
 }

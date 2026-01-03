@@ -5,9 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Domain\Authentication\Actions\ConfirmPasswordAction;
 use App\Domain\Authentication\Actions\ResetPasswordAction;
 use App\Domain\Authentication\Actions\SendPasswordResetLinkAction;
-use App\Domain\Authentication\DTOs\ConfirmPasswordData;
-use App\Domain\Authentication\DTOs\ForgotPasswordData;
-use App\Domain\Authentication\DTOs\ResetPasswordData;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,15 +31,9 @@ class PasswordController extends Controller
         Request $request,
         SendPasswordResetLinkAction $sendPasswordResetLinkAction
     ): RedirectResponse {
-        $data = ForgotPasswordData::from($request->all());
+        $result = $sendPasswordResetLinkAction->execute($request->all());
 
-        try {
-            $status = $sendPasswordResetLinkAction->execute($data);
-
-            return back()->with('status', $status);
-        } catch (ValidationException $e) {
-            throw $e;
-        }
+        return back()->with('status', $result['status']);
     }
 
     /**
@@ -63,15 +54,9 @@ class PasswordController extends Controller
         Request $request,
         ResetPasswordAction $resetPasswordAction
     ): RedirectResponse {
-        $data = ResetPasswordData::from($request->all());
+        $result = $resetPasswordAction->execute($request->all());
 
-        try {
-            $status = $resetPasswordAction->execute($data);
-
-            return redirect()->route('login')->with('status', $status);
-        } catch (ValidationException $e) {
-            throw $e;
-        }
+        return redirect()->route('login')->with('status', $result['status']);
     }
 
     /**
@@ -81,9 +66,7 @@ class PasswordController extends Controller
         Request $request,
         ConfirmPasswordAction $confirmPasswordAction
     ): RedirectResponse {
-        $data = ConfirmPasswordData::from($request->all());
-
-        $confirmPasswordAction->execute($request->user(), $data);
+        $confirmPasswordAction->execute($request->user()->id, $request->all());
 
         $request->session()->put('auth.password_confirmed_at', time());
 

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Domain\Authentication\Actions\ConfirmTwoFactorAction;
-use App\Domain\Authentication\Actions\DisableTwoFactorAction;
-use App\Domain\Authentication\Actions\EnableTwoFactorAction;
-use App\Domain\Authentication\Actions\GenerateNewRecoveryCodesAction;
+use App\Domain\TwoFactor\Actions\ConfirmTwoFactorAction;
+use App\Domain\TwoFactor\Actions\DisableTwoFactorAction;
+use App\Domain\TwoFactor\Actions\EnableTwoFactorAction;
+use App\Domain\TwoFactor\Actions\GenerateNewRecoveryCodesAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -41,7 +41,7 @@ class TwoFactorAuthenticationController extends Controller
         Request $request,
         EnableTwoFactorAction $enableTwoFactorAction
     ): RedirectResponse {
-        $enableTwoFactorAction->execute($request->user());
+        $enableTwoFactorAction->execute($request->user()->id);
 
         return back();
     }
@@ -53,11 +53,7 @@ class TwoFactorAuthenticationController extends Controller
         Request $request,
         ConfirmTwoFactorAction $confirmTwoFactorAction
     ): RedirectResponse {
-        $request->validate([
-            'code' => 'required|string',
-        ]);
-
-        $confirmTwoFactorAction->execute($request->user(), $request->input('code'));
+        $confirmTwoFactorAction->execute($request->user()->id, $request->all());
 
         return back();
     }
@@ -69,7 +65,7 @@ class TwoFactorAuthenticationController extends Controller
         Request $request,
         DisableTwoFactorAction $disableTwoFactorAction
     ): RedirectResponse {
-        $disableTwoFactorAction->execute($request->user());
+        $disableTwoFactorAction->execute($request->user()->id);
 
         return back();
     }
@@ -111,7 +107,7 @@ class TwoFactorAuthenticationController extends Controller
         Request $request,
         GenerateNewRecoveryCodesAction $generateNewRecoveryCodesAction
     ): RedirectResponse {
-        $generateNewRecoveryCodesAction->execute($request->user());
+        $generateNewRecoveryCodesAction->execute($request->user()->id);
 
         return back();
     }

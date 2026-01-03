@@ -12,19 +12,23 @@ class ConfirmPasswordAction
     /**
      * 确认用户密码
      *
-     * @param User $user
-     * @param ConfirmPasswordData $data
-     * @return bool
+     * @param int $userId
+     * @param array $data
+     * @return array
      * @throws ValidationException
      */
-    public function execute(User $user, ConfirmPasswordData $data): bool
+    public function execute(int $userId, array $data): array
     {
-        if (!Hash::check($data->password, $user->password)) {
+        $validatedData = ConfirmPasswordData::from($data);
+
+        $user = User::findOrFail($userId);
+
+        if (!Hash::check($validatedData->password, $user->password)) {
             throw ValidationException::withMessages([
                 'password' => [__('auth.password')],
             ]);
         }
 
-        return true;
+        return ['confirmed' => true];
     }
 }
