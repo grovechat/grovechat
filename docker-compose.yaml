@@ -1,8 +1,5 @@
 services:
   dev:
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
     image: registry.cn-hangzhou.aliyuncs.com/grovechat/dev:latest
     volumes:
       - .:/app
