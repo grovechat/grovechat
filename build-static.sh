@@ -1,31 +1,20 @@
 #!/bin/bash
+# 构建多平台静态二进制
 
 set -e
 
-# 检测当前平台
-CURRENT_ARCH=$(uname -m)
-if [[ "$CURRENT_ARCH" == "x86_64" ]]; then
-    PLATFORM="amd64"
-    DOCKER_PLATFORM="linux/amd64"
-    ARCH_NAME="x86_64"
-elif [[ "$CURRENT_ARCH" == "aarch64" ]] || [[ "$CURRENT_ARCH" == "arm64" ]]; then
-    PLATFORM="arm64"
-    DOCKER_PLATFORM="linux/arm64"
-    ARCH_NAME="aarch64"
+echo "开始构建 GroveChat 静态二进制（多平台）..."
+echo ""
+
+# 确保 buildx builder 存在
+if ! docker buildx inspect multiarch-builder &> /dev/null; then
+    echo "创建 multiarch-builder..."
+    docker buildx create --name multiarch-builder --use
+    docker buildx inspect --bootstrap
 else
-    echo "错误: 无法检测当前架构 ($CURRENT_ARCH)"
-    exit 1
+    echo "使用已存在的 multiarch-builder"
+    docker buildx use multiarch-builder
 fi
-
-echo "开始构建 GroveChat 静态二进制..."
-echo ""
-echo "================================"
-echo "构建平台: $PLATFORM ($ARCH_NAME)"
-echo "================================"
-echo ""
-
-# 构建镜像
-echo "步骤 1/3: 构建 Docker 镜像..."
 
 # GITHUB_TOKEN
 BUILD_ARGS=""
@@ -33,35 +22,59 @@ if [ -n "${GITHUB_TOKEN}" ]; then
     BUILD_ARGS="--build-arg GITHUB_TOKEN=${GITHUB_TOKEN}"
 fi
 
-docker build ${BUILD_ARGS} --platform ${DOCKER_PLATFORM} -t grovechat-static-builder -f static-build.Dockerfile .
-
-# 创建临时容器并提取二进制文件
 echo ""
-echo "步骤 2/3: 提取静态二进制文件..."
-docker create --name grovechat-static-tmp grovechat-static-builder
+echo "================================"
+echo "构建平台: linux/amd64,linux/arm64"
+echo "================================"
+echo ""
 
-# 提取到 build 目录
+# 提取二进制文件
 mkdir -p build
-docker cp grovechat-static-tmp:/work/dist/grovechat-linux-${ARCH_NAME} build/grovechat-${PLATFORM}
 
-# 清理临时容器
+# 构建并提取 amd64 版本
+echo "步骤 1/4: 构建 linux/amd64 镜像..."
+docker buildx build \
+    ${BUILD_ARGS} \
+    --platform linux/amd64 \
+    -t grovechat-static-builder:amd64 \
+    -f static-build.Dockerfile \
+    --load \
+    .
+
 echo ""
-echo "步骤 3/3: 清理临时容器..."
-docker rm grovechat-static-tmp
+echo "步骤 2/4: 提取 amd64 二进制..."
+docker create --name grovechat-static-amd64 grovechat-static-builder:amd64
+docker cp grovechat-static-amd64:/work/dist/grovechat-linux-x86_64 build/grovechat-amd64
+docker rm grovechat-static-amd64
+
+# 构建并提取 arm64 版本
+echo ""
+echo "步骤 3/4: 构建 linux/arm64 镜像..."
+docker buildx build \
+    ${BUILD_ARGS} \
+    --platform linux/arm64 \
+    -t grovechat-static-builder:arm64 \
+    -f static-build.Dockerfile \
+    --load \
+    .
+
+echo ""
+echo "步骤 4/4: 提取 arm64 二进制..."
+docker create --name grovechat-static-arm64 grovechat-static-builder:arm64
+docker cp grovechat-static-arm64:/work/dist/grovechat-linux-aarch64 build/grovechat-arm64
+docker rm grovechat-static-arm64
 
 echo ""
 echo "========================================"
 echo "构建完成！"
 echo "========================================"
 echo ""
-echo "二进制文件位置: build/grovechat-${PLATFORM}"
+echo "二进制文件:"
+ls -lh build/grovechat-*
 echo ""
-
-# 显示文件信息
-ls -lh build/grovechat-${PLATFORM}
-file build/grovechat-${PLATFORM}
+file build/grovechat-*
 echo ""
 echo "测试运行："
-echo "chmod +x build/grovechat-${PLATFORM}"
-echo "./build/grovechat-${PLATFORM}"
+echo "chmod +x build/grovechat-amd64 (或 build/grovechat-arm64)"
+echo "./build/grovechat-amd64 (或 ./build/grovechat-arm64)"
 echo ""
