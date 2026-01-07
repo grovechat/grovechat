@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Toaster from '@/components/ui/toast/Toaster.vue';
-import { useFlashToast } from '@/composables/useFlashToast';
+// import { useFlashToast } from '@/composables/useFlashToast';
 import { home } from '@/routes';
 import { Link } from '@inertiajs/vue3';
 
@@ -10,7 +10,7 @@ defineProps<{
   description?: string;
 }>();
 
-useFlashToast();
+// useFlashToast();
 </script>
 
 <template>
@@ -43,6 +43,6 @@ useFlashToast();
         <slot />
       </div>
     </div>
-    <Toaster />
+    <!-- <Toaster /> -->
   </div>
 </template>
