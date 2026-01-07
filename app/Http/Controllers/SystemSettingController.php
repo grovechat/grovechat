@@ -19,12 +19,10 @@ class SystemSettingController extends Controller
         return Inertia::render('systemSettings/GeneralSetting', $action->execute());
     }
 
-    public function updateGeneralSettings(
-        GeneralSettingsData $data,
-        UpdateSettingAction $action
-    )
+    public function updateGeneralSettings(GeneralSettingsData $data, UpdateSettingAction $action)
     {
         $action->execute($data);
-        return back()->with('success', '设置已更新');
+        
+        return back();
     }
 }
