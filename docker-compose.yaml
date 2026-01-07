@@ -1,0 +1,27 @@
+services:
+  dev:
+    image: registry.cn-hangzhou.aliyuncs.com/grovechat/dev:latest
+    volumes:
+      - .:/app
+      - ~/.ssh:/root/.ssh:ro
+      - ~/.gitconfig:/root/.gitconfig:ro
+    tty: true
+    command: tail -f /dev/null
+    working_dir: /app
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "80:80"
+      - "443:443"
+      - "5173:5173"
+
+  test:
+    image: ubuntu:24.04
+    volumes:
+      - ./build/:/root/
+    tty: true
+    working_dir: /root/
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "8081:80"
