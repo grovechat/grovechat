@@ -16,7 +16,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import { useTimezone, type Timezone } from '@/composables/useTimezone';
 import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
+import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { availableLocales, type Locale } from '@/locales';
 import { edit } from '@/routes/language';
 import { type BreadcrumbItem } from '@/types';

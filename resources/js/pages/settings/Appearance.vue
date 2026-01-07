@@ -9,7 +9,7 @@ import { useTenant } from '@/composables/useTenant';
 import { type BreadcrumbItem } from '@/types';
 
 import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
+import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { edit } from '@/routes/appearance';
 
 const { t } = useI18n();

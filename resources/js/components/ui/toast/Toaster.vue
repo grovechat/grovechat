@@ -16,7 +16,6 @@ import ToastAction from './ToastAction.vue';
 
 const { toasts, removeToast } = useToast();
 
-// 现代化设计：微妙的背景 + 精致的边框 + 柔和的颜色
 const getToastClass = (type?: string) => {
   switch (type) {
     case 'success':

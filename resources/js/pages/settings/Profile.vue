@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
+import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 
 interface Props {
