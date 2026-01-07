@@ -15,6 +15,11 @@ declare module 'vite/client' {
 
 declare module '@inertiajs/core' {
   interface PageProps extends InertiaPageProps, AppPageProps {}
+  interface InertiaConfig {
+    flashDataType: {
+      toast?: string;
+    };
+  }
 }
 
 declare module 'vue' {

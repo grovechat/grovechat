@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\BusinessException;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\HandleLocale;
@@ -28,6 +29,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response, Throwable $exception, \Illuminate\Http\Request $request) {
+            if ($exception instanceof BusinessException && $request->header('X-Inertia')) {
+                return back()->withErrors(['toast' => $exception->getMessage()]);
+            }
+            return $response;
+        });
     })->create()
     ->useStoragePath(env('LARAVEL_STORAGE_PATH', base_path('storage')));

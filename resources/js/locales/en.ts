@@ -4,6 +4,13 @@ export default {
   '加载中...': 'Loading...',
   发生错误: 'An error occurred',
 
+  // Toast 通知
+  成功: 'Success',
+  错误: 'Error',
+  警告: 'Warning',
+  提示: 'Info',
+  通知: 'Notice',
+
   // 设置
   设置: 'Settings',
   管理你的个人资料和账户设置: 'Manage your profile and account settings',
