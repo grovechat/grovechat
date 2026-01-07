@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response, Throwable $exception, \Illuminate\Http\Request $request) {
             if ($exception instanceof BusinessException) {
+                dd($exception->getMessage());
                 if ($request->header('X-Inertia')) {
                     return back()->withErrors(['toast' => $exception->getMessage()]);
                 } else {
