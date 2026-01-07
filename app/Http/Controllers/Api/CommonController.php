@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\BusinessException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -10,22 +11,21 @@ class CommonController extends Controller
 {
     public function uploadImage(Request $request)
     {
+        throw new BusinessException('File upload cannot be empty');
         if (!$request->hasFile('file')) {
-            return response()->json(['message' => 'File upload cannot be empty'], 400);
+            throw new BusinessException('File upload cannot be empty');
         }
         if (!$request->file('file')->isValid()) {
-            return response()->json(['message' => 'File upload failed'], 400);
+            throw new BusinessException('File upload failed');
         }
 
         $uploaded = $request->file('file');
         if (strpos((string) $uploaded->getMimeType(), 'image/') !== 0) {
-            return response()->json(['message' => 'Only image upload is supported'], 400);
+            throw new BusinessException("Only image upload is supported");
         }
 
         $path = $request->file('file')->store('uploads', 'public');
 
-        $url = Storage::url($path);
-
-        return response()->json(['path' => $path, 'url' => $url]);
+        return response()->json(['url' => Storage::url($path)]);
     }
 }

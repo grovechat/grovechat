@@ -82,6 +82,7 @@ func New(cli CLIConfig) *Config {
 	cfg.WatchPaths = []string{
 		cfg.PhpProjectRoot + "/routes",
 		cfg.PhpProjectRoot + "/app",
+		cfg.PhpProjectRoot + "/bootstrap",
 		cfg.PhpProjectRoot + "/config",
 		cfg.PhpProjectRoot + "/lang",
 	}
