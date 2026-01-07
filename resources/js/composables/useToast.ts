@@ -1,4 +1,5 @@
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
+import { router } from '@inertiajs/vue3';
 import { useI18n } from './useI18n';
 
 export type ToastType = 'default' | 'success' | 'error' | 'warning' | 'info';
@@ -58,4 +59,18 @@ export function useToast() {
     addToast,
     removeToast,
   };
+}
+
+export function useBackendToast() {
+  const { toast } = useToast();
+
+  const removeListener = router.on('error', (event) => {
+    const errors = event.detail.errors as any;
+
+    if (errors?.toast && typeof errors.toast === 'string') {
+      toast.error(errors.toast);
+    }
+  });
+
+  onUnmounted(removeListener);
 }

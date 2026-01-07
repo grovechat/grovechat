@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { SidebarProvider } from '@/components/ui/sidebar';
 import Toaster from '@/components/ui/toast/Toaster.vue';
-import { useFlashToast } from '@/composables/useFlashToast';
+import { useBackendToast } from '@/composables/useToast';
 import { usePage } from '@inertiajs/vue3';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 defineProps<Props>();
 
 const isOpen = usePage().props.sidebarOpen;
-useFlashToast();
+useBackendToast();
 </script>
 
 <template>
