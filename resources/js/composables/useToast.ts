@@ -61,9 +61,16 @@ export function useToast() {
   };
 }
 
-export function useBackendToast() {
+let apiInterceptorSetup = false;
+
+/**
+ * 统一设置错误处理
+ * 同时处理 Inertia 表单错误和 API 请求错误
+ */
+export function useErrorHandling() {
   const { toast } = useToast();
 
+  // 处理 Inertia 表单错误
   const removeListener = router.on('error', (event) => {
     const errors = event.detail.errors as any;
 
@@ -73,4 +80,28 @@ export function useBackendToast() {
   });
 
   onUnmounted(removeListener);
+
+  // 处理 API 请求错误（确保只设置一次拦截器）
+  if (!apiInterceptorSetup) {
+    import('axios').then(({ default: axios }) => {
+      axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+          // 提取错误消息
+          const message =
+            error.response?.data?.message ||
+            error.message ||
+            '请求失败，请稍后重试';
+
+          // 显示错误 toast
+          toast.error(message);
+
+          // 继续抛出错误，让调用方可以进一步处理
+          return Promise.reject(error);
+        }
+      );
+
+      apiInterceptorSetup = true;
+    });
+  }
 }

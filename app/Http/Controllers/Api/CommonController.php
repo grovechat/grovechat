@@ -11,7 +11,6 @@ class CommonController extends Controller
 {
     public function uploadImage(Request $request)
     {
-        throw new BusinessException('File upload cannot be empty');
         if (!$request->hasFile('file')) {
             throw new BusinessException('File upload cannot be empty');
         }

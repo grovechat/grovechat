@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
 import SystemSettingController from '@/actions/App/Http/Controllers/SystemSettingController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
@@ -53,15 +54,14 @@ const handleLogoChange = async (event: Event) => {
 
   try {
     uploading.value = true;
-    const response = await axios.post('/api/upload-image', formData, {
+    const response = await axios.post(CommonController.uploadImage.url(), formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
     // 上传成功后更新logo URL
     logoUrl.value = response.data.url;
-  } catch (error) {
-    console.error('Logo upload failed:', error);
+  } catch {
     // 上传失败，恢复原来的logo
     logoPreview.value = props.logo || '';
   } finally {
