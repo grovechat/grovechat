@@ -12,15 +12,15 @@ class CommonController extends Controller
     public function uploadImage(Request $request)
     {
         if (!$request->hasFile('file')) {
-            throw new BusinessException('File upload cannot be empty');
+            throw new BusinessException(__('common.文件上传不能为空'));
         }
         if (!$request->file('file')->isValid()) {
-            throw new BusinessException('File upload failed');
+            throw new BusinessException(__('common.无效的文件'));
         }
 
         $uploaded = $request->file('file');
         if (strpos((string) $uploaded->getMimeType(), 'image/') !== 0) {
-            throw new BusinessException("Only image upload is supported");
+            throw new BusinessException(__('common.仅支持图片上传'));
         }
 
         $path = $request->file('file')->store('uploads', 'public');
