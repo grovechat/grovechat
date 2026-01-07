@@ -11,6 +11,10 @@ class CommonController extends Controller
 {
     public function uploadImage(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string',
+            'age' => 'required|integer',
+        ]);
         if (!$request->hasFile('file')) {
             throw new BusinessException(__('common.文件上传不能为空'));
         }

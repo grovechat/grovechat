@@ -25,19 +25,38 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
-        
+
+        $middleware->api(append: [
+            HandleLocale::class,
+        ]);
+
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response, Throwable $exception, \Illuminate\Http\Request $request) {
+            // 处理业务异常
             if ($exception instanceof BusinessException) {
-                dd($exception->getMessage());
                 if ($request->header('X-Inertia')) {
                     return back()->withErrors(['toast' => $exception->getMessage()]);
                 } else {
                     return response()->json(['message' => $exception->getMessage()], 422);
                 }
             }
+
+            // 处理验证异常 - 优化 API 的异常响应格式
+            if ($exception instanceof \Illuminate\Validation\ValidationException) {
+                if ($request->expectsJson() && !$request->header('X-Inertia')) {
+                    $errors = $exception->errors();
+                    $firstField = array_key_first($errors);
+                    $firstError = $errors[$firstField][0];
+
+                    return response()->json([
+                        'message' => $firstField . ' ' . $firstError,
+                        'errors' => $errors,
+                    ], 422)->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+                }
+            }
+
             return $response;
         });
     })->create()
