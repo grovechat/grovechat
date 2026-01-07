@@ -71,7 +71,7 @@ export function useErrorHandling() {
   const { toast } = useToast();
 
   // 处理 Inertia 表单错误
-  const removeListener = router.on('error', (event) => {
+  const removeErrorListener = router.on('error', (event) => {
     const errors = event.detail.errors as any;
 
     if (errors?.toast && typeof errors.toast === 'string') {
@@ -79,9 +79,16 @@ export function useErrorHandling() {
     }
   });
 
-  onUnmounted(removeListener);
+  const removeNavigateListener = router.on('navigate', () => {
+    toasts.value = [];
+  });
 
-  // 处理 API 请求错误（确保只设置一次拦截器）
+  onUnmounted(() => {
+    removeErrorListener();
+    removeNavigateListener();
+  });
+
+  // 处理 API 请求错误
   if (!apiInterceptorSetup) {
     import('axios').then(({ default: axios }) => {
       axios.interceptors.response.use(
@@ -92,11 +99,8 @@ export function useErrorHandling() {
             error.response?.data?.message ||
             error.message ||
             '请求失败，请稍后重试';
-
-          // 显示错误 toast
           toast.error(message);
 
-          // 继续抛出错误，让调用方可以进一步处理
           return Promise.reject(error);
         }
       );
