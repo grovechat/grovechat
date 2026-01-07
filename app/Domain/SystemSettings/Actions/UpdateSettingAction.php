@@ -14,12 +14,11 @@ class UpdateSettingAction
     /**
      * 执行更新设置的操作
      *
-     * @param array $data 请求数据
+     * @param GeneralSettingsData $data 设置数据
      */
-    public function execute(array $data)
+    public function execute(GeneralSettingsData $data)
     {
-        $data = GeneralSettingsData::from($data);
         $this->settings->lock('version');
-        $this->settings->fill($data)->save();    
+        $this->settings->fill($data)->save();
     }
 }
