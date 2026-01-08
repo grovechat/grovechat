@@ -6,6 +6,7 @@ use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
 use App\Http\Controllers\SystemSettingController;
+use App\Http\Controllers\TenantSettingController;
 use App\Http\Middleware\IdentifyTenant;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Route;
@@ -86,9 +87,9 @@ Route::middleware(['auth', 'verified', IdentifyTenant::class])
         
                 
         // 工作区--常规设置
-        Route::get('tenant-settings/tenant/general', function () {
-            return Inertia::render('tenantSettings/tenant/General');
-        })->name('tenant-setting.tenant.general');
+        Route::get('tenant-settings/tenant/general',
+            [TenantSettingController::class, 'showTenantGeneralPage'])
+            ->name('tenant-setting.tenant.general');
 
         // 客服--多客服
         Route::get('tenant-settings/teammate/index', function () {

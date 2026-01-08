@@ -31,6 +31,5 @@ yarn-error.log
 **/caddy
 frankenphp
 frankenphp-worker.php
-data/
 build/
 *.db
