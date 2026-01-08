@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:static-builder-gnu-1.11.1
+FROM dunglas/frankenphp:static-builder-gnu-1.11.1 AS static-builder
 
 # 接收 GitHub Token（用于避免 API 限流）
 ARG GITHUB_TOKEN
@@ -47,9 +47,38 @@ RUN ./spc build \
     $PHP_EXTENSIONS \
     --with-libs=$PHP_EXTENSION_LIBS
 
+# ================================
+# 第二阶段：使用开发镜像构建应用
+# ================================
+FROM registry.cn-hangzhou.aliyuncs.com/grovechat/dev:latest AS app-builder
+
+WORKDIR /build
+
 # 复制项目文件
+COPY . .
+
+# 删除现有的 vendor 和 node_modules
+RUN rm -rf vendor node_modules
+
+# 安装 PHP 生产依赖（不包含开发依赖）
+RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-interaction
+
+# 安装 Node.js 依赖并构建前端资源
+RUN npm install && \
+    npm run build && \
+    rm -rf node_modules
+
+# 优化 Laravel 应用
+RUN php artisan optimize
+
+# ================================
+# 第三阶段：打包最终应用
+# ================================
+FROM static-builder AS final
+
+# 从开发镜像复制构建好的应用
 WORKDIR /work
-COPY . ./php-app/
+COPY --from=app-builder /build ./php-app/
 COPY go.mod go.sum ./
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
