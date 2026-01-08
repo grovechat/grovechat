@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
+import TenantSwitcher from '@/components/TenantSwitcher.vue';
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,
@@ -9,7 +11,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
@@ -22,7 +23,7 @@ import stats from '@/routes/stats';
 import systemSetting from '@/routes/system-setting';
 import tenantSetting from '@/routes/tenant-setting';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
   BarChart,
   BookOpen,
@@ -34,11 +35,13 @@ import {
   Users,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
-import AppLogo from './AppLogo.vue';
 
 const { t } = useI18n();
 const { tenantPath } = useTenant();
 const { toggleSidebar, state } = useSidebar();
+const page = usePage();
+
+const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
 
 const mainNavItems = computed<NavItem[]>(() => [
   {
@@ -92,15 +95,32 @@ const footerNavItems = computed<NavItem[]>(() => [
   <Sidebar collapsible="icon" variant="inset">
     <SidebarHeader class="group-data-[collapsible=icon]:!p-0">
       <div
-        class="flex items-center justify-between group-data-[collapsible=icon]:flex-col"
+        class="flex items-center justify-between group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-2"
       >
-        <SidebarMenu class="group-data-[collapsible=icon]:!p-2">
+        <SidebarMenu class="group-data-[collapsible=icon]:!p-2 w-full">
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" as-child>
-              <Link :href="tenantPath ? dashboard(tenantPath) : '/'">
-                <AppLogo />
+            <div class="flex items-center gap-2 w-full px-2 py-2">
+              <!-- 系统 Logo - 可点击跳转首页 -->
+              <Link
+                :href="tenantPath ? dashboard(tenantPath) : '/'"
+                class="shrink-0"
+              >
+                <div
+                  class="flex aspect-square size-10 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
+                >
+                  <AppLogoIcon class="size-10 fill-current text-white dark:text-black" />
+                </div>
               </Link>
-            </SidebarMenuButton>
+
+              <!-- 右侧：系统名称和工作区切换器 -->
+              <div class="flex flex-col gap-1 flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
+                <!-- 系统名称 -->
+                <span class="text-sm font-semibold leading-tight">{{ systemName }}</span>
+
+                <!-- 工作区切换器 - 独立的热区 -->
+                <TenantSwitcher />
+              </div>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
         <Button
@@ -108,7 +128,7 @@ const footerNavItems = computed<NavItem[]>(() => [
           size="icon"
           :class="
             cn(
-              'mr-2 h-7 w-7 shrink-0 transition-colors duration-200',
+              'mr-3 h-7 w-7 shrink-0 transition-colors duration-200',
               'group-data-[collapsible=icon]:mr-0 group-data-[collapsible=icon]:mb-2',
               'group-data-[state=expanded]/sidebar-wrapper:bg-sidebar-accent group-data-[state=expanded]/sidebar-wrapper:text-sidebar-accent-foreground',
             )
