@@ -36,18 +36,20 @@ class TenantSettingController extends Controller
         return redirect(route('tenant-setting.tenant.general', $this->tenant->path));
     }
     
-    public function createTenant(CreateTenantDTO $dto)
+    public function storeTenant(CreateTenantDTO $dto)
     {
-        DB::transaction(function () use ($dto) {
+        $newTenant = DB::transaction(function () use ($dto) {
             $tenant = Tenant::query()->create($dto->toArray());
             $tenant->createSlug();
 
             /** @var User $user */
             $user = Auth::user();
             $user->tenants()->attach($tenant->id, ['role' => TenantRole::ADMIN]);
+
+            return $tenant;
         });
-        
-        return back();
+
+        return redirect(route('tenant-setting.tenant.general', $newTenant->path));
     }
     
     public function deleteTenant()
@@ -57,5 +59,9 @@ class TenantSettingController extends Controller
         }
         
         $this->tenant->delete();
+        
+        $defaultTenant = Tenant::query()->where('owner_id', Auth::id())->firstOrFail();
+
+        return redirect(route('tenant-setting.tenant.general', $defaultTenant->path));
     }
 }

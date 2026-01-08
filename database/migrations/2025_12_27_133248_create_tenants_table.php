@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name')->comment('租户名');
-            $table->string('slug')->comment('租户标识');
+            $table->string('slug')->nullable()->comment('租户标识');
             $table->string('logo')->nullable()->comment('租户logo');
             $table->string('path')->comment('租户url访问路径');
+            $table->integer('owner_id')->nullable()->comment('所有者ID');
         });
     }
 
