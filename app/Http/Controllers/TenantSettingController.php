@@ -57,11 +57,15 @@ class TenantSettingController extends Controller
         if (!empty($this->tenant->owner_id)) {
             throw new BusinessException("不能删除默认工作区");
         }
-        
+
         $this->tenant->delete();
-        
+
         $defaultTenant = Tenant::query()->where('owner_id', Auth::id())->firstOrFail();
 
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => '工作区已删除'
+        ]);
         return redirect(route('tenant-setting.tenant.general', $defaultTenant->path));
     }
 }
