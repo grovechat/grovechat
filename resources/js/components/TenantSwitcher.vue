@@ -76,7 +76,7 @@ const goToCreateTenant = () => {
     </DropdownMenuTrigger>
     <DropdownMenuContent align="start" class="w-64">
       <div class="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-        {{ t('工作区') }}
+        {{ t('切换工作区') }}
       </div>
       <DropdownMenuItem
         v-for="tenant in tenants"

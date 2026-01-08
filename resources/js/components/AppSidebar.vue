@@ -17,10 +17,10 @@ import {
 import { useI18n } from '@/composables/useI18n';
 import { useTenant } from '@/composables/useTenant';
 import { cn } from '@/lib/utils';
-import { dashboard } from '@/routes';
 import contact from '@/routes/contact';
 import stats from '@/routes/stats';
 import systemSetting from '@/routes/system-setting';
+import tenant from '@/routes/tenant';
 import tenantSetting from '@/routes/tenant-setting';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -46,7 +46,7 @@ const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('工作台'),
-    href: tenantPath.value ? dashboard(tenantPath.value) : '/',
+    href: tenantPath.value ? tenant.dashboard.url(tenantPath.value) : '/',
     icon: LayoutGrid,
   },
   {
@@ -99,26 +99,48 @@ const footerNavItems = computed<NavItem[]>(() => [
       >
         <SidebarMenu class="group-data-[collapsible=icon]:!p-2 w-full">
           <SidebarMenuItem>
-            <div class="flex items-center gap-2 w-full px-2 py-2">
-              <!-- 系统 Logo - 可点击跳转首页 -->
+            <div class="flex items-center gap-2 w-full px-0 py-0 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
+              <!-- 系统 Logo - 可点击跳转当前工作区首页 -->
               <Link
-                :href="tenantPath ? dashboard(tenantPath) : '/'"
-                class="shrink-0"
+                :href="tenantPath ? tenant.dashboard.url(tenantPath) : '/'"
+                class="shrink-0 p-2 group-data-[collapsible=icon]:p-0"
               >
                 <div
-                  class="flex aspect-square size-10 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
+                  class="flex aspect-square size-12 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
                 >
-                  <AppLogoIcon class="size-10 fill-current text-white dark:text-black" />
+                  <AppLogoIcon class="size-12 fill-current text-white dark:text-black" />
                 </div>
               </Link>
 
               <!-- 右侧：系统名称和工作区切换器 -->
-              <div class="flex flex-col gap-1 flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
+              <div class="flex flex-col gap-1 flex-1 min-w-0 group-data-[collapsible=icon]:hidden pr-2">
                 <!-- 系统名称 -->
                 <span class="text-sm font-semibold leading-tight">{{ systemName }}</span>
 
                 <!-- 工作区切换器 - 独立的热区 -->
                 <TenantSwitcher />
+              </div>
+
+              <!-- 缩进时显示的工作区 Logo -->
+              <div v-if="page.props.currentTenant" class="hidden group-data-[collapsible=icon]:block">
+                <div
+                  v-if="page.props.currentTenant.logo"
+                  class="flex h-10 w-10 items-center justify-center rounded overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground"
+                >
+                  <img
+                    :src="page.props.currentTenant.logo"
+                    :alt="page.props.currentTenant.name"
+                    class="h-full w-full object-cover"
+                  />
+                </div>
+                <div
+                  v-else
+                  class="flex h-10 w-10 items-center justify-center rounded bg-sidebar-primary text-sidebar-primary-foreground"
+                >
+                  <span class="text-sm font-semibold">
+                    {{ page.props.currentTenant.name.charAt(0).toUpperCase() }}
+                  </span>
+                </div>
               </div>
             </div>
           </SidebarMenuItem>
@@ -128,7 +150,7 @@ const footerNavItems = computed<NavItem[]>(() => [
           size="icon"
           :class="
             cn(
-              'mr-3 h-7 w-7 shrink-0 transition-colors duration-200',
+              'h-7 w-7 shrink-0 transition-colors duration-200',
               'group-data-[collapsible=icon]:mr-0 group-data-[collapsible=icon]:mb-2',
               'group-data-[state=expanded]/sidebar-wrapper:bg-sidebar-accent group-data-[state=expanded]/sidebar-wrapper:text-sidebar-accent-foreground',
             )

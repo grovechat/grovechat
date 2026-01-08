@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
@@ -8,38 +9,18 @@ use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TenantSettingController;
 use App\Http\Middleware\IdentifyTenant;
-use App\Models\Tenant;
+use App\Http\Middleware\TrackLastTenant;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
-// 自动重定向到用户的第一个租户
-Route::get('dashboard', function () {
-    $user = auth()->user();
-    if ($user) {
-        $firstTenant = $user->tenants()->first();
-        if ($firstTenant) {
-            return redirect()->route('tenant.dashboard', ['tenant_path' => $firstTenant->path]);
-        }
-    }
-    return redirect()->route('home');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware(['auth', 'verified', IdentifyTenant::class])
+Route::middleware(['auth', 'verified', IdentifyTenant::class, TrackLastTenant::class])
     ->prefix('w/{tenant_path}')
     ->group(function () {
-        Route::get('/', function (Tenant $tenant) {
-            return redirect()->route('tenant.dashboard', $tenant->path);
-        });
-        Route::get('dashboard', function () {
-            return Inertia::render('Dashboard');
-        })->name('tenant.dashboard');
+        Route::get('/', [HomeController::class, 'tenantHome'])->name('tenant.home');
+        Route::get('dashboard', [HomeController::class, 'tenantDashboard'])->name('tenant.dashboard');
        
         // 个人资料
         Route::redirect('settings', 'settings/profile');
