@@ -42,6 +42,7 @@ class CreateNewUser implements CreatesNewUsers
                 'name' => $user->name, // 以用户名作为默认租户名
                 'slug' => Str::lower($input['name']) . '-' . Str::lower(Str::random(4)),
                 'path' => strtolower($user->name), // 路径强制小写
+                'owner_id' => $user->id,
             ]);
 
             $user->tenants()->attach($tenant->id, ['role' => TenantRole::ADMIN]);

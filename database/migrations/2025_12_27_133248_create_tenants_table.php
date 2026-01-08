@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tenants', function (Blueprint $table) {
+        Schema::connection('sqlite')->create('tenants', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('name')->comment('租户名');
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tenants');
+        Schema::connection('sqlite')->dropIfExists('tenants');
     }
 };

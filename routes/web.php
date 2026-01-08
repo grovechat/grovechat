@@ -57,8 +57,12 @@ Route::middleware(['auth', 'verified', IdentifyTenant::class])
         Route::get('settings/appearance', [AppearanceController::class, 'edit'])->name('appearance.edit');
 
         // 基础设置
-        Route::get('system-settings/general', [SystemSettingController::class, 'getGeneralSettings'])->name('system-setting.get-general-settings');
-        Route::put('system-settings/general', [SystemSettingController::class, 'updateGeneralSettings'])->name('system-setting.update-general-settings');
+        Route::get('system-settings/general', [
+            SystemSettingController::class, 'getGeneralSettings'
+        ])->name('system-setting.get-general-settings');
+        Route::put('system-settings/general', [
+            SystemSettingController::class, 'updateGeneralSettings'
+        ])->name('system-setting.update-general-settings');
 
         // 存储设置
         Route::get('system-settings/storage', function () {
@@ -87,9 +91,15 @@ Route::middleware(['auth', 'verified', IdentifyTenant::class])
         
                 
         // 工作区--常规设置
-        Route::get('tenant-settings/tenant/general',
-            [TenantSettingController::class, 'showTenantGeneralPage'])
-            ->name('tenant-setting.tenant.general');
+        Route::get('tenant-settings/tenant/general', [
+            TenantSettingController::class, 'showTenantGeneralPage'
+        ])->name('tenant-setting.tenant.general');
+        Route::put('tenant-settings/tenant/updateTenant', [
+            TenantSettingController::class, 'updateTenent',
+        ])->name('tenant-settings.tenent.update');
+        Route::delete('tenant-settings/tenant/deleteTenant', [
+            TenantSettingController::class, 'deleteTenant',
+        ])->name('tenant-settings.tenant.delete');
 
         // 客服--多客服
         Route::get('tenant-settings/teammate/index', function () {

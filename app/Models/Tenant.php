@@ -14,6 +14,7 @@ class Tenant extends Model
         'slug',
         'logo',
         'path',
+        'owner_id',
     ];
 
     public function users()
