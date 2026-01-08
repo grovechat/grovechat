@@ -189,7 +189,7 @@ const handleDelete = async () => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="logo">{{ t('Logo') }}</Label>
+            <Label for="logo">{{ t('工作区Logo') }}</Label>
             <div class="mt-1 space-y-3">
               <div
                 v-if="logoPreview"

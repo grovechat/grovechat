@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\CreateTenantDTO;
 use App\Data\UpdateTenantDTO;
+use App\Enums\TenantRole;
 use App\Exceptions\BusinessException;
 use App\Models\Tenant;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class TenantSettingController extends Controller
 {
@@ -20,11 +24,30 @@ class TenantSettingController extends Controller
         ]);
     }
     
+    public function showCreateTenantPage()
+    {
+        return Inertia::render('tenantSettings/tenant/CreateTenant');
+    }
+    
     public function updateTenent(UpdateTenantDTO $dto)
     {
         $this->tenant->update($dto->toArray());
         
         return redirect(route('tenant-setting.tenant.general', $this->tenant->path));
+    }
+    
+    public function createTenant(CreateTenantDTO $dto)
+    {
+        DB::transaction(function () use ($dto) {
+            $tenant = Tenant::query()->create($dto->toArray());
+            $tenant->createSlug();
+
+            /** @var User $user */
+            $user = Auth::user();
+            $user->tenants()->attach($tenant->id, ['role' => TenantRole::ADMIN]);
+        });
+        
+        return back();
     }
     
     public function deleteTenant()

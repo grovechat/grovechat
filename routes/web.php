@@ -94,9 +94,19 @@ Route::middleware(['auth', 'verified', IdentifyTenant::class])
         Route::get('tenant-settings/tenant/general', [
             TenantSettingController::class, 'showTenantGeneralPage'
         ])->name('tenant-setting.tenant.general');
+        
+        Route::get('tenant-settings/tenant/create', [
+            TenantSettingController::class, 'showCreateTenantPage',
+        ])->name('tenant-settings.tenant.create');
+        
         Route::put('tenant-settings/tenant/updateTenant', [
             TenantSettingController::class, 'updateTenent',
         ])->name('tenant-settings.tenent.update');
+        
+        Route::post('tenant-settings/tenant/store', [
+            TenantSettingController::class, 'storeTenant',
+        ])->name('tenant-settings.tenant.addTenant');
+        
         Route::delete('tenant-settings/tenant/deleteTenant', [
             TenantSettingController::class, 'deleteTenant',
         ])->name('tenant-settings.tenant.delete');

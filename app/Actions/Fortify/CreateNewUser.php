@@ -44,7 +44,8 @@ class CreateNewUser implements CreatesNewUsers
                 'path' => strtolower($user->name), // 路径强制小写
                 'owner_id' => $user->id,
             ]);
-
+            $tenant->createSlug();
+            
             $user->tenants()->attach($tenant->id, ['role' => TenantRole::ADMIN]);
 
             return $user;
