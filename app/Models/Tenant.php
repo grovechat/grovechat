@@ -25,7 +25,7 @@ class Tenant extends Model
     
     public function createSlug()
     {
-        $slug = (new Hashids('', 0, 'abcdefghijklmnopqrstuvwxyz'))->encode($this->id);
+        $slug = (new Hashids('', 10, 'abcdefghijklmnopqrstuvwxyz'))->encode($this->id);
         $this->update(['slug' => $slug]);
     }
 }

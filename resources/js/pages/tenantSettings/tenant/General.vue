@@ -119,24 +119,23 @@ const copyToClipboard = async () => {
   }
 };
 
-const handleDelete = async () => {
+const handleDelete = () => {
   if (!tenantPath.value) return;
 
-  try {
-    deleting.value = true;
-    await router.delete(
-      TenantSettingController.deleteTenant.url(tenantPath.value),
-      {
-        onSuccess: () => {
-          showDeleteDialog.value = false;
-          // 删除成功后跳转到首页或其他页面
-          router.visit('/');
-        },
+  deleting.value = true;
+  router.delete(
+    TenantSettingController.deleteTenant.url(tenantPath.value),
+    {
+      preserveState: false,
+      preserveScroll: false,
+      onSuccess: () => {
+        showDeleteDialog.value = false;
       },
-    );
-  } finally {
-    deleting.value = false;
-  }
+      onFinish: () => {
+        deleting.value = false;
+      },
+    },
+  );
 };
 </script>
 
