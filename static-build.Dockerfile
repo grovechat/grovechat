@@ -53,23 +53,11 @@ RUN ./spc build \
 FROM registry.cn-hangzhou.aliyuncs.com/grovechat/dev:latest AS app-builder
 
 WORKDIR /build
-
-# 复制项目文件
 COPY . .
-
-# 删除现有的 vendor 和 node_modules
-RUN rm -rf vendor node_modules
-
-# 安装 PHP 生产依赖（不包含开发依赖）
 RUN composer install --ignore-platform-reqs --no-dev --optimize-autoloader --no-interaction
-
-# 安装 Node.js 依赖并构建前端资源
 RUN npm install && \
     npm run build && \
     rm -rf node_modules
-
-# 优化 Laravel 应用
-RUN php artisan optimize
 
 # ================================
 # 第三阶段：打包最终应用
