@@ -239,19 +239,19 @@ const handleDelete = async () => {
               required
               :placeholder="t('请输入访问路径')"
             />
-            <div class="flex items-center gap-2 mt-1 mb-1">
-              <p class="text-sm text-muted-foreground flex-1 break-all">
+            <div class="flex items-center gap-1.5 mt-1">
+              <p class="text-sm text-muted-foreground">
                 {{ fullAccessUrl }}
               </p>
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 @click="copyToClipboard"
-                class="shrink-0"
+                class="shrink-0 h-6 px-2"
               >
-                <Check v-if="copied" class="h-4 w-4" />
-                <Copy v-else class="h-4 w-4" />
+                <Check v-if="copied" class="h-3.5 w-3.5" />
+                <Copy v-else class="h-3.5 w-3.5" />
               </Button>
             </div>
             <InputError class="mt-2" :message="errors.path" />
@@ -279,12 +279,12 @@ const handleDelete = async () => {
           </div>
         </Form>
 
-        <div class="border-t pt-6">
+        <div class="border-t pt-8 mt-12">
           <HeadingSmall
             :title="t('危险操作')"
             :description="t('删除工作区将无法恢复，请谨慎操作')"
           />
-          <div class="mt-4">
+          <div class="mt-6">
             <Button
               variant="destructive"
               :disabled="isDefaultTenant"
