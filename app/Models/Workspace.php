@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Godruoyi\Snowflake\Snowflake;
 use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,7 +26,6 @@ class Workspace extends Model
 
     public function createSlug()
     {
-        $slug = (new Hashids('', 10, 'abcdefghijklmnopqrstuvwxyz'))->encode($this->id);
-        $this->update(['slug' => $slug]);
+        $this->update(['slug' => (new Snowflake())->id()]);
     }
 }
