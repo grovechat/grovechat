@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import ContactsLayout from '@/layouts/ContactsLayout.vue';
 import contact from '@/routes/contact';
@@ -10,7 +10,7 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 const page = usePage();
 
 // 从路由参数获取类型
@@ -34,8 +34,8 @@ const typeLabels: Record<string, string> = {
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: typeLabels[type.value],
-    href: tenantPath.value
-      ? contact.index.url({ tenant_path: tenantPath.value, type: type.value })
+    href: workspacePath.value
+      ? contact.index.url({ workspace_path: workspacePath.value, type: type.value })
       : '#',
   },
 ]);

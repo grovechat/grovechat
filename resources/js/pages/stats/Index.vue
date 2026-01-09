@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/HeadingSmall.vue';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import stats from '@/routes/stats';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: '统计',
-    href: tenantPath.value ? stats.index(tenantPath.value).url : '#',
+    href: workspacePath.value ? stats.index(workspacePath.value).url : '#',
   },
 ]);
 </script>

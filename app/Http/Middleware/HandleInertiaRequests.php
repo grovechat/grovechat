@@ -40,15 +40,33 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        $user = $request->user();
+        $workspaces = null;
+        $currentWorkspace = null;
+
+        if ($user) {
+            // 获取用户的所有工作区
+            $workspaces = $user->workspaces()->get()->toArray();
+
+            // 获取当前工作区（从请求中）
+            if ($request->route('workspace_path')) {
+                $currentWorkspace = $user->workspaces()
+                    ->where('path', $request->route('workspace_path'))
+                    ->first();
+            }
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'generalSettings' => GeneralSettingsData::from(app(GeneralSettings::class)),
+            'workspaces' => $workspaces,
+            'currentWorkspace' => $currentWorkspace,
         ];
     }
 }

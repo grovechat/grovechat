@@ -79,12 +79,30 @@ export function useErrorHandling() {
     }
   });
 
+  // 处理 Flash Data
+  const removeFlashListener = router.on('flash', (event) => {
+    const flash = event.detail.flash as any;
+
+    if (flash?.toast && typeof flash.toast === 'object') {
+      const { type = 'success', message } = flash.toast;
+      if (type !== 'error' && message) {
+        const toastFn = toast[type as ToastType];
+        if (toastFn) {
+          toastFn(message);
+        } else {
+          toast.default(message);
+        }
+      }
+    }
+  });
+
   const removeNavigateListener = router.on('navigate', () => {
     toasts.value = [];
   });
 
   onUnmounted(() => {
     removeErrorListener();
+    removeFlashListener();
     removeNavigateListener();
   });
 

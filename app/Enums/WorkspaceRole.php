@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum TenantRole: string
+enum WorkspaceRole: string
 {
     case ADMIN = 'admin';
     case CUSTOMER_SERVICE = 'customer_service';

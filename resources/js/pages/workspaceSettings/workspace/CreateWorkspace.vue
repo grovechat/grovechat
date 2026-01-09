@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
-import SystemSettingController from '@/actions/App/Http/Controllers/SystemSettingController';
+import WorkspaceSettingController from '@/actions/App/Http/Controllers/WorkspaceSettingController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -9,31 +9,39 @@ import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
 import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
-import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
-import systemSetting from '@/routes/system-setting';
+import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
+import workspaceSetting from '@/routes/workspace-setting';
 import { type BreadcrumbItem } from '@/types';
-import { type GeneralSettingsData } from '@/types/generated';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import { Check, Copy } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-
-const props = defineProps<GeneralSettingsData>();
 
 const { t } = useI18n();
 const { workspacePath } = useWorkspace();
+const page = usePage();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
-    title: t('基础设置'),
-    href: workspacePath.value
-      ? systemSetting.getGeneralSettings.url(workspacePath.value)
-      : '#',
+    title: t('创建工作区'),
+    href: '#',
   },
 ]);
 
-const logoPreview = ref<string>(props.logo || '');
-const logoUrl = ref<string>(props.logo || '');
+const logoPreview = ref<string>('');
+const logoUrl = ref<string>('');
 const uploading = ref(false);
+const pathInput = ref<string>('');
+const copied = ref(false);
+
+// 从共享数据中获取 generalSettings
+const generalSettings = computed(() => page.props.generalSettings as any);
+
+// 计算完整的访问路径
+const fullAccessUrl = computed(() => {
+  const baseUrl = generalSettings.value?.baseUrl || '';
+  return `${baseUrl}/w/${pathInput.value}`;
+});
 
 const handleLogoChange = async (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -63,62 +71,59 @@ const handleLogoChange = async (event: Event) => {
     logoUrl.value = response.data.url;
   } catch {
     // 上传失败，恢复原来的logo
-    logoPreview.value = props.logo || '';
+    logoPreview.value = '';
   } finally {
     uploading.value = false;
+  }
+};
+
+const copyToClipboard = async () => {
+  try {
+    await navigator.clipboard.writeText(fullAccessUrl.value);
+    copied.value = true;
+    setTimeout(() => {
+      copied.value = false;
+    }, 2000);
+  } catch (err) {
+    console.error('Failed to copy:', err);
   }
 };
 </script>
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head :title="t('基础设置')" />
+    <Head :title="t('创建工作区')" />
 
-    <SystemSettingsLayout>
+    <WorkspaceSettingsLayout>
       <div class="space-y-6">
         <HeadingSmall
-          :title="t('基础设置')"
-          :description="t('配置系统的基本信息和全局设置')"
+          :title="t('创建工作区')"
+          :description="t('创建一个新的工作区来组织你的团队和项目')"
         />
 
         <Form
           v-bind="
             workspacePath
-              ? SystemSettingController.updateGeneralSettings.form(workspacePath)
+              ? WorkspaceSettingController.storeWorkspace.form(workspacePath)
               : {}
           "
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
           <div class="grid gap-2">
-            <Label for="baseUrl">{{ t('主机地址') }}</Label>
-            <Input
-              id="baseUrl"
-              name="baseUrl"
-              type="url"
-              class="mt-1 block w-full"
-              :default-value="baseUrl || undefined"
-              required
-              :placeholder="t('请输入主机地址，例如：https://example.com')"
-            />
-            <InputError class="mt-2" :message="errors.baseUrl" />
-          </div>
-
-          <div class="grid gap-2">
-            <Label for="name">{{ t('系统名称') }}</Label>
+            <Label for="name">{{ t('工作区名称') }}</Label>
             <Input
               id="name"
               name="name"
               class="mt-1 block w-full"
-              :default-value="props.name || undefined"
               required
-              :placeholder="t('请输入系统名称')"
+              :placeholder="t('请输入工作区名称')"
             />
             <InputError class="mt-2" :message="errors.name" />
           </div>
 
           <div class="grid gap-2">
-            <Label for="logo">{{ t('系统Logo') }}</Label>
+            <Label for="logo">{{ t('Logo') }}</Label>
             <div class="mt-1 space-y-3">
               <div
                 v-if="logoPreview"
@@ -158,43 +163,40 @@ const handleLogoChange = async (event: Event) => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="copyright">{{ t('版权信息') }}</Label>
+            <Label for="path">{{ t('访问路径 (path)') }}</Label>
             <Input
-              id="copyright"
-              name="copyright"
+              id="path"
+              name="path"
               class="mt-1 block w-full"
-              :default-value="copyright || undefined"
-              :placeholder="t('请输入版权信息')"
+              v-model="pathInput"
+              required
+              :placeholder="t('请输入访问路径')"
             />
-            <InputError class="mt-2" :message="errors.copyright" />
-          </div>
-
-          <div class="grid gap-2">
-            <Label for="icpRecord">{{ t('备案信息') }}</Label>
-            <Input
-              id="icpRecord"
-              name="icpRecord"
-              class="mt-1 block w-full"
-              :default-value="icpRecord || undefined"
-              :placeholder="t('请输入备案信息')"
-            />
-            <InputError class="mt-2" :message="errors.icpRecord" />
-          </div>
-
-          <div class="grid gap-2">
-            <Label>{{ t('版本号') }}</Label>
-            <div class="text-sm text-muted-foreground py-2">
-              {{ version || t('未设置') }}
+            <div class="flex items-center gap-1.5 mt-1">
+              <p class="text-sm text-muted-foreground">
+                {{ fullAccessUrl }}
+              </p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                @click="copyToClipboard"
+                class="shrink-0 h-6 px-2"
+              >
+                <Check v-if="copied" class="h-3.5 w-3.5" />
+                <Copy v-else class="h-3.5 w-3.5" />
+              </Button>
             </div>
+            <InputError class="mt-2" :message="errors.path" />
           </div>
 
           <div class="flex items-center gap-4">
             <Button
               type="submit"
               :disabled="processing"
-              data-test="update-general-settings-button"
+              data-test="create-workspace-button"
             >
-              {{ t('保存') }}
+              {{ t('创建工作区') }}
             </Button>
 
             <Transition
@@ -204,12 +206,12 @@ const handleLogoChange = async (event: Event) => {
               leave-to-class="opacity-0"
             >
               <p v-show="recentlySuccessful" class="text-sm text-neutral-600">
-                {{ t('已保存。') }}
+                {{ t('创建成功。') }}
               </p>
             </Transition>
           </div>
         </Form>
       </div>
-    </SystemSettingsLayout>
+    </WorkspaceSettingsLayout>
   </AppLayout>
 </template>

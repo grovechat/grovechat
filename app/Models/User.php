@@ -50,8 +50,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function tenants()
+    public function workspaces()
     {
-        return $this->belongsToMany(Tenant::class)->withPivot('role')->withTimestamps();
+        return $this->belongsToMany(Workspace::class)->withPivot('role')->withTimestamps();
     }
 }

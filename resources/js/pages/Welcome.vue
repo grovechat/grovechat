@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import { dashboard, login, register } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -12,7 +12,7 @@ withDefaults(
   },
 );
 
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 </script>
 
 <template>
@@ -43,8 +43,8 @@ const { tenantPath } = useTenant();
         class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
       >
         <Link
-          v-if="$page.props.auth.user && tenantPath"
-          :href="dashboard(tenantPath)"
+          v-if="$page.props.auth.user && workspacePath"
+          :href="dashboard(workspacePath)"
           class="inline-flex w-full items-center justify-center rounded-lg bg-gray-900 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 sm:w-auto dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
         >
           进入控制台

@@ -2,8 +2,8 @@
 
 namespace App\Actions\Fortify;
 
-use App\Enums\TenantRole;
-use App\Models\Tenant;
+use App\Enums\WorkspaceRole;
+use App\Models\Workspace;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -24,7 +24,7 @@ class CreateNewUser implements CreatesNewUsers
     {
         // 验证输入
         Validator::make($input, [
-            'name' => ['required', 'string', 'max:255', 'unique:users', 'unique:tenants,path', 'regex:/^[a-zA-Z0-9_-]+$/'],
+            'name' => ['required', 'string', 'max:255', 'unique:users', 'unique:workspaces,path', 'regex:/^[a-zA-Z0-9_-]+$/'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
             'password' => $this->passwordRules(),
         ])->validate();
@@ -37,14 +37,15 @@ class CreateNewUser implements CreatesNewUsers
                 'password' => $input['password'],
             ]);
 
-            // 创建租户
-            $tenant = Tenant::create([
-                'name' => $user->name, // 以用户名作为默认租户名
-                'slug' => Str::lower($input['name']) . '-' . Str::lower(Str::random(4)),
-                'path' => strtolower($user->name), // 路径强制小写
+            // 创建工作区
+            $workspace = Workspace::create([
+                'name' => 'Default',
+                'path' => strtolower($user->name),
+                'owner_id' => $user->id,
             ]);
+            $workspace->createSlug();
 
-            $user->tenants()->attach($tenant->id, ['role' => TenantRole::ADMIN]);
+            $user->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::ADMIN]);
 
             return $user;
         });

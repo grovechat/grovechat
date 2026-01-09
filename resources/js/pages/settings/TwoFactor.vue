@@ -5,7 +5,7 @@ import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
@@ -26,12 +26,12 @@ withDefaults(defineProps<Props>(), {
 });
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('两步验证'),
-    href: tenantPath.value ? show(tenantPath.value).url : '#',
+    href: workspacePath.value ? show(workspacePath.value).url : '#',
   },
 ]);
 
@@ -73,7 +73,7 @@ onUnmounted(() => {
             </Button>
             <Form
               v-else
-              v-bind="tenantPath ? enable.form(tenantPath) : {}"
+              v-bind="workspacePath ? enable.form(workspacePath) : {}"
               @success="showSetupModal = true"
               #default="{ processing }"
             >
@@ -99,7 +99,7 @@ onUnmounted(() => {
 
           <div class="relative inline">
             <Form
-              v-bind="tenantPath ? disable.form(tenantPath) : {}"
+              v-bind="workspacePath ? disable.form(workspacePath) : {}"
               #default="{ processing }"
             >
               <Button

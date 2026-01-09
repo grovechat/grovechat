@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import { useTimezone, type Timezone } from '@/composables/useTimezone';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
@@ -24,12 +24,12 @@ import { type BreadcrumbItem } from '@/types';
 const { locale, updateLocale, t } = useI18n();
 const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =
   useTimezone();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('语言和时区设置'),
-    href: tenantPath.value ? edit(tenantPath.value).url : '#',
+    href: workspacePath.value ? edit(workspacePath.value).url : '#',
   },
 ]);
 

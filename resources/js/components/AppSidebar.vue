@@ -1,28 +1,30 @@
 <script setup lang="ts">
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
+import WorkspaceSwitcher from '@/components/WorkspaceSwitcher.vue';
 import { Button } from '@/components/ui/button';
+import defaultWorkspaceUrl from '@/assets/images/workspace.png';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import { cn } from '@/lib/utils';
-import { dashboard } from '@/routes';
 import contact from '@/routes/contact';
 import stats from '@/routes/stats';
 import systemSetting from '@/routes/system-setting';
-import tenantSetting from '@/routes/tenant-setting';
+import workspace from '@/routes/workspace';
+import workspaceSetting from '@/routes/workspace-setting';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
   BarChart,
   BookOpen,
@@ -34,34 +36,36 @@ import {
   Users,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
-import AppLogo from './AppLogo.vue';
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 const { toggleSidebar, state } = useSidebar();
+const page = usePage();
 
+const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
+const workspaceLogo = computed(() => page.props.currentWorkspace?.logo || defaultWorkspaceUrl)
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('工作台'),
-    href: tenantPath.value ? dashboard(tenantPath.value) : '/',
+    href: workspacePath.value ? workspace.dashboard.url(workspacePath.value) : '/',
     icon: LayoutGrid,
   },
   {
     title: t('联系人'),
-    href: tenantPath.value
-      ? contact.index.url({ tenant_path: tenantPath.value, type: 'all' })
+    href: workspacePath.value
+      ? contact.index.url({ workspace_path: workspacePath.value, type: 'all' })
       : '/',
     icon: Users,
   },
   {
     title: t('统计'),
-    href: tenantPath.value ? stats.index.url(tenantPath.value) : '/',
+    href: workspacePath.value ? stats.index.url(workspacePath.value) : '/',
     icon: BarChart,
   },
   {
     title: t('管理中心'),
-    href: tenantPath.value
-      ? tenantSetting.tenant.general.url(tenantPath.value)
+    href: workspacePath.value
+      ? workspaceSetting.workspace.general.url(workspacePath.value)
       : '/',
     icon: Building2,
   },
@@ -80,8 +84,8 @@ const footerNavItems = computed<NavItem[]>(() => [
   },
   {
     title: t('系统设置'),
-    href: tenantPath.value
-      ? systemSetting.getGeneralSettings.url(tenantPath.value)
+    href: workspacePath.value
+      ? systemSetting.getGeneralSettings.url(workspacePath.value)
       : '/',
     icon: Settings,
   },
@@ -92,15 +96,43 @@ const footerNavItems = computed<NavItem[]>(() => [
   <Sidebar collapsible="icon" variant="inset">
     <SidebarHeader class="group-data-[collapsible=icon]:!p-0">
       <div
-        class="flex items-center justify-between group-data-[collapsible=icon]:flex-col"
+        class="flex items-center justify-between group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-2"
       >
-        <SidebarMenu class="group-data-[collapsible=icon]:!p-2">
+        <SidebarMenu class="group-data-[collapsible=icon]:!p-2 w-full">
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" as-child>
-              <Link :href="tenantPath ? dashboard(tenantPath) : '/'">
-                <AppLogo />
+            <div class="flex items-center gap-2 w-full px-0 py-0 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
+              <!-- 系统 Logo - 可点击跳转当前工作区首页 -->
+              <Link
+                :href="workspacePath ? workspace.dashboard.url(workspacePath) : '/'"
+                class="shrink-0 p-2 group-data-[collapsible=icon]:p-0"
+              >
+                <div
+                  class="flex aspect-square size-12 items-center justify-center rounded-md text-sidebar-primary-foreground"
+                >
+                  <AppLogoIcon class="size-12 fill-current text-white dark:text-black" />
+                </div>
               </Link>
-            </SidebarMenuButton>
+
+              <!-- 右侧：系统名称和工作区切换器 -->
+              <div class="flex flex-col gap-1 flex-1 min-w-0 group-data-[collapsible=icon]:hidden pr-2">
+                <!-- 系统名称 -->
+                <span class="text-sm font-semibold leading-tight">{{ systemName }}</span>
+
+                <!-- 工作区切换器 - 独立的热区 -->
+                <WorkspaceSwitcher />
+              </div>
+
+              <!-- 缩进时显示的工作区 Logo -->
+              <div v-if="page.props.currentWorkspace" class="hidden group-data-[collapsible=icon]:block">
+                <div class="flex h-6 w-6 items-center justify-center rounded overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground">
+                  <img
+                    :src="workspaceLogo"
+                    :alt="page.props.currentWorkspace.name"
+                    class="h-full w-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
         <Button
@@ -108,7 +140,7 @@ const footerNavItems = computed<NavItem[]>(() => [
           size="icon"
           :class="
             cn(
-              'mr-2 h-7 w-7 shrink-0 transition-colors duration-200',
+              'h-7 w-7 shrink-0 transition-colors duration-200',
               'group-data-[collapsible=icon]:mr-0 group-data-[collapsible=icon]:mb-2',
               'group-data-[state=expanded]/sidebar-wrapper:bg-sidebar-accent group-data-[state=expanded]/sidebar-wrapper:text-sidebar-accent-foreground',
             )

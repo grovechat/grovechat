@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editLanguage } from '@/routes/language';
@@ -14,31 +14,31 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 
 const sidebarNavItems = computed<NavItem[]>(() => {
-  if (!tenantPath.value) return [];
+  if (!workspacePath.value) return [];
 
   return [
     {
       title: t('个人资料'),
-      href: editProfile(tenantPath.value),
+      href: editProfile(workspacePath.value),
     },
     {
       title: t('密码'),
-      href: editPassword(tenantPath.value),
+      href: editPassword(workspacePath.value),
     },
     {
       title: t('两步验证'),
-      href: show(tenantPath.value),
+      href: show(workspacePath.value),
     },
     {
       title: t('语言和时区'),
-      href: editLanguage(tenantPath.value),
+      href: editLanguage(workspacePath.value),
     },
     {
       title: t('外观'),
-      href: editAppearance(tenantPath.value),
+      href: editAppearance(workspacePath.value),
     },
   ];
 });

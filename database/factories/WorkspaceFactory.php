@@ -2,16 +2,16 @@
 
 namespace Database\Factories;
 
-use App\Models\Tenant;
+use App\Models\Workspace;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Tenant>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Workspace>
  */
-class TenantFactory extends Factory
+class WorkspaceFactory extends Factory
 {
-    protected $model = Tenant::class;
+    protected $model = Workspace::class;
 
     /**
      * Define the model's default state.
