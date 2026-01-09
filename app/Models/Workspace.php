@@ -6,7 +6,7 @@ use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tenant extends Model
+class Workspace extends Model
 {
     use HasFactory;
 
@@ -22,7 +22,7 @@ class Tenant extends Model
     {
         return $this->belongsToMany(User::class)->withPivot('role')->withTimestamps();
     }
-    
+
     public function createSlug()
     {
         $slug = (new Hashids('', 10, 'abcdefghijklmnopqrstuvwxyz'))->encode($this->id);

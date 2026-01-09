@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
-import TenantSettingsLayout from '@/layouts/TenantSettingsLayout.vue';
+import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import tenantSetting from '@/routes/tenant-setting';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
-    title: t('标签'),
-    href: tenantPath.value
-      ? tenantSetting.datas.tag.url(tenantPath.value)
+    title: t('多客服'),
+    href: workspacePath.value
+      ? tenantSetting.teammate.index.url(workspacePath.value)
       : '#',
   },
 ]);
@@ -24,15 +24,15 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
 <template>
   <AppLayout :breadcrumbs="breadcrumbItems">
-    <Head :title="t('标签')" />
+    <Head :title="t('多客服')" />
 
-    <TenantSettingsLayout>
+    <WorkspaceSettingsLayout>
       <div class="space-y-6">
         <HeadingSmall
-          :title="t('标签')"
-          :description="t('管理和组织联系人标签')"
+          :title="t('多客服')"
+          :description="t('管理团队成员和客服人员')"
         />
       </div>
-    </TenantSettingsLayout>
+    </WorkspaceSettingsLayout>
   </AppLayout>
 </template>

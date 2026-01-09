@@ -2,7 +2,7 @@
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import InputError from '@/components/InputError.vue';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { edit } from '@/routes/user-password';
@@ -16,12 +16,12 @@ import { Label } from '@/components/ui/label';
 import { type BreadcrumbItem } from '@/types';
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('密码设置'),
-    href: tenantPath.value ? edit(tenantPath.value).url : '#',
+    href: workspacePath.value ? edit(workspacePath.value).url : '#',
   },
 ]);
 </script>
@@ -38,7 +38,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="tenantPath ? PasswordController.update.form(tenantPath) : {}"
+          v-bind="workspacePath ? PasswordController.update.form(workspacePath) : {}"
           :options="{
             preserveScroll: true,
           }"

@@ -3,7 +3,7 @@ import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
-import TenantSwitcher from '@/components/TenantSwitcher.vue';
+import WorkspaceSwitcher from '@/components/WorkspaceSwitcher.vue';
 import { Button } from '@/components/ui/button';
 import defaultWorkspaceUrl from '@/assets/images/workspace.png';
 import {
@@ -16,7 +16,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import { cn } from '@/lib/utils';
 import contact from '@/routes/contact';
 import stats from '@/routes/stats';
@@ -38,34 +38,34 @@ import {
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 const { toggleSidebar, state } = useSidebar();
 const page = usePage();
 
 const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
-const tenantLogo = computed(() => page.props.currentTenant?.logo || defaultWorkspaceUrl)
+const tenantLogo = computed(() => page.props.currentWorkspace?.logo || defaultWorkspaceUrl)
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('工作台'),
-    href: tenantPath.value ? tenant.dashboard.url(tenantPath.value) : '/',
+    href: workspacePath.value ? tenant.dashboard.url(workspacePath.value) : '/',
     icon: LayoutGrid,
   },
   {
     title: t('联系人'),
-    href: tenantPath.value
-      ? contact.index.url({ tenant_path: tenantPath.value, type: 'all' })
+    href: workspacePath.value
+      ? contact.index.url({ workspace_path: workspacePath.value, type: 'all' })
       : '/',
     icon: Users,
   },
   {
     title: t('统计'),
-    href: tenantPath.value ? stats.index.url(tenantPath.value) : '/',
+    href: workspacePath.value ? stats.index.url(workspacePath.value) : '/',
     icon: BarChart,
   },
   {
     title: t('管理中心'),
-    href: tenantPath.value
-      ? tenantSetting.tenant.general.url(tenantPath.value)
+    href: workspacePath.value
+      ? tenantSetting.tenant.general.url(workspacePath.value)
       : '/',
     icon: Building2,
   },
@@ -84,8 +84,8 @@ const footerNavItems = computed<NavItem[]>(() => [
   },
   {
     title: t('系统设置'),
-    href: tenantPath.value
-      ? systemSetting.getGeneralSettings.url(tenantPath.value)
+    href: workspacePath.value
+      ? systemSetting.getGeneralSettings.url(workspacePath.value)
       : '/',
     icon: Settings,
   },
@@ -103,7 +103,7 @@ const footerNavItems = computed<NavItem[]>(() => [
             <div class="flex items-center gap-2 w-full px-0 py-0 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               <!-- 系统 Logo - 可点击跳转当前工作区首页 -->
               <Link
-                :href="tenantPath ? tenant.dashboard.url(tenantPath) : '/'"
+                :href="workspacePath ? tenant.dashboard.url(workspacePath) : '/'"
                 class="shrink-0 p-2 group-data-[collapsible=icon]:p-0"
               >
                 <div
@@ -119,15 +119,15 @@ const footerNavItems = computed<NavItem[]>(() => [
                 <span class="text-sm font-semibold leading-tight">{{ systemName }}</span>
 
                 <!-- 工作区切换器 - 独立的热区 -->
-                <TenantSwitcher />
+                <WorkspaceSwitcher />
               </div>
 
               <!-- 缩进时显示的工作区 Logo -->
-              <div v-if="page.props.currentTenant" class="hidden group-data-[collapsible=icon]:block">
+              <div v-if="page.props.currentWorkspace" class="hidden group-data-[collapsible=icon]:block">
                 <div class="flex h-6 w-6 items-center justify-center rounded overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground">
                   <img
                     :src="tenantLogo"
-                    :alt="page.props.currentTenant.name"
+                    :alt="page.props.currentWorkspace.name"
                     class="h-full w-full object-cover"
                   />
                 </div>

@@ -4,14 +4,14 @@ namespace App\Data;
 
 use Spatie\LaravelData\Data;
 
-class CreateTenantDTO extends Data
+class UpdateWorkspaceDTO extends Data
 {
     public function __construct(
         public string $name,
         public string $path,
         public ?string $logo = null,
     ) {}
-    
+
     public function rule()
     {
         return [

@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import systemSetting from '@/routes/system-setting';
 import { type NavItem } from '@/types';
@@ -10,35 +10,35 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 
 const sidebarNavItems = computed<NavItem[]>(() => {
-  if (!tenantPath.value) return [];
+  if (!workspacePath.value) return [];
 
   return [
     {
       title: t('基础设置'),
-      href: systemSetting.getGeneralSettings.url(tenantPath.value),
+      href: systemSetting.getGeneralSettings.url(workspacePath.value),
     },
     {
       title: t('存储设置'),
-      href: systemSetting.getStorageSettings.url(tenantPath.value),
+      href: systemSetting.getStorageSettings.url(workspacePath.value),
     },
     {
       title: t('邮箱服务器'),
-      href: systemSetting.getMailSettings.url(tenantPath.value),
+      href: systemSetting.getMailSettings.url(workspacePath.value),
     },
     {
       title: t('集成'),
-      href: systemSetting.getIntegrationSettings.url(tenantPath.value),
+      href: systemSetting.getIntegrationSettings.url(workspacePath.value),
     },
     {
       title: t('安全'),
-      href: systemSetting.getSecuritySettings.url(tenantPath.value),
+      href: systemSetting.getSecuritySettings.url(workspacePath.value),
     },
     {
       title: t('维护'),
-      href: systemSetting.getMaintenanceSettings.url(tenantPath.value),
+      href: systemSetting.getMaintenanceSettings.url(workspacePath.value),
     },
   ];
 });

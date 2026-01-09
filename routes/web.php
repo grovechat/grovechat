@@ -7,20 +7,20 @@ use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
 use App\Http\Controllers\SystemSettingController;
-use App\Http\Controllers\TenantSettingController;
-use App\Http\Middleware\IdentifyTenant;
-use App\Http\Middleware\TrackLastTenant;
+use App\Http\Controllers\WorkspaceSettingController;
+use App\Http\Middleware\IdentifyWorkspace;
+use App\Http\Middleware\TrackLastWorkspace;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'verified', IdentifyTenant::class, TrackLastTenant::class])
-    ->prefix('w/{tenant_path}')
+Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])
+    ->prefix('w/{workspace_path}')
     ->group(function () {
-        Route::get('/', [HomeController::class, 'tenantHome'])->name('tenant.home');
-        Route::get('dashboard', [HomeController::class, 'tenantDashboard'])->name('tenant.dashboard');
+        Route::get('/', [HomeController::class, 'workspaceHome'])->name('workspace.home');
+        Route::get('dashboard', [HomeController::class, 'workspaceDashboard'])->name('workspace.dashboard');
        
         // 个人资料
         Route::redirect('settings', 'settings/profile');
@@ -72,45 +72,45 @@ Route::middleware(['auth', 'verified', IdentifyTenant::class, TrackLastTenant::c
         
                 
         // 工作区--常规设置
-        Route::get('tenant-settings/tenant/general', [
-            TenantSettingController::class, 'showTenantGeneralPage'
-        ])->name('tenant-setting.tenant.general');
-        
-        Route::get('tenant-settings/tenant/create', [
-            TenantSettingController::class, 'showCreateTenantPage',
-        ])->name('tenant-settings.tenant.create');
-        
-        Route::put('tenant-settings/tenant/updateTenant', [
-            TenantSettingController::class, 'updateTenent',
-        ])->name('tenant-settings.tenent.update');
-        
-        Route::post('tenant-settings/tenant/store', [
-            TenantSettingController::class, 'storeTenant',
-        ])->name('tenant-settings.tenant.addTenant');
-        
-        Route::delete('tenant-settings/tenant/deleteTenant', [
-            TenantSettingController::class, 'deleteTenant',
-        ])->name('tenant-settings.tenant.delete');
+        Route::get('workspace-settings/workspace/general', [
+            WorkspaceSettingController::class, 'showWorkspaceGeneralPage'
+        ])->name('workspace-setting.workspace.general');
+
+        Route::get('workspace-settings/workspace/create', [
+            WorkspaceSettingController::class, 'showCreateWorkspacePage',
+        ])->name('workspace-settings.workspace.create');
+
+        Route::put('workspace-settings/workspace/updateWorkspace', [
+            WorkspaceSettingController::class, 'updateWorkspace',
+        ])->name('workspace-settings.workspace.update');
+
+        Route::post('workspace-settings/workspace/store', [
+            WorkspaceSettingController::class, 'storeWorkspace',
+        ])->name('workspace-settings.workspace.addWorkspace');
+
+        Route::delete('workspace-settings/workspace/deleteWorkspace', [
+            WorkspaceSettingController::class, 'deleteWorkspace',
+        ])->name('workspace-settings.workspace.delete');
 
         // 客服--多客服
-        Route::get('tenant-settings/teammate/index', function () {
-            return Inertia::render('tenantSettings/teammate/Index');
-        })->name('tenant-setting.teammate.index');
+        Route::get('workspace-settings/teammate/index', function () {
+            return Inertia::render('workspaceSettings/teammate/Index');
+        })->name('workspace-setting.teammate.index');
 
         // 渠道--网站
-        Route::get('tenant-settings/channels/web', function () {
-            return Inertia::render('tenantSettings/channels/Web');
-        })->name('tenant-setting.channels.web');
+        Route::get('workspace-settings/channels/web', function () {
+            return Inertia::render('workspaceSettings/channels/Web');
+        })->name('workspace-setting.channels.web');
 
         // 数据--标签
-        Route::get('tenant-settings/datas/tag', function () {
-            return Inertia::render('tenantSettings/datas/Tag');
-        })->name('tenant-setting.datas.tag');
+        Route::get('workspace-settings/datas/tag', function () {
+            return Inertia::render('workspaceSettings/datas/Tag');
+        })->name('workspace-setting.datas.tag');
 
         // 数据--自定义属性
-        Route::get('tenant-settings/datas/attribute', function () {
-            return Inertia::render('tenantSettings/datas/Attribute');
-        })->name('tenant-setting.datas.attribute');
+        Route::get('workspace-settings/datas/attribute', function () {
+            return Inertia::render('workspaceSettings/datas/Attribute');
+        })->name('workspace-setting.datas.attribute');
 
         // 联系人
         Route::get('contacts/{type}/index', function () {

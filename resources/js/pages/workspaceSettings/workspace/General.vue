@@ -15,9 +15,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
-import TenantSettingsLayout from '@/layouts/TenantSettingsLayout.vue';
+import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import tenantSetting from '@/routes/tenant-setting';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/vue3';
@@ -39,14 +39,14 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 const page = usePage();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('常规设置'),
-    href: tenantPath.value
-      ? tenantSetting.tenant.general.url(tenantPath.value)
+    href: workspacePath.value
+      ? tenantSetting.tenant.general.url(workspacePath.value)
       : '#',
   },
 ]);
@@ -120,11 +120,11 @@ const copyToClipboard = async () => {
 };
 
 const handleDelete = () => {
-  if (!tenantPath.value) return;
+  if (!workspacePath.value) return;
 
   deleting.value = true;
   router.delete(
-    TenantSettingController.deleteTenant.url(tenantPath.value),
+    TenantSettingController.deleteTenant.url(workspacePath.value),
     {
       preserveState: false,
       preserveScroll: false,
@@ -143,7 +143,7 @@ const handleDelete = () => {
   <AppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('常规设置')" />
 
-    <TenantSettingsLayout>
+    <WorkspaceSettingsLayout>
       <div class="space-y-6">
         <HeadingSmall
           :title="t('常规设置')"
@@ -152,8 +152,8 @@ const handleDelete = () => {
 
         <Form
           v-bind="
-            tenantPath
-              ? TenantSettingController.updateTenent.form(tenantPath)
+            workspacePath
+              ? TenantSettingController.updateTenent.form(workspacePath)
               : {}
           "
           class="space-y-6"
@@ -297,7 +297,7 @@ const handleDelete = () => {
           </div>
         </div>
       </div>
-    </TenantSettingsLayout>
+    </WorkspaceSettingsLayout>
 
     <Dialog v-model:open="showDeleteDialog">
       <DialogContent>

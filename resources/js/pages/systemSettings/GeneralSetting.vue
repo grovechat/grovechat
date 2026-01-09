@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import systemSetting from '@/routes/system-setting';
@@ -20,13 +20,13 @@ import { computed, ref } from 'vue';
 const props = defineProps<GeneralSettingsData>();
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: tenantPath.value
-      ? systemSetting.getGeneralSettings.url(tenantPath.value)
+    href: workspacePath.value
+      ? systemSetting.getGeneralSettings.url(workspacePath.value)
       : '#',
   },
 ]);
@@ -83,8 +83,8 @@ const handleLogoChange = async (event: Event) => {
 
         <Form
           v-bind="
-            tenantPath
-              ? SystemSettingController.updateGeneralSettings.form(tenantPath)
+            workspacePath
+              ? SystemSettingController.updateGeneralSettings.form(workspacePath)
               : {}
           "
           class="space-y-6"

@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
-import TenantSettingsLayout from '@/layouts/TenantSettingsLayout.vue';
+import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import tenantSetting from '@/routes/tenant-setting';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
@@ -18,7 +18,7 @@ import { Check, Copy } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 const page = usePage();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -94,7 +94,7 @@ const copyToClipboard = async () => {
   <AppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('创建工作区')" />
 
-    <TenantSettingsLayout>
+    <WorkspaceSettingsLayout>
       <div class="space-y-6">
         <HeadingSmall
           :title="t('创建工作区')"
@@ -103,8 +103,8 @@ const copyToClipboard = async () => {
 
         <Form
           v-bind="
-            tenantPath
-              ? TenantSettingController.storeTenant.form(tenantPath)
+            workspacePath
+              ? TenantSettingController.storeTenant.form(workspacePath)
               : {}
           "
           class="space-y-6"
@@ -212,6 +212,6 @@ const copyToClipboard = async () => {
           </div>
         </Form>
       </div>
-    </TenantSettingsLayout>
+    </WorkspaceSettingsLayout>
   </AppLayout>
 </template>

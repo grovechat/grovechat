@@ -26,11 +26,11 @@ interface Tenant {
 const { t } = useI18n();
 const page = usePage();
 
-const tenants = computed(() => (page.props.tenants as Tenant[]) || []);
-const currentTenant = computed(() => page.props.currentTenant as Tenant | null);
-const tenantLogo = computed(() => currentTenant.value?.logo || defaultWorkspaceUrl)
+const workspaces = computed(() => (page.props.workspaces as Tenant[]) || []);
+const currentWorkspace = computed(() => page.props.currentWorkspace as Tenant | null);
+const tenantLogo = computed(() => currentWorkspace.value?.logo || defaultWorkspaceUrl)
 const switchTenant = (selectedTenant: Tenant) => {
-  if (selectedTenant.path !== currentTenant.value?.path) {
+  if (selectedTenant.path !== currentWorkspace.value?.path) {
     router.visit(tenant.dashboard.url(selectedTenant.path), {
       preserveState: false,
       preserveScroll: false,
@@ -39,14 +39,14 @@ const switchTenant = (selectedTenant: Tenant) => {
 };
 
 const goToCreateTenant = () => {
-  if (currentTenant.value) {
-    router.visit(TenantSettingController.showCreateTenantPage.url(currentTenant.value.path));
+  if (currentWorkspace.value) {
+    router.visit(TenantSettingController.showCreateTenantPage.url(currentWorkspace.value.path));
   }
 };
 </script>
 
 <template>
-  <DropdownMenu v-if="currentTenant">
+  <DropdownMenu v-if="currentWorkspace">
     <DropdownMenuTrigger as-child>
       <button
         class="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-left text-xs hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
@@ -54,12 +54,12 @@ const goToCreateTenant = () => {
         <div class="flex h-5 w-5 items-center justify-center rounded overflow-hidden text-sidebar-primary-foreground shrink-0">
           <img
             :src="tenantLogo"
-            :alt="currentTenant.name"
+            :alt="currentWorkspace.name"
             class="h-full w-full object-cover"
           />
         </div>
         <span class="flex-1 truncate text-xs font-medium">
-          {{ currentTenant.name }}
+          {{ currentWorkspace.name }}
         </span>
         <ChevronsUpDown class="h-3 w-3 shrink-0 opacity-50" />
       </button>
@@ -69,7 +69,7 @@ const goToCreateTenant = () => {
         {{ t('切换工作区') }}
       </div>
       <DropdownMenuItem
-        v-for="tenant in tenants"
+        v-for="tenant in workspaces"
         :key="tenant.id"
         class="flex items-center gap-2 cursor-pointer"
         @click="switchTenant(tenant)"
@@ -83,7 +83,7 @@ const goToCreateTenant = () => {
         </div>
         <span class="flex-1 truncate">{{ tenant.name }}</span>
         <Check
-          v-if="tenant.path === currentTenant?.path"
+          v-if="tenant.path === currentWorkspace?.path"
           class="h-4 w-4 shrink-0"
         />
       </DropdownMenuItem>

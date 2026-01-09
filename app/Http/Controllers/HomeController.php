@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tenant;
+use App\Models\Workspace;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Features;
 use Inertia\Inertia;
@@ -15,34 +15,34 @@ class HomeController extends Controller
             'canRegister' => Features::enabled(Features::registration()),
         ]);
     }
-    
+
     public function dashboard()
     {
         /** @var User $user */
         $user = Auth::user();
 
-        $lastTenantPath = session('last_tenant_path');
-        if ($lastTenantPath) {
-            $tenant = $user->tenants()->where('path', $lastTenantPath)->first();
-            if ($tenant) {
-                return redirect()->route('tenant.dashboard', ['tenant_path' => $tenant->path]);
+        $lastWorkspacePath = session('last_workspace_path');
+        if ($lastWorkspacePath) {
+            $workspace = $user->workspaces()->where('path', $lastWorkspacePath)->first();
+            if ($workspace) {
+                return redirect()->route('workspace.dashboard', ['workspace_path' => $workspace->path]);
             }
         }
 
         // 如果没有保存的工作区或无权访问，跳转到第一个工作区
-        $firstTenant = $user->tenants()->first();
-        if ($firstTenant) {
-            return redirect()->route('tenant.dashboard', ['tenant_path' => $firstTenant->path]);
+        $firstWorkspace = $user->workspaces()->first();
+        if ($firstWorkspace) {
+            return redirect()->route('workspace.dashboard', ['workspace_path' => $firstWorkspace->path]);
         }
         return redirect()->route('home');
     }
-    
-    public function tenantHome(Tenant $tenant)
+
+    public function workspaceHome(Workspace $workspace)
     {
-        return redirect()->route('tenant.dashboard', $tenant->path);
+        return redirect()->route('workspace.dashboard', $workspace->path);
     }
-    
-    public function tenantDashboard()
+
+    public function workspaceDashboard()
     {
         return Inertia::render('Dashboard');
     }

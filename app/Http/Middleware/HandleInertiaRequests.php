@@ -41,17 +41,17 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         $user = $request->user();
-        $tenants = null;
-        $currentTenant = null;
+        $workspaces = null;
+        $currentWorkspace = null;
 
         if ($user) {
-            // 获取用户的所有租户
-            $tenants = $user->tenants()->get()->toArray();
+            // 获取用户的所有工作区
+            $workspaces = $user->workspaces()->get()->toArray();
 
-            // 获取当前租户（从请求中）
-            if ($request->route('tenant_path')) {
-                $currentTenant = $user->tenants()
-                    ->where('path', $request->route('tenant_path'))
+            // 获取当前工作区（从请求中）
+            if ($request->route('workspace_path')) {
+                $currentWorkspace = $user->workspaces()
+                    ->where('path', $request->route('workspace_path'))
                     ->first();
             }
         }
@@ -65,8 +65,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'generalSettings' => GeneralSettingsData::from(app(GeneralSettings::class)),
-            'tenants' => $tenants,
-            'currentTenant' => $currentTenant,
+            'workspaces' => $workspaces,
+            'currentWorkspace' => $currentWorkspace,
         ];
     }
 }

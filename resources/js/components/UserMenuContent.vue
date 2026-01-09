@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import type { User } from '@/types';
@@ -25,7 +25,7 @@ const handleLogout = () => {
 defineProps<Props>();
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 </script>
 
 <template>
@@ -39,7 +39,7 @@ const { tenantPath } = useTenant();
     <DropdownMenuItem :as-child="true">
       <Link
         class="block w-full"
-        :href="tenantPath ? edit(tenantPath) : '#'"
+        :href="workspacePath ? edit(workspacePath) : '#'"
         prefetch
         as="button"
       >

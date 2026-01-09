@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
-import TenantSwitcher from '@/components/TenantSwitcher.vue';
+import WorkspaceSwitcher from '@/components/WorkspaceSwitcher.vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -23,7 +23,7 @@ const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat
       <span class="text-sm font-semibold leading-tight">{{ systemName }}</span>
 
       <!-- 工作区切换器 -->
-      <TenantSwitcher />
+      <WorkspaceSwitcher />
     </div>
   </div>
 </template>

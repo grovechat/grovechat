@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import { useTenant } from '@/composables/useTenant';
+import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { type BreadcrumbItem } from '@/types';
@@ -24,7 +24,7 @@ interface Props {
 defineProps<Props>();
 
 const { t } = useI18n();
-const { tenantPath } = useTenant();
+const { workspacePath } = useWorkspace();
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -32,7 +32,7 @@ const user = page.props.auth.user;
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('个人资料设置'),
-    href: tenantPath.value ? edit(tenantPath.value).url : '#',
+    href: workspacePath.value ? edit(workspacePath.value).url : '#',
   },
 ]);
 </script>
@@ -49,7 +49,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="tenantPath ? ProfileController.update.form(tenantPath) : {}"
+          v-bind="workspacePath ? ProfileController.update.form(workspacePath) : {}"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
@@ -86,7 +86,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             <p class="-mt-4 text-sm text-muted-foreground">
               {{ t('你的电子邮件地址未验证。') }}
               <Link
-                :href="tenantPath ? send(tenantPath) : '#'"
+                :href="workspacePath ? send(workspacePath) : '#'"
                 as="button"
                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
               >

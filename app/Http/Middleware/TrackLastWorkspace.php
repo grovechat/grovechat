@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class TrackLastTenant
+class TrackLastWorkspace
 {
     /**
      * Handle an incoming request.
@@ -15,10 +15,10 @@ class TrackLastTenant
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // 如果用户已登录且当前路由包含 tenant_path，保存到 session
-        if ($request->user() && $request->route('tenant_path')) {
-            $tenantPath = $request->route('tenant_path');
-            $request->session()->put('last_tenant_path', $tenantPath);
+        // 如果用户已登录且当前路由包含 workspace_path，保存到 session
+        if ($request->user() && $request->route('workspace_path')) {
+            $workspacePath = $request->route('workspace_path');
+            $request->session()->put('last_workspace_path', $workspacePath);
         }
 
         return $next($request);
