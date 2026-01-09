@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import TenantSettingController from '@/actions/App/Http/Controllers/TenantSettingController';
+import defaultWorkspaceUrl from '@/assets/images/workspace.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +28,7 @@ const page = usePage();
 
 const tenants = computed(() => (page.props.tenants as Tenant[]) || []);
 const currentTenant = computed(() => page.props.currentTenant as Tenant | null);
-
+const tenantLogo = computed(() => currentTenant.value?.logo || defaultWorkspaceUrl)
 const switchTenant = (selectedTenant: Tenant) => {
   if (selectedTenant.path !== currentTenant.value?.path) {
     router.visit(tenant.dashboard.url(selectedTenant.path), {
@@ -50,23 +51,12 @@ const goToCreateTenant = () => {
       <button
         class="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-left text-xs hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
       >
-        <div
-          v-if="currentTenant.logo"
-          class="flex h-5 w-5 items-center justify-center rounded overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground shrink-0"
-        >
+        <div class="flex h-5 w-5 items-center justify-center rounded overflow-hidden text-sidebar-primary-foreground shrink-0">
           <img
-            :src="currentTenant.logo"
+            :src="tenantLogo"
             :alt="currentTenant.name"
             class="h-full w-full object-cover"
           />
-        </div>
-        <div
-          v-else
-          class="flex h-5 w-5 items-center justify-center rounded bg-sidebar-primary text-sidebar-primary-foreground shrink-0"
-        >
-          <span class="text-[10px] font-semibold">
-            {{ currentTenant.name.charAt(0).toUpperCase() }}
-          </span>
         </div>
         <span class="flex-1 truncate text-xs font-medium">
           {{ currentTenant.name }}
@@ -84,23 +74,12 @@ const goToCreateTenant = () => {
         class="flex items-center gap-2 cursor-pointer"
         @click="switchTenant(tenant)"
       >
-        <div
-          v-if="tenant.logo"
-          class="flex h-6 w-6 items-center justify-center rounded-md overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground shrink-0"
-        >
+        <div class="flex h-6 w-6 items-center justify-center rounded-md overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground shrink-0">
           <img
             :src="tenant.logo"
             :alt="tenant.name"
             class="h-full w-full object-cover"
           />
-        </div>
-        <div
-          v-else
-          class="flex h-6 w-6 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground shrink-0"
-        >
-          <span class="text-xs font-semibold">
-            {{ tenant.name.charAt(0).toUpperCase() }}
-          </span>
         </div>
         <span class="flex-1 truncate">{{ tenant.name }}</span>
         <Check

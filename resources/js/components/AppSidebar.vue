@@ -5,6 +5,7 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import TenantSwitcher from '@/components/TenantSwitcher.vue';
 import { Button } from '@/components/ui/button';
+import defaultWorkspaceUrl from '@/assets/images/workspace.png';
 import {
   Sidebar,
   SidebarContent,
@@ -42,7 +43,7 @@ const { toggleSidebar, state } = useSidebar();
 const page = usePage();
 
 const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
-
+const tenantLogo = computed(() => page.props.currentTenant?.logo || defaultWorkspaceUrl)
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('工作台'),
@@ -106,7 +107,7 @@ const footerNavItems = computed<NavItem[]>(() => [
                 class="shrink-0 p-2 group-data-[collapsible=icon]:p-0"
               >
                 <div
-                  class="flex aspect-square size-12 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
+                  class="flex aspect-square size-12 items-center justify-center rounded-md text-sidebar-primary-foreground"
                 >
                   <AppLogoIcon class="size-12 fill-current text-white dark:text-black" />
                 </div>
@@ -123,23 +124,12 @@ const footerNavItems = computed<NavItem[]>(() => [
 
               <!-- 缩进时显示的工作区 Logo -->
               <div v-if="page.props.currentTenant" class="hidden group-data-[collapsible=icon]:block">
-                <div
-                  v-if="page.props.currentTenant.logo"
-                  class="flex h-10 w-10 items-center justify-center rounded overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground"
-                >
+                <div class="flex h-6 w-6 items-center justify-center rounded overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground">
                   <img
-                    :src="page.props.currentTenant.logo"
+                    :src="tenantLogo"
                     :alt="page.props.currentTenant.name"
                     class="h-full w-full object-cover"
                   />
-                </div>
-                <div
-                  v-else
-                  class="flex h-10 w-10 items-center justify-center rounded bg-sidebar-primary text-sidebar-primary-foreground"
-                >
-                  <span class="text-sm font-semibold">
-                    {{ page.props.currentTenant.name.charAt(0).toUpperCase() }}
-                  </span>
                 </div>
               </div>
             </div>

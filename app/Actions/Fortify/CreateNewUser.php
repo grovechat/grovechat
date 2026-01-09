@@ -39,9 +39,8 @@ class CreateNewUser implements CreatesNewUsers
 
             // 创建租户
             $tenant = Tenant::create([
-                'name' => $user->name, // 以用户名作为默认租户名
-                'slug' => Str::lower($input['name']) . '-' . Str::lower(Str::random(4)),
-                'path' => strtolower($user->name), // 路径强制小写
+                'name' => 'Default',
+                'path' => strtolower($user->name),
                 'owner_id' => $user->id,
             ]);
             $tenant->createSlug();
