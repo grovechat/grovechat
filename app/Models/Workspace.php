@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 class Workspace extends Model
 {
     use HasFactory, HasUlids;
+    
+    protected $guarded = [];
 
     protected $fillable = [
         'id',

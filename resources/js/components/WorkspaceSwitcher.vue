@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import WorkspaceSettingController from '@/actions/App/Http/Controllers/WorkspaceSettingController';
-import defaultWorkspaceUrl from '@/assets/images/workspace.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,26 +9,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
 import workspace from '@/routes/workspace';
+import { WorkspaceData } from '@/types/generated';
 import { router, usePage } from '@inertiajs/vue3';
 import { Check, ChevronsUpDown, Plus } from 'lucide-vue-next';
 import { computed } from 'vue';
 
-interface Workspace {
-  id: number;
-  name: string;
-  slug: string;
-  logo_id: string | null;
-  logo_url: string | null;
-  owner_id: number | null;
-}
-
 const { t } = useI18n();
 const page = usePage();
+const workspaces = computed(() => (page.props.workspaces));
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
-const workspaces = computed(() => (page.props.workspaces as Workspace[]) || []);
-const currentWorkspace = computed(() => page.props.currentWorkspace as Workspace | null);
-const workspaceLogo = computed(() => currentWorkspace.value?.logo_url || defaultWorkspaceUrl)
-const switchWorkspace = (selectedWorkspace: Workspace) => {
+const switchWorkspace = (selectedWorkspace: WorkspaceData) => {
   if (selectedWorkspace.slug !== currentWorkspace.value?.slug) {
     router.visit(workspace.dashboard.url(selectedWorkspace.slug), {
       preserveState: false,
@@ -53,7 +43,7 @@ const goToCreateWorkspace = () => {
       >
         <div class="flex h-5 w-5 items-center justify-center rounded overflow-hidden text-sidebar-primary-foreground shrink-0">
           <img
-            :src="workspaceLogo"
+            :src="currentWorkspace.logo_url"
             :alt="currentWorkspace.name"
             class="h-full w-full object-cover"
           />
@@ -76,7 +66,7 @@ const goToCreateWorkspace = () => {
       >
         <div class="flex h-6 w-6 items-center justify-center rounded-md overflow-hidden text-sidebar-primary-foreground shrink-0">
           <img
-            :src="workspaceLogo"
+            :src="workspace.logo_url"
             :alt="workspace.name"
             class="h-full w-full object-cover"
           />

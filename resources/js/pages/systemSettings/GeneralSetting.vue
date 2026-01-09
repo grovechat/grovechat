@@ -7,32 +7,26 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import systemSetting from '@/routes/system-setting';
 import { type BreadcrumbItem } from '@/types';
-import { type GeneralSettingsData } from '@/types/generated';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, ref } from 'vue';
 
-const props = defineProps<{
-  generalSettings: GeneralSettingsData;
-}>();
-
+const page = usePage()
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
+const generalSettings = computed(() => page.props.generalSettings);
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: workspaceSlug.value
-      ? systemSetting.getGeneralSettings.url(workspaceSlug.value)
-      : '#',
+    href: systemSetting.getGeneralSettings.url(currentWorkspace.value.slug)
   },
 ]);
-const logoPreview = ref<string>(props.generalSettings.logoUrl || '');
-const logoId = ref<string>(props.generalSettings.logoId || '');
+const logoPreview = ref<string>(generalSettings.value.logo_url || '');
+const logoId = ref<string>(generalSettings.value.logo_id || '');
 const uploading = ref(false);
 
 const handleLogoChange = async (event: Event) => {
@@ -61,7 +55,7 @@ const handleLogoChange = async (event: Event) => {
     });
     logoId.value = response.data.id;
   } catch {
-    logoPreview.value = props.generalSettings.logoUrl || '';
+    logoPreview.value = generalSettings.value.logo_url || '';
   } finally {
     uploading.value = false;
   }
@@ -80,22 +74,18 @@ const handleLogoChange = async (event: Event) => {
         />
 
         <Form
-          v-bind="
-            workspaceSlug
-              ? SystemSettingController.updateGeneralSettings.form(workspaceSlug)
-              : {}
-          "
+          v-bind="SystemSettingController.updateGeneralSettings.form(currentWorkspace.slug)"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
           <div class="grid gap-2">
-            <Label for="baseUrl">{{ t('主机地址') }}</Label>
+            <Label for="base_url">{{ t('主机地址') }}</Label>
             <Input
-              id="baseUrl"
-              name="baseUrl"
+              id="base_url"
+              name="base_url"
               type="url"
               class="mt-1 block w-full"
-              :default-value="generalSettings.baseUrl || undefined"
+              :default-value="generalSettings.base_url || undefined"
               required
               :placeholder="t('请输入主机地址，例如：https://example.com')"
             />
@@ -108,7 +98,7 @@ const handleLogoChange = async (event: Event) => {
               id="name"
               name="name"
               class="mt-1 block w-full"
-              :default-value="props.generalSettings.name || undefined"
+              :default-value="generalSettings.name || undefined"
               required
               :placeholder="t('请输入系统名称')"
             />
@@ -116,7 +106,7 @@ const handleLogoChange = async (event: Event) => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="logoId">{{ t('系统Logo') }}</Label>
+            <Label for="logo_id">{{ t('系统Logo') }}</Label>
             <div class="mt-1 space-y-3">
               <div
                 v-if="logoPreview"
@@ -135,8 +125,8 @@ const handleLogoChange = async (event: Event) => {
                 </div>
               </div>
               <input
-                id="logoId"
-                name="logoId"
+                id="logo_id"
+                name="logo_id"
                 type="hidden"
                 :value="logoId"
               />
@@ -152,7 +142,7 @@ const handleLogoChange = async (event: Event) => {
                 {{ t('支持上传图片格式文件，选择后自动上传') }}
               </p>
             </div>
-            <InputError class="mt-2" :message="errors.logoId" />
+            <InputError class="mt-2" :message="errors.logo_id" />
           </div>
 
           <div class="grid gap-2">
@@ -168,15 +158,15 @@ const handleLogoChange = async (event: Event) => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="icpRecord">{{ t('备案信息') }}</Label>
+            <Label for="icp_record">{{ t('备案信息') }}</Label>
             <Input
-              id="icpRecord"
-              name="icpRecord"
+              id="icp_record"
+              name="icp_record"
               class="mt-1 block w-full"
-              :default-value="generalSettings.icpRecord || undefined"
+              :default-value="generalSettings.icp_record || undefined"
               :placeholder="t('请输入备案信息')"
             />
-            <InputError class="mt-2" :message="errors.icpRecord" />
+            <InputError class="mt-2" :message="errors.icp_record" />
           </div>
 
           <div class="grid gap-2">

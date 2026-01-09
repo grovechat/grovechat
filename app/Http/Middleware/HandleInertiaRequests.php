@@ -2,9 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Data\WorkspaceData;
 use App\Domain\SystemSettings\Actions\GetSettingAction;
-use App\Domain\SystemSettings\DTOs\GeneralSettingsData;
-use App\Settings\GeneralSettings;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -50,11 +49,9 @@ class HandleInertiaRequests extends Middleware
         $currentWorkspace = null;
 
         if ($user) {
-            $workspaces = $user->workspaces()->get()->toArray();
+            $workspaces = $user->workspaces()->get();
             if ($request->route('slug')) {
-                $currentWorkspace = $user->workspaces()
-                    ->where('slug', $request->route('slug'))
-                    ->first();
+                $currentWorkspace = $user->workspaces()->where('slug', $request->route('slug'))->first();
             }
         }
 
@@ -67,8 +64,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'generalSettings' => $this->getSettingAction->execute(),
-            'workspaces' => $workspaces,
-            'currentWorkspace' => $currentWorkspace,
+            'workspaces' => WorkspaceData::collect($workspaces),
+            'currentWorkspace' => $currentWorkspace ? WorkspaceData::from($currentWorkspace) : null,
         ];
     }
 }

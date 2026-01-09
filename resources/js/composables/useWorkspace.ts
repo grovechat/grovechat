@@ -1,3 +1,4 @@
+import { WorkspaceData } from '@/types/generated';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -12,7 +13,7 @@ export function useWorkspace() {
   const page = usePage();
 
   const currentWorkspace = computed(
-    () => page.props.currentWorkspace as Workspace | undefined,
+    () => page.props.currentWorkspace as WorkspaceData | undefined,
   );
 
   const workspaceSlug = computed(() => currentWorkspace.value?.slug);

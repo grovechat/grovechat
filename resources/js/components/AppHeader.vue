@@ -30,7 +30,6 @@ import {
 } from '@/components/ui/tooltip';
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
@@ -48,8 +47,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
-const { workspaceSlug } = useWorkspace();
-
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 const isCurrentRoute = computed(
   () => (url: NonNullable<InertiaLinkProps['href']>) =>
     urlIsActive(url, page.url),
@@ -65,7 +63,7 @@ const activeItemStyles = computed(
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: 'Dashboard',
-    href: workspaceSlug.value ? dashboard(workspaceSlug.value) : '/',
+    href: dashboard(currentWorkspace.value.slug),
     icon: LayoutGrid,
   },
 ]);
@@ -144,10 +142,7 @@ const rightNavItems: NavItem[] = [
           </Sheet>
         </div>
 
-        <Link
-          :href="workspaceSlug ? dashboard(workspaceSlug.value) : '/'"
-          class="flex items-center gap-x-2"
-        >
+        <Link :href="dashboard(currentWorkspace.slug)" class="flex items-center gap-x-2">
           <AppLogo />
         </Link>
 

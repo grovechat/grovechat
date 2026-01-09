@@ -18,7 +18,7 @@ class StorageSettings extends Settings
     
     // 访问优化
     public ?string $url;       // CDN 地址或自定义域名 (如 https://cdn.example.com)
-    public bool $pathStyle = false;   // 是否开启路径风格 (Minio 常用)
+    public bool $path_style = false;   // 是否开启路径风格 (Minio 常用)
     
     public static function group(): string
     {

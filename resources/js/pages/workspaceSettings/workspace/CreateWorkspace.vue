@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { type BreadcrumbItem } from '@/types';
@@ -17,28 +16,24 @@ import { Check, Copy } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
 const page = usePage();
-
+const generalSettings = computed(() => page.props.generalSettings);
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('创建工作区'),
     href: '#',
   },
 ]);
-
 const logoPreview = ref<string>('');
 const logoId = ref<string>('');
 const uploading = ref(false);
 const slugInput = ref<string>('');
 const copied = ref(false);
 
-// 从共享数据中获取 generalSettings
-const generalSettings = computed(() => page.props.generalSettings as any);
-
 // 计算完整的访问路径
 const fullAccessUrl = computed(() => {
-  const baseUrl = generalSettings.value?.baseUrl || '';
+  const baseUrl = generalSettings.value?.base_url || '';
   return `${baseUrl}/w/${slugInput.value}`;
 });
 
@@ -66,10 +61,8 @@ const handleLogoChange = async (event: Event) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    // 上传成功后更新logo URL
     logoId.value = response.data.id;
   } catch {
-    // 上传失败，恢复原来的logo
     logoPreview.value = '';
   } finally {
     uploading.value = false;
@@ -101,11 +94,7 @@ const copyToClipboard = async () => {
         />
 
         <Form
-          v-bind="
-            workspaceSlug
-              ? WorkspaceSettingController.storeWorkspace.form(workspaceSlug)
-              : {}
-          "
+          v-bind="WorkspaceSettingController.storeWorkspace.form(currentWorkspace.slug)"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
