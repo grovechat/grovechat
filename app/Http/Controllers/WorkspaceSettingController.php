@@ -19,9 +19,7 @@ class WorkspaceSettingController extends Controller
 
     public function showWorkspaceGeneralPage()
     {
-        return Inertia::render("workspaceSettings/workspace/General", [
-            'workspace' => $this->workspace,
-        ]);
+        return Inertia::render("workspaceSettings/workspace/General");
     }
 
     public function showCreateWorkspacePage()

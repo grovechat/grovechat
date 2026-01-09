@@ -18,7 +18,7 @@ import axios from 'axios';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
-  workspace: GeneralSettingsData;
+  generalSettings: GeneralSettingsData;
 }>();
 
 const { t } = useI18n();
@@ -31,8 +31,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
       : '#',
   },
 ]);
-const logoPreview = ref<string>(props.workspace.logoUrl || '');
-const logoId = ref<string>(props.workspace.logoId || '');
+const logoPreview = ref<string>(props.generalSettings.logoUrl || '');
+const logoId = ref<string>(props.generalSettings.logoId || '');
 const uploading = ref(false);
 
 const handleLogoChange = async (event: Event) => {
@@ -61,7 +61,7 @@ const handleLogoChange = async (event: Event) => {
     });
     logoId.value = response.data.id;
   } catch {
-    logoPreview.value = props.workspace.logoUrl || '';
+    logoPreview.value = props.generalSettings.logoUrl || '';
   } finally {
     uploading.value = false;
   }
@@ -95,7 +95,7 @@ const handleLogoChange = async (event: Event) => {
               name="baseUrl"
               type="url"
               class="mt-1 block w-full"
-              :default-value="workspace.baseUrl || undefined"
+              :default-value="generalSettings.baseUrl || undefined"
               required
               :placeholder="t('请输入主机地址，例如：https://example.com')"
             />
@@ -108,7 +108,7 @@ const handleLogoChange = async (event: Event) => {
               id="name"
               name="name"
               class="mt-1 block w-full"
-              :default-value="props.workspace.name || undefined"
+              :default-value="props.generalSettings.name || undefined"
               required
               :placeholder="t('请输入系统名称')"
             />
@@ -161,7 +161,7 @@ const handleLogoChange = async (event: Event) => {
               id="copyright"
               name="copyright"
               class="mt-1 block w-full"
-              :default-value="workspace.copyright || undefined"
+              :default-value="generalSettings.copyright || undefined"
               :placeholder="t('请输入版权信息')"
             />
             <InputError class="mt-2" :message="errors.copyright" />
@@ -173,7 +173,7 @@ const handleLogoChange = async (event: Event) => {
               id="icpRecord"
               name="icpRecord"
               class="mt-1 block w-full"
-              :default-value="workspace.icpRecord || undefined"
+              :default-value="generalSettings.icpRecord || undefined"
               :placeholder="t('请输入备案信息')"
             />
             <InputError class="mt-2" :message="errors.icpRecord" />
@@ -182,7 +182,7 @@ const handleLogoChange = async (event: Event) => {
           <div class="grid gap-2">
             <Label>{{ t('版本号') }}</Label>
             <div class="text-sm text-muted-foreground py-2">
-              {{ workspace.version || t('未设置') }}
+              {{ generalSettings.version || t('未设置') }}
             </div>
           </div>
 

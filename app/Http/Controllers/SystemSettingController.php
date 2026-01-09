@@ -6,7 +6,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\SystemSettings\Actions\GetSettingAction;
 use App\Domain\SystemSettings\Actions\UpdateSettingAction;
 use App\Domain\SystemSettings\DTOs\GeneralSettingsData;
 use App\Http\Controllers\Controller;
@@ -14,7 +13,7 @@ use Inertia\Inertia;
 
 class SystemSettingController extends Controller
 {
-    public function getGeneralSettings(GetSettingAction $action)
+    public function getGeneralSettings()
     {
         return Inertia::render('systemSettings/GeneralSetting');
     }

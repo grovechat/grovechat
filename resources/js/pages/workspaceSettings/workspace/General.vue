@@ -35,7 +35,7 @@ interface Workspace {
 }
 
 const props = defineProps<{
-  workspace: Workspace;
+  currentWorkspace: Workspace;
 }>();
 
 const { t } = useI18n();
@@ -51,10 +51,10 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   },
 ]);
 
-const logoPreview = ref<string>(props.workspace.logo_url || '');
-const logoId = ref<string>(props.workspace.logo_id || '');
+const logoPreview = ref<string>(props.currentWorkspace.logo_url || '');
+const logoId = ref<string>(props.currentWorkspace.logo_id || '');
 const uploading = ref(false);
-const slugInput = ref<string>(props.workspace.slug || '');
+const slugInput = ref<string>(props.currentWorkspace.slug || '');
 const copied = ref(false);
 const showDeleteDialog = ref(false);
 const deleting = ref(false);
@@ -70,7 +70,7 @@ const fullAccessUrl = computed(() => {
 
 // 判断是否是默认工作区
 const isDefaultWorkspace = computed(() => {
-  return props.workspace.owner_id !== null;
+  return props.currentWorkspace.owner_id !== null;
 });
 
 const handleLogoChange = async (event: Event) => {
@@ -101,7 +101,7 @@ const handleLogoChange = async (event: Event) => {
     logoId.value = response.data.id;
   } catch {
     // 上传失败，恢复原来的logo
-    logoPreview.value = props.workspace.logo_url || '';
+    logoPreview.value = props.currentWorkspace.logo_url || '';
   } finally {
     uploading.value = false;
   }
@@ -165,7 +165,7 @@ const handleDelete = () => {
               id="slug"
               name="slug"
               class="mt-1 block w-full bg-gray-50"
-              :default-value="workspace.slug"
+              :default-value="currentWorkspace.slug"
               disabled
               readonly
             />
@@ -180,7 +180,7 @@ const handleDelete = () => {
               id="name"
               name="name"
               class="mt-1 block w-full"
-              :default-value="workspace.name"
+              :default-value="currentWorkspace.name"
               required
               :placeholder="t('请输入工作区名称')"
             />
@@ -233,7 +233,7 @@ const handleDelete = () => {
               id="slug"
               name="slug"
               class="mt-1 block w-full"
-              :default-value="workspace.slug"
+              :default-value="currentWorkspace.slug"
               v-model="slugInput"
               required
               :placeholder="t('请输入访问路径')"
