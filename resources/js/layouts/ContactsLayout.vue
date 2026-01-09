@@ -2,14 +2,14 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import contact from '@/routes/contact';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 interface SubMenuItem {
   title: string;
@@ -23,8 +23,6 @@ interface MenuItem {
 }
 
 const sidebarNavItems = computed<MenuItem[]>(() => {
-  if (!workspaceSlug.value) return [];
-
   return [
     {
       title: t('身份类型'),
@@ -32,21 +30,21 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
         {
           title: t('全部'),
           href: contact.index.url({
-            slug: workspaceSlug.value,
+            slug: currentWorkspace.value.slug,
             type: 'all',
           }),
         },
         {
           title: t('注册用户'),
           href: contact.index.url({
-            slug: workspaceSlug.value,
+            slug: currentWorkspace.value.slug,
             type: 'customers',
           }),
         },
         {
           title: t('潜在客户'),
           href: contact.index.url({
-            slug: workspaceSlug.value,
+            slug: currentWorkspace.value.slug,
             type: 'leads',
           }),
         },
@@ -54,7 +52,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
     },
     {
       title: t('会话记录'),
-      href: contact.conversations.url(workspaceSlug.value),
+      href: contact.conversations.url(currentWorkspace.value.slug),
     },
   ];
 });
@@ -94,11 +92,7 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
                   ]"
                   as-child
                 >
-                  <Link
-                    :href="
-                      typeof child.href === 'string' ? child.href : child.href
-                    "
-                  >
+                  <Link :href="typeof child.href === 'string' ? child.href : child.href">
                     {{ child.title }}
                   </Link>
                 </Button>
@@ -117,9 +111,7 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
                 ]"
                 as-child
               >
-                <Link
-                  :href="typeof item.href === 'string' ? item.href : item.href"
-                >
+                <Link :href="typeof item.href === 'string' ? item.href : item.href">
                   {{ item.title }}
                 </Link>
               </Button>

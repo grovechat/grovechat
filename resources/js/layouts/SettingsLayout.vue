@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editLanguage } from '@/routes/language';
@@ -10,35 +9,34 @@ import { edit as editProfile } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const sidebarNavItems = computed<NavItem[]>(() => {
-  if (!workspaceSlug.value) return [];
-
   return [
     {
       title: t('个人资料'),
-      href: editProfile(workspaceSlug.value),
+      href: editProfile(currentWorkspace.value.slug),
     },
     {
       title: t('密码'),
-      href: editPassword(workspaceSlug.value),
+      href: editPassword(currentWorkspace.value.slug),
     },
     {
       title: t('两步验证'),
-      href: show(workspaceSlug.value),
+      href: show(currentWorkspace.value.slug),
     },
     {
       title: t('语言和时区'),
-      href: editLanguage(workspaceSlug.value),
+      href: editLanguage(currentWorkspace.value.slug),
     },
     {
       title: t('外观'),
-      href: editAppearance(workspaceSlug.value),
+      href: editAppearance(currentWorkspace.value.slug),
     },
   ];
 });

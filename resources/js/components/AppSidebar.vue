@@ -5,7 +5,6 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import WorkspaceSwitcher from '@/components/WorkspaceSwitcher.vue';
 import { Button } from '@/components/ui/button';
-import defaultWorkspaceUrl from '@/assets/images/workspace.png';
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +15,6 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { cn } from '@/lib/utils';
 import contact from '@/routes/contact';
 import stats from '@/routes/stats';
@@ -38,35 +36,30 @@ import {
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
-const { toggleSidebar, state } = useSidebar();
 const page = usePage();
+const { toggleSidebar, state } = useSidebar();
+const generalSettings = computed(() => page.props.generalSettings)
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
-const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
-const workspaceLogo = computed(() => page.props.currentWorkspace?.logo_url || defaultWorkspaceUrl)
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('工作台'),
-    href: workspaceSlug.value ? workspace.dashboard.url(workspaceSlug.value) : '/',
+    href: workspace.dashboard.url(currentWorkspace.value.slug),
     icon: LayoutGrid,
   },
   {
     title: t('联系人'),
-    href: workspaceSlug.value
-      ? contact.index.url({ slug: workspaceSlug.value, type: 'all' })
-      : '/',
+    href: contact.index.url({ slug: currentWorkspace.value.slug, type: 'all' }),
     icon: Users,
   },
   {
     title: t('统计'),
-    href: workspaceSlug.value ? stats.index.url(workspaceSlug.value) : '/',
+    href: stats.index.url(currentWorkspace.value.slug),
     icon: BarChart,
   },
   {
     title: t('管理中心'),
-    href: workspaceSlug.value
-      ? workspaceSetting.workspace.general.url(workspaceSlug.value)
-      : '/',
+    href: workspaceSetting.workspace.general.url(currentWorkspace.value.slug),
     icon: Building2,
   },
 ]);
@@ -84,9 +77,7 @@ const footerNavItems = computed<NavItem[]>(() => [
   },
   {
     title: t('系统设置'),
-    href: workspaceSlug.value
-      ? systemSetting.getGeneralSettings.url(workspaceSlug.value)
-      : '/',
+    href: systemSetting.getGeneralSettings.url(currentWorkspace.value.slug),
     icon: Settings,
   },
 ]);
@@ -102,10 +93,7 @@ const footerNavItems = computed<NavItem[]>(() => [
           <SidebarMenuItem>
             <div class="flex items-center gap-2 w-full px-0 py-0 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               <!-- 系统 Logo - 可点击跳转当前工作区首页 -->
-              <Link
-                :href="workspaceSlug ? workspace.dashboard.url(workspaceSlug) : '/'"
-                class="shrink-0 p-2 group-data-[collapsible=icon]:p-0"
-              >
+              <Link :href="workspace.dashboard.url(currentWorkspace.slug)" class="shrink-0 p-2 group-data-[collapsible=icon]:p-0">
                 <div
                   class="flex aspect-square size-12 items-center justify-center rounded-md text-sidebar-primary-foreground"
                 >
@@ -116,7 +104,7 @@ const footerNavItems = computed<NavItem[]>(() => [
               <!-- 右侧：系统名称和工作区切换器 -->
               <div class="flex flex-col gap-1 flex-1 min-w-0 group-data-[collapsible=icon]:hidden pr-2">
                 <!-- 系统名称 -->
-                <span class="text-sm font-semibold leading-tight">{{ systemName }}</span>
+                <span class="text-sm font-semibold leading-tight">{{ generalSettings.name }}</span>
 
                 <!-- 工作区切换器 - 独立的热区 -->
                 <WorkspaceSwitcher />
@@ -126,7 +114,7 @@ const footerNavItems = computed<NavItem[]>(() => [
               <div v-if="page.props.currentWorkspace" class="hidden group-data-[collapsible=icon]:block">
                 <div class="flex h-6 w-6 items-center justify-center rounded overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground">
                   <img
-                    :src="workspaceLogo"
+                    :src="currentWorkspace.logo_url"
                     :alt="page.props.currentWorkspace.name"
                     class="h-full w-full object-cover"
                   />

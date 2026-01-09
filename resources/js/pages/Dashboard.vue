@@ -1,21 +1,20 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/routes/workspace';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
-
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('我负责的'),
-    href: workspaceSlug.value ? dashboard(workspaceSlug.value).url : '#',
+    href: dashboard(currentWorkspace.value.slug),
   },
 ]);
 </script>

@@ -2,14 +2,14 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import workspaceSetting from '@/routes/workspace-setting';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 interface SubMenuItem {
   title: string;
@@ -23,15 +23,13 @@ interface MenuItem {
 }
 
 const sidebarNavItems = computed<MenuItem[]>(() => {
-  if (!workspaceSlug.value) return [];
-
   return [
     {
       title: t('工作区'),
       children: [
         {
           title: t('常规设置'),
-          href: workspaceSetting.workspace.general.url(workspaceSlug.value),
+          href: workspaceSetting.workspace.general.url(currentWorkspace.value.slug),
         },
       ],
     },
@@ -40,7 +38,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('多客服'),
-          href: workspaceSetting.teammate.index.url(workspaceSlug.value),
+          href: workspaceSetting.teammate.index.url(currentWorkspace.value.slug),
         },
       ],
     },
@@ -49,7 +47,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('网站'),
-          href: workspaceSetting.channels.web.url(workspaceSlug.value),
+          href: workspaceSetting.channels.web.url(currentWorkspace.value.slug),
         },
       ],
     },
@@ -58,11 +56,11 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('标签'),
-          href: workspaceSetting.datas.tag.url(workspaceSlug.value),
+          href: workspaceSetting.datas.tag.url(currentWorkspace.value.slug),
         },
         {
           title: t('自定义属性'),
-          href: workspaceSetting.datas.attribute.url(workspaceSlug.value),
+          href: workspaceSetting.datas.attribute.url(currentWorkspace.value.slug),
         },
       ],
     },
@@ -104,11 +102,7 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
                   ]"
                   as-child
                 >
-                  <Link
-                    :href="
-                      typeof child.href === 'string' ? child.href : child.href
-                    "
-                  >
+                  <Link :href="typeof child.href === 'string' ? child.href : child.href">
                     {{ child.title }}
                   </Link>
                 </Button>
@@ -127,9 +121,7 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
                 ]"
                 as-child
               >
-                <Link
-                  :href="typeof item.href === 'string' ? item.href : item.href"
-                >
+                <Link :href="typeof item.href === 'string' ? item.href : item.href">
                   {{ item.title }}
                 </Link>
               </Button>

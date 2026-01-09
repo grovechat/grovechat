@@ -2,14 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { dashboard } from '@/routes';
-import { Link } from '@inertiajs/vue3';
+import { dashboard } from '@/routes/workspace';
+import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-
-const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
 
 interface SubMenuItem {
   title: string;
@@ -22,16 +18,18 @@ interface MenuItem {
   children?: SubMenuItem[];
 }
 
-const sidebarNavItems = computed<MenuItem[]>(() => {
-  if (!workspaceSlug.value) return [];
+const { t } = useI18n();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
+const sidebarNavItems = computed<MenuItem[]>(() => {
   return [
     {
       title: t('人工接待'),
       children: [
         {
           title: t('我负责的'),
-          href: dashboard(workspaceSlug.value),
+          href: dashboard(currentWorkspace.value.slug),
         },
         {
           title: t('提到我的'),
@@ -136,11 +134,7 @@ const currentPath = typeof window !== 'undefined' ? window.location.pathname : '
                   ]"
                   as-child
                 >
-                  <Link
-                    :href="
-                      typeof child.href === 'string' ? child.href : child.href
-                    "
-                  >
+                  <Link :href="typeof child.href === 'string' ? child.href : child.href">
                     {{ child.title }}
                   </Link>
                 </Button>
