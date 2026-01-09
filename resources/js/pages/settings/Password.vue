@@ -47,6 +47,17 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
+          <!-- Hidden username field for password managers -->
+          <input
+            type="text"
+            name="username"
+            :value="page.props.auth.user.email"
+            autocomplete="username"
+            style="display: none"
+            aria-hidden="true"
+            tabindex="-1"
+          />
+
           <div class="grid gap-2">
             <Label for="current_password">{{ t('当前密码') }}</Label>
             <Input
