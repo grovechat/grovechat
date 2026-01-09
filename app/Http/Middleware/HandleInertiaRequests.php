@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Domain\SystemSettings\Actions\GetSettingAction;
 use App\Domain\SystemSettings\DTOs\GeneralSettingsData;
 use App\Settings\GeneralSettings;
 use Illuminate\Foundation\Inspiring;
@@ -10,6 +11,10 @@ use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
+    public function __construct(
+        public GetSettingAction $getSettingAction
+    ) { }
+
     /**
      * The root template that's loaded on the first page visit.
      *
@@ -61,7 +66,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'generalSettings' => GeneralSettingsData::from(app(GeneralSettings::class)),
+            'generalSettings' => $this->getSettingAction->execute(),
             'workspaces' => $workspaces,
             'currentWorkspace' => $currentWorkspace,
         ];
