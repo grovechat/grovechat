@@ -4,14 +4,12 @@ import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { type BreadcrumbItem } from '@/types';
@@ -24,15 +22,14 @@ interface Props {
 defineProps<Props>();
 
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
-
 const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 const user = page.props.auth.user;
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('个人资料设置'),
-    href: workspaceSlug.value ? edit(workspaceSlug.value).url : '#',
+    href: edit(currentWorkspace.value.slug).url,
   },
 ]);
 </script>
@@ -49,7 +46,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="workspaceSlug ? ProfileController.update.form(workspaceSlug) : {}"
+          v-bind="ProfileController.update.form(currentWorkspace.slug)"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
@@ -86,7 +83,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             <p class="-mt-4 text-sm text-muted-foreground">
               {{ t('你的电子邮件地址未验证。') }}
               <Link
-                :href="workspaceSlug ? send(workspaceSlug) : '#'"
+                :href="send(currentWorkspace.slug)"
                 as="button"
                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
               >

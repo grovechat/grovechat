@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { useWorkspace } from '@/composables/useWorkspace';
-import { dashboard, login, register } from '@/routes';
-import { Head, Link } from '@inertiajs/vue3';
+import { login, register } from '@/routes';
+import { dashboard } from '@/routes/workspace';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 withDefaults(
   defineProps<{
@@ -12,7 +13,9 @@ withDefaults(
   },
 );
 
-const { workspaceSlug } = useWorkspace();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
+
 </script>
 
 <template>
@@ -43,8 +46,8 @@ const { workspaceSlug } = useWorkspace();
         class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
       >
         <Link
-          v-if="$page.props.auth.user && workspaceSlug"
-          :href="dashboard(workspaceSlug)"
+          v-if="$page.props.auth.user && currentWorkspace.slug"
+          :href="dashboard(currentWorkspace.slug)"
           class="inline-flex w-full items-center justify-center rounded-lg bg-gray-900 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 sm:w-auto dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
         >
           进入控制台

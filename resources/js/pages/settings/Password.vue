@@ -2,11 +2,10 @@
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import InputError from '@/components/InputError.vue';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { edit } from '@/routes/user-password';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
@@ -16,12 +15,13 @@ import { Label } from '@/components/ui/label';
 import { type BreadcrumbItem } from '@/types';
 
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('密码设置'),
-    href: workspaceSlug.value ? edit(workspaceSlug.value).url : '#',
+    href: edit(currentWorkspace.value.slug).url,
   },
 ]);
 </script>
@@ -37,11 +37,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           :description="t('确保你的账户使用长且随机的密码以保证安全')"
         />
 
-        <Form
-          v-bind="workspaceSlug ? PasswordController.update.form(workspaceSlug) : {}"
-          :options="{
-            preserveScroll: true,
-          }"
+        <Form v-bind="PasswordController.update.form(currentWorkspace.slug)" :options="{preserveScroll: true}"
           reset-on-success
           :reset-on-error="[
             'password',

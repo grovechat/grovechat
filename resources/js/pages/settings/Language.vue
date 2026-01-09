@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { useTimezone, type Timezone } from '@/composables/useTimezone';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
@@ -24,12 +23,14 @@ import { type BreadcrumbItem } from '@/types';
 const { locale, updateLocale, t } = useI18n();
 const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =
   useTimezone();
-const { workspaceSlug } = useWorkspace();
+
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('语言和时区设置'),
-    href: workspaceSlug.value ? edit(workspaceSlug.value).url : '#',
+    href: edit(currentWorkspace.value.slug).url,
   },
 ]);
 

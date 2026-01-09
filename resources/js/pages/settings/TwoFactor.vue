@@ -5,13 +5,12 @@ import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { disable, enable, show } from '@/routes/two-factor';
 import { BreadcrumbItem } from '@/types';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
 import { ShieldBan, ShieldCheck } from 'lucide-vue-next';
 import { computed, onUnmounted, ref } from 'vue';
 
@@ -26,12 +25,13 @@ withDefaults(defineProps<Props>(), {
 });
 
 const { t } = useI18n();
-const { workspaceSlug } = useWorkspace();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('两步验证'),
-    href: workspaceSlug.value ? show(workspaceSlug.value).url : '#',
+    href: show(currentWorkspace.value.slug).url,
   },
 ]);
 
@@ -73,7 +73,7 @@ onUnmounted(() => {
             </Button>
             <Form
               v-else
-              v-bind="workspaceSlug ? enable.form(workspaceSlug) : {}"
+              v-bind="enable.form(currentWorkspace.slug)"
               @success="showSetupModal = true"
               #default="{ processing }"
             >
@@ -99,7 +99,7 @@ onUnmounted(() => {
 
           <div class="relative inline">
             <Form
-              v-bind="workspaceSlug ? disable.form(workspaceSlug) : {}"
+              v-bind="disable.form(currentWorkspace.slug)"
               #default="{ processing }"
             >
               <Button

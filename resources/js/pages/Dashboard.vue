@@ -14,7 +14,7 @@ const currentWorkspace = computed(() => page.props.currentWorkspace);
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('我负责的'),
-    href: dashboard(currentWorkspace.value.slug),
+    href: dashboard.url(currentWorkspace.value.slug),
   },
 ]);
 </script>
