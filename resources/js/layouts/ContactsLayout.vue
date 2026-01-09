@@ -9,7 +9,7 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 interface SubMenuItem {
   title: string;
@@ -23,7 +23,7 @@ interface MenuItem {
 }
 
 const sidebarNavItems = computed<MenuItem[]>(() => {
-  if (!workspacePath.value) return [];
+  if (!workspaceSlug.value) return [];
 
   return [
     {
@@ -32,21 +32,21 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
         {
           title: t('全部'),
           href: contact.index.url({
-            workspace_path: workspacePath.value,
+            slug: workspaceSlug.value,
             type: 'all',
           }),
         },
         {
           title: t('注册用户'),
           href: contact.index.url({
-            workspace_path: workspacePath.value,
+            slug: workspaceSlug.value,
             type: 'customers',
           }),
         },
         {
           title: t('潜在客户'),
           href: contact.index.url({
-            workspace_path: workspacePath.value,
+            slug: workspaceSlug.value,
             type: 'leads',
           }),
         },
@@ -54,13 +54,12 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
     },
     {
       title: t('会话记录'),
-      href: contact.conversations.url(workspacePath.value),
+      href: contact.conversations.url(workspaceSlug.value),
     },
   ];
 });
 
-const currentPath =
-  typeof window !== 'undefined' ? window.location.pathname : '';
+const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
 </script>
 
 <template>

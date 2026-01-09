@@ -14,31 +14,31 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const sidebarNavItems = computed<NavItem[]>(() => {
-  if (!workspacePath.value) return [];
+  if (!workspaceSlug.value) return [];
 
   return [
     {
       title: t('个人资料'),
-      href: editProfile(workspacePath.value),
+      href: editProfile(workspaceSlug.value),
     },
     {
       title: t('密码'),
-      href: editPassword(workspacePath.value),
+      href: editPassword(workspaceSlug.value),
     },
     {
       title: t('两步验证'),
-      href: show(workspacePath.value),
+      href: show(workspaceSlug.value),
     },
     {
       title: t('语言和时区'),
-      href: editLanguage(workspacePath.value),
+      href: editLanguage(workspaceSlug.value),
     },
     {
       title: t('外观'),
-      href: editAppearance(workspacePath.value),
+      href: editAppearance(workspaceSlug.value),
     },
   ];
 });

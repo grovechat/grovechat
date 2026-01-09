@@ -9,7 +9,7 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 interface SubMenuItem {
   title: string;
@@ -23,7 +23,7 @@ interface MenuItem {
 }
 
 const sidebarNavItems = computed<MenuItem[]>(() => {
-  if (!workspacePath.value) return [];
+  if (!workspaceSlug.value) return [];
 
   return [
     {
@@ -31,7 +31,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('我负责的'),
-          href: dashboard(workspacePath.value),
+          href: dashboard(workspaceSlug.value),
         },
         {
           title: t('提到我的'),
@@ -101,8 +101,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
   ];
 });
 
-const currentPath =
-  typeof window !== 'undefined' ? window.location.pathname : '';
+const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
 </script>
 
 <template>

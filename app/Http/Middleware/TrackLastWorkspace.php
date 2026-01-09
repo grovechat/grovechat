@@ -16,9 +16,9 @@ class TrackLastWorkspace
     public function handle(Request $request, Closure $next): Response
     {
         // 如果用户已登录且当前路由包含 workspace_path，保存到 session
-        if ($request->user() && $request->route('workspace_path')) {
-            $workspacePath = $request->route('workspace_path');
-            $request->session()->put('last_workspace_path', $workspacePath);
+        if ($request->user() && $request->route('slug')) {
+            $workspaceSlug = $request->route('slug');
+            $request->session()->put('last_workspace_slug', $workspaceSlug);
         }
 
         return $next($request);

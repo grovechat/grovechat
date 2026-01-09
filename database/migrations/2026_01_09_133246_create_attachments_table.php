@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('workspaces', function (Blueprint $table) {
+        Schema::create('attachments', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->timestamps();
-            $table->string('name')->comment('工作区名');
-            $table->string('slug')->nullable()->unique()->comment('访问标识');
-            $table->ulid('logo_id')->nullable()->comment('工作区logo');
-            $table->ulid('owner_id')->nullable()->comment('所有者ID');
+            $table->string('disk');
+            $table->string('path'); 
+            $table->string('file_name');
+            $table->string('file_type');
+            $table->unsignedBigInteger('file_size');
+            $table->nullableUlidMorphs('attachable'); 
         });
     }
 
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('workspaces');
+        Schema::dropIfExists('attachments');
     }
 };

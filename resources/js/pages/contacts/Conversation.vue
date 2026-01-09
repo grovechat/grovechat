@@ -10,12 +10,12 @@ import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('会话记录'),
-    href: workspacePath.value ? contact.conversations.url(workspacePath.value) : '#',
+    href: workspaceSlug.value ? contact.conversations.url(workspaceSlug.value) : '#',
   },
 ]);
 </script>

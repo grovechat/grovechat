@@ -25,7 +25,7 @@ const handleLogout = () => {
 defineProps<Props>();
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 </script>
 
 <template>
@@ -39,7 +39,7 @@ const { workspacePath } = useWorkspace();
     <DropdownMenuItem :as-child="true">
       <Link
         class="block w-full"
-        :href="workspacePath ? edit(workspacePath) : '#'"
+        :href="workspaceSlug ? edit(workspaceSlug) : '#'"
         prefetch
         as="button"
       >

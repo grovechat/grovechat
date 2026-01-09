@@ -24,7 +24,7 @@ interface Props {
 defineProps<Props>();
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -32,7 +32,7 @@ const user = page.props.auth.user;
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('个人资料设置'),
-    href: workspacePath.value ? edit(workspacePath.value).url : '#',
+    href: workspaceSlug.value ? edit(workspaceSlug.value).url : '#',
   },
 ]);
 </script>
@@ -49,7 +49,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="workspacePath ? ProfileController.update.form(workspacePath) : {}"
+          v-bind="workspaceSlug ? ProfileController.update.form(workspaceSlug) : {}"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
@@ -86,7 +86,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             <p class="-mt-4 text-sm text-muted-foreground">
               {{ t('你的电子邮件地址未验证。') }}
               <Link
-                :href="workspacePath ? send(workspacePath) : '#'"
+                :href="workspaceSlug ? send(workspaceSlug) : '#'"
                 as="button"
                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
               >

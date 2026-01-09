@@ -10,13 +10,13 @@ import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('安全'),
-    href: workspacePath.value
-      ? systemSetting.getSecuritySettings.url(workspacePath.value)
+    href: workspaceSlug.value
+      ? systemSetting.getSecuritySettings.url(workspaceSlug.value)
       : '#',
   },
 ]);

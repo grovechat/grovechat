@@ -18,8 +18,8 @@ interface Workspace {
   id: number;
   name: string;
   slug: string;
-  logo: string | null;
-  path: string;
+  logo_id: string | null;
+  logo_url: string | null;
   owner_id: number | null;
 }
 
@@ -28,10 +28,10 @@ const page = usePage();
 
 const workspaces = computed(() => (page.props.workspaces as Workspace[]) || []);
 const currentWorkspace = computed(() => page.props.currentWorkspace as Workspace | null);
-const workspaceLogo = computed(() => currentWorkspace.value?.logo || defaultWorkspaceUrl)
+const workspaceLogo = computed(() => currentWorkspace.value?.logo_url || defaultWorkspaceUrl)
 const switchWorkspace = (selectedWorkspace: Workspace) => {
-  if (selectedWorkspace.path !== currentWorkspace.value?.path) {
-    router.visit(workspace.dashboard.url(selectedWorkspace.path), {
+  if (selectedWorkspace.slug !== currentWorkspace.value?.slug) {
+    router.visit(workspace.dashboard.url(selectedWorkspace.slug), {
       preserveState: false,
       preserveScroll: false,
     });
@@ -40,7 +40,7 @@ const switchWorkspace = (selectedWorkspace: Workspace) => {
 
 const goToCreateWorkspace = () => {
   if (currentWorkspace.value) {
-    router.visit(WorkspaceSettingController.showCreateWorkspacePage.url(currentWorkspace.value.path));
+    router.visit(WorkspaceSettingController.showCreateWorkspacePage.url(currentWorkspace.value.slug));
   }
 };
 </script>
@@ -83,7 +83,7 @@ const goToCreateWorkspace = () => {
         </div>
         <span class="flex-1 truncate">{{ workspace.name }}</span>
         <Check
-          v-if="workspace.path === currentWorkspace?.path"
+          v-if="workspace.slug === currentWorkspace?.slug"
           class="h-4 w-4 shrink-0"
         />
       </DropdownMenuItem>

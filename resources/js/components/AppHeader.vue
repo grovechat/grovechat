@@ -48,7 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const isCurrentRoute = computed(
   () => (url: NonNullable<InertiaLinkProps['href']>) =>
@@ -65,7 +65,7 @@ const activeItemStyles = computed(
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: 'Dashboard',
-    href: workspacePath.value ? dashboard(workspacePath.value) : '/',
+    href: workspaceSlug.value ? dashboard(workspaceSlug.value) : '/',
     icon: LayoutGrid,
   },
 ]);
@@ -145,7 +145,7 @@ const rightNavItems: NavItem[] = [
         </div>
 
         <Link
-          :href="workspacePath ? dashboard(workspacePath) : '/'"
+          :href="workspaceSlug ? dashboard(workspaceSlug.value) : '/'"
           class="flex items-center gap-x-2"
         >
           <AppLogo />

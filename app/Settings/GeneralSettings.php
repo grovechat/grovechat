@@ -10,7 +10,7 @@ class GeneralSettings extends Settings
 
     public ?string $name;  // 系统名称
 
-    public ?string $logo;  // 系统logo
+    public ?string $logoId;  // 系统logo
 
     public ?string $copyright; // 版权信息
 

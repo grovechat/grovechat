@@ -3,8 +3,9 @@ import { computed } from 'vue';
 
 export interface Workspace {
   id: number;
-  path: string;
+  slug: string;
   name?: string;
+  logo_url?: string;
 }
 
 export function useWorkspace() {
@@ -14,10 +15,10 @@ export function useWorkspace() {
     () => page.props.currentWorkspace as Workspace | undefined,
   );
 
-  const workspacePath = computed(() => currentWorkspace.value?.path);
+  const workspaceSlug = computed(() => currentWorkspace.value?.slug);
 
   return {
     currentWorkspace,
-    workspacePath,
+    workspaceSlug,
   };
 }

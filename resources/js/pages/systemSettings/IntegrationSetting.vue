@@ -10,13 +10,13 @@ import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('集成'),
-    href: workspacePath.value
-      ? systemSetting.getIntegrationSettings.url(workspacePath.value)
+    href: workspaceSlug.value
+      ? systemSetting.getIntegrationSettings.url(workspaceSlug.value)
       : '#',
   },
 ]);

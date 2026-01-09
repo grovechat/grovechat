@@ -29,8 +29,8 @@ interface Workspace {
   id: number;
   name: string;
   slug: string;
-  logo: string | null;
-  path: string;
+  logo_id: string | null;
+  logo_url: string | null;
   owner_id: number | null;
 }
 
@@ -39,22 +39,22 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 const page = usePage();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('常规设置'),
-    href: workspacePath.value
-      ? workspaceSetting.workspace.general.url(workspacePath.value)
+    href: workspaceSlug.value
+      ? workspaceSetting.workspace.general.url(workspaceSlug.value)
       : '#',
   },
 ]);
 
-const logoPreview = ref<string>(props.workspace.logo || '');
-const logoUrl = ref<string>(props.workspace.logo || '');
+const logoPreview = ref<string>(props.workspace.logo_url || '');
+const logoId = ref<string>(props.workspace.logo_id || '');
 const uploading = ref(false);
-const pathInput = ref<string>(props.workspace.path || '');
+const slugInput = ref<string>(props.workspace.slug || '');
 const copied = ref(false);
 const showDeleteDialog = ref(false);
 const deleting = ref(false);
@@ -65,7 +65,7 @@ const generalSettings = computed(() => page.props.generalSettings as any);
 // 计算完整的访问路径
 const fullAccessUrl = computed(() => {
   const baseUrl = generalSettings.value?.baseUrl || '';
-  return `${baseUrl}/w/${pathInput.value}`;
+  return `${baseUrl}/w/${slugInput.value}`;
 });
 
 // 判断是否是默认工作区
@@ -98,10 +98,10 @@ const handleLogoChange = async (event: Event) => {
       },
     });
     // 上传成功后更新logo URL
-    logoUrl.value = response.data.url;
+    logoId.value = response.data.id;
   } catch {
     // 上传失败，恢复原来的logo
-    logoPreview.value = props.workspace.logo || '';
+    logoPreview.value = props.workspace.logo_url || '';
   } finally {
     uploading.value = false;
   }
@@ -120,11 +120,11 @@ const copyToClipboard = async () => {
 };
 
 const handleDelete = () => {
-  if (!workspacePath.value) return;
+  if (!workspaceSlug.value) return;
 
   deleting.value = true;
   router.delete(
-    WorkspaceSettingController.deleteWorkspace.url(workspacePath.value),
+    WorkspaceSettingController.deleteWorkspace.url(workspaceSlug.value),
     {
       preserveState: false,
       preserveScroll: false,
@@ -152,8 +152,8 @@ const handleDelete = () => {
 
         <Form
           v-bind="
-            workspacePath
-              ? WorkspaceSettingController.updateWorkspace.form(workspacePath)
+            workspaceSlug
+              ? WorkspaceSettingController.updateWorkspace.form(workspaceSlug)
               : {}
           "
           class="space-y-6"
@@ -188,7 +188,7 @@ const handleDelete = () => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="logo">{{ t('工作区Logo') }}</Label>
+            <Label for="logo_id">{{ t('工作区Logo') }}</Label>
             <div class="mt-1 space-y-3">
               <div
                 v-if="logoPreview"
@@ -207,10 +207,10 @@ const handleDelete = () => {
                 </div>
               </div>
               <input
-                id="logo"
-                name="logo"
+                id="logo_id"
+                name="logo_id"
                 type="hidden"
-                :value="logoUrl"
+                :value="logoId"
               />
               <Input
                 id="logoFile"
@@ -228,13 +228,13 @@ const handleDelete = () => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="path">{{ t('访问路径 (path)') }}</Label>
+            <Label for="slug">{{ t('访问路径 (slug)') }}</Label>
             <Input
-              id="path"
-              name="path"
+              id="slug"
+              name="slug"
               class="mt-1 block w-full"
-              :default-value="workspace.path"
-              v-model="pathInput"
+              :default-value="workspace.slug"
+              v-model="slugInput"
               required
               :placeholder="t('请输入访问路径')"
             />
@@ -253,7 +253,7 @@ const handleDelete = () => {
                 <Copy v-else class="h-3.5 w-3.5" />
               </Button>
             </div>
-            <InputError class="mt-2" :message="errors.path" />
+            <InputError class="mt-2" :message="errors.slug" />
           </div>
 
           <div class="flex items-center gap-4">

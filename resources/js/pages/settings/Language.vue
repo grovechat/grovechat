@@ -24,12 +24,12 @@ import { type BreadcrumbItem } from '@/types';
 const { locale, updateLocale, t } = useI18n();
 const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =
   useTimezone();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('语言和时区设置'),
-    href: workspacePath.value ? edit(workspacePath.value).url : '#',
+    href: workspaceSlug.value ? edit(workspaceSlug.value).url : '#',
   },
 ]);
 

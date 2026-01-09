@@ -10,7 +10,6 @@ import { useI18n } from '@/composables/useI18n';
 import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
-import workspaceSetting from '@/routes/workspace-setting';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -18,7 +17,7 @@ import { Check, Copy } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 const page = usePage();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -29,9 +28,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 ]);
 
 const logoPreview = ref<string>('');
-const logoUrl = ref<string>('');
+const logoId = ref<string>('');
 const uploading = ref(false);
-const pathInput = ref<string>('');
+const slugInput = ref<string>('');
 const copied = ref(false);
 
 // 从共享数据中获取 generalSettings
@@ -40,7 +39,7 @@ const generalSettings = computed(() => page.props.generalSettings as any);
 // 计算完整的访问路径
 const fullAccessUrl = computed(() => {
   const baseUrl = generalSettings.value?.baseUrl || '';
-  return `${baseUrl}/w/${pathInput.value}`;
+  return `${baseUrl}/w/${slugInput.value}`;
 });
 
 const handleLogoChange = async (event: Event) => {
@@ -68,7 +67,7 @@ const handleLogoChange = async (event: Event) => {
       },
     });
     // 上传成功后更新logo URL
-    logoUrl.value = response.data.url;
+    logoId.value = response.data.id;
   } catch {
     // 上传失败，恢复原来的logo
     logoPreview.value = '';
@@ -103,8 +102,8 @@ const copyToClipboard = async () => {
 
         <Form
           v-bind="
-            workspacePath
-              ? WorkspaceSettingController.storeWorkspace.form(workspacePath)
+            workspaceSlug
+              ? WorkspaceSettingController.storeWorkspace.form(workspaceSlug)
               : {}
           "
           class="space-y-6"
@@ -123,7 +122,7 @@ const copyToClipboard = async () => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="logo">{{ t('Logo') }}</Label>
+            <Label for="logo_id">{{ t('Logo') }}</Label>
             <div class="mt-1 space-y-3">
               <div
                 v-if="logoPreview"
@@ -142,10 +141,10 @@ const copyToClipboard = async () => {
                 </div>
               </div>
               <input
-                id="logo"
-                name="logo"
+                id="logo_id"
+                name="logo_id"
                 type="hidden"
-                :value="logoUrl"
+                :value="logoId"
               />
               <Input
                 id="logoFile"
@@ -163,12 +162,12 @@ const copyToClipboard = async () => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="path">{{ t('访问路径 (path)') }}</Label>
+            <Label for="slug">{{ t('访问路径 (slug)') }}</Label>
             <Input
-              id="path"
-              name="path"
+              id="slug"
+              name="slug"
               class="mt-1 block w-full"
-              v-model="pathInput"
+              v-model="slugInput"
               required
               :placeholder="t('请输入访问路径')"
             />
@@ -187,7 +186,7 @@ const copyToClipboard = async () => {
                 <Copy v-else class="h-3.5 w-3.5" />
               </Button>
             </div>
-            <InputError class="mt-2" :message="errors.path" />
+            <InputError class="mt-2" :message="errors.slug" />
           </div>
 
           <div class="flex items-center gap-4">

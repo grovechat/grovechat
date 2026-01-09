@@ -26,12 +26,12 @@ withDefaults(defineProps<Props>(), {
 });
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('两步验证'),
-    href: workspacePath.value ? show(workspacePath.value).url : '#',
+    href: workspaceSlug.value ? show(workspaceSlug.value).url : '#',
   },
 ]);
 
@@ -73,7 +73,7 @@ onUnmounted(() => {
             </Button>
             <Form
               v-else
-              v-bind="workspacePath ? enable.form(workspacePath) : {}"
+              v-bind="workspaceSlug ? enable.form(workspaceSlug) : {}"
               @success="showSetupModal = true"
               #default="{ processing }"
             >
@@ -99,7 +99,7 @@ onUnmounted(() => {
 
           <div class="relative inline">
             <Form
-              v-bind="workspacePath ? disable.form(workspacePath) : {}"
+              v-bind="workspaceSlug ? disable.form(workspaceSlug) : {}"
               #default="{ processing }"
             >
               <Button

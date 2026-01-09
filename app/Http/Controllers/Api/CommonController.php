@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Exceptions\BusinessException;
 use App\Http\Controllers\Controller;
+use App\Services\AttachmentService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class CommonController extends Controller
 {
     public function uploadImage(Request $request)
     {
-        if (!$request->hasFile('file')) {
-            throw new BusinessException(__('common.文件上传不能为空'));
-        }
-        if (!$request->file('file')->isValid()) {
-            throw new BusinessException(__('common.无效的文件'));
-        }
+        $request->validate([
+            'file' => ['required', 'file', 'image', 'max:2048', 'mimes:jpeg,png,jpg,gif,webp'],
+            'folder' => 'string|alpha_dash',
+        ]);
 
-        $uploaded = $request->file('file');
-        if (strpos((string) $uploaded->getMimeType(), 'image/') !== 0) {
-            throw new BusinessException(__('common.仅支持图片上传'));
-        }
+        $folder = $request->input('folder', 'uploads');
+        $attachment = AttachmentService::upload($request->file('file'), $folder);
 
-        $path = $request->file('file')->store('uploads', 'public');
-
-        return response()->json(['url' => Storage::url($path)]);
+        return response()->json([
+            'id'   => $attachment->id,
+            'path' => $attachment->path,
+            'full_url'  => $attachment->full_url,
+            'name' => $attachment->file_name,
+            'size' => $attachment->file_size,
+        ]);
     }
 }

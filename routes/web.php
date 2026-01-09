@@ -17,7 +17,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])
-    ->prefix('w/{workspace_path}')
+    ->prefix('w/{slug}')
     ->group(function () {
         Route::get('/', [HomeController::class, 'workspaceHome'])->name('workspace.home');
         Route::get('dashboard', [HomeController::class, 'workspaceDashboard'])->name('workspace.dashboard');

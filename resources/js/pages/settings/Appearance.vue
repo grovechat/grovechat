@@ -13,12 +13,12 @@ import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { edit } from '@/routes/appearance';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('外观设置'),
-    href: workspacePath.value ? edit(workspacePath.value).url : '#',
+    href: workspaceSlug.value ? edit(workspaceSlug.value).url : '#',
   },
 ]);
 </script>

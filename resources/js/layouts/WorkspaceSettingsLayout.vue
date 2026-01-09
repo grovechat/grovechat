@@ -9,7 +9,7 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 interface SubMenuItem {
   title: string;
@@ -23,7 +23,7 @@ interface MenuItem {
 }
 
 const sidebarNavItems = computed<MenuItem[]>(() => {
-  if (!workspacePath.value) return [];
+  if (!workspaceSlug.value) return [];
 
   return [
     {
@@ -31,7 +31,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('常规设置'),
-          href: workspaceSetting.workspace.general.url(workspacePath.value),
+          href: workspaceSetting.workspace.general.url(workspaceSlug.value),
         },
       ],
     },
@@ -40,7 +40,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('多客服'),
-          href: workspaceSetting.teammate.index.url(workspacePath.value),
+          href: workspaceSetting.teammate.index.url(workspaceSlug.value),
         },
       ],
     },
@@ -49,7 +49,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('网站'),
-          href: workspaceSetting.channels.web.url(workspacePath.value),
+          href: workspaceSetting.channels.web.url(workspaceSlug.value),
         },
       ],
     },
@@ -58,19 +58,18 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('标签'),
-          href: workspaceSetting.datas.tag.url(workspacePath.value),
+          href: workspaceSetting.datas.tag.url(workspaceSlug.value),
         },
         {
           title: t('自定义属性'),
-          href: workspaceSetting.datas.attribute.url(workspacePath.value),
+          href: workspaceSetting.datas.attribute.url(workspaceSlug.value),
         },
       ],
     },
   ];
 });
 
-const currentPath =
-  typeof window !== 'undefined' ? window.location.pathname : '';
+const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
 </script>
 
 <template>

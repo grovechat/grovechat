@@ -45,13 +45,10 @@ class HandleInertiaRequests extends Middleware
         $currentWorkspace = null;
 
         if ($user) {
-            // 获取用户的所有工作区
             $workspaces = $user->workspaces()->get()->toArray();
-
-            // 获取当前工作区（从请求中）
-            if ($request->route('workspace_path')) {
+            if ($request->route('slug')) {
                 $currentWorkspace = $user->workspaces()
-                    ->where('path', $request->route('workspace_path'))
+                    ->where('slug', $request->route('slug'))
                     ->first();
             }
         }

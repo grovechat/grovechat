@@ -21,25 +21,23 @@ class HomeController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $lastWorkspacePath = session('last_workspace_path');
-        if ($lastWorkspacePath) {
-            $workspace = $user->workspaces()->where('path', $lastWorkspacePath)->first();
-            if ($workspace) {
-                return redirect()->route('workspace.dashboard', ['workspace_path' => $workspace->path]);
+        $lastWorkspaceSlug = session('last_workspace_slug');
+        if ($lastWorkspaceSlug) {
+            if ($workspace = $user->workspaces()->where('slug', $lastWorkspaceSlug)->first()) {
+                return redirect()->route('workspace.dashboard', ['slug' => $workspace->slug]);
             }
         }
 
         // 如果没有保存的工作区或无权访问，跳转到第一个工作区
-        $firstWorkspace = $user->workspaces()->first();
-        if ($firstWorkspace) {
-            return redirect()->route('workspace.dashboard', ['workspace_path' => $firstWorkspace->path]);
+        if ($firstWorkspace = $user->workspaces()->first()) {
+            return redirect()->route('workspace.dashboard', ['slug' => $firstWorkspace->slug]);
         }
         return redirect()->route('home');
     }
 
     public function workspaceHome(Workspace $workspace)
     {
-        return redirect()->route('workspace.dashboard', $workspace->path);
+        return redirect()->route('workspace.dashboard', $workspace->slug);
     }
 
     public function workspaceDashboard()

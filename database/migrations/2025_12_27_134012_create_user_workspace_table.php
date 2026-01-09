@@ -13,11 +13,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_workspace', function (Blueprint $table) {
-            $table->id();
             $table->timestamps();
-            $table->integer('workspace_id')->comment('工作区ID');
-            $table->integer('user_id')->comment('用户ID');
+            $table->ulid('workspace_id');
+            $table->ulid('user_id');
             $table->string('role')->default(WorkspaceRole::CUSTOMER_SERVICE->value)->comment('角色');
+            $table->primary(['workspace_id', 'user_id']);
         });
     }
 

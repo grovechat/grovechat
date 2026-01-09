@@ -10,13 +10,13 @@ import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('多客服'),
-    href: workspacePath.value
-      ? workspaceSetting.teammate.index.url(workspacePath.value)
+    href: workspaceSlug.value
+      ? workspaceSetting.teammate.index.url(workspaceSlug.value)
       : '#',
   },
 ]);

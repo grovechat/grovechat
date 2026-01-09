@@ -10,41 +10,40 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const sidebarNavItems = computed<NavItem[]>(() => {
-  if (!workspacePath.value) return [];
+  if (!workspaceSlug.value) return [];
 
   return [
     {
       title: t('基础设置'),
-      href: systemSetting.getGeneralSettings.url(workspacePath.value),
+      href: systemSetting.getGeneralSettings.url(workspaceSlug.value),
     },
     {
       title: t('存储设置'),
-      href: systemSetting.getStorageSettings.url(workspacePath.value),
+      href: systemSetting.getStorageSettings.url(workspaceSlug.value),
     },
     {
       title: t('邮箱服务器'),
-      href: systemSetting.getMailSettings.url(workspacePath.value),
+      href: systemSetting.getMailSettings.url(workspaceSlug.value),
     },
     {
       title: t('集成'),
-      href: systemSetting.getIntegrationSettings.url(workspacePath.value),
+      href: systemSetting.getIntegrationSettings.url(workspaceSlug.value),
     },
     {
       title: t('安全'),
-      href: systemSetting.getSecuritySettings.url(workspacePath.value),
+      href: systemSetting.getSecuritySettings.url(workspaceSlug.value),
     },
     {
       title: t('维护'),
-      href: systemSetting.getMaintenanceSettings.url(workspacePath.value),
+      href: systemSetting.getMaintenanceSettings.url(workspaceSlug.value),
     },
   ];
 });
 
-const currentPath =
-  typeof window !== 'undefined' ? window.location.pathname : '';
+const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
 </script>
 
 <template>

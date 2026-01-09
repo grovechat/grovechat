@@ -31,7 +31,7 @@ class CreateNewUser implements CreatesNewUsers
 
         return DB::transaction(function () use ($input) {
             // 创建用户
-            $user = User::create([
+            $user = User::query()->create([
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => $input['password'],
@@ -40,7 +40,6 @@ class CreateNewUser implements CreatesNewUsers
             // 创建工作区
             $workspace = Workspace::create([
                 'name' => 'Default',
-                'path' => strtolower($user->name),
                 'owner_id' => $user->id,
             ]);
             $workspace->createSlug();

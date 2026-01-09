@@ -38,34 +38,34 @@ import {
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 const { toggleSidebar, state } = useSidebar();
 const page = usePage();
 
 const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
-const workspaceLogo = computed(() => page.props.currentWorkspace?.logo || defaultWorkspaceUrl)
+const workspaceLogo = computed(() => page.props.currentWorkspace?.logo_url || defaultWorkspaceUrl)
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('工作台'),
-    href: workspacePath.value ? workspace.dashboard.url(workspacePath.value) : '/',
+    href: workspaceSlug.value ? workspace.dashboard.url(workspaceSlug.value) : '/',
     icon: LayoutGrid,
   },
   {
     title: t('联系人'),
-    href: workspacePath.value
-      ? contact.index.url({ workspace_path: workspacePath.value, type: 'all' })
+    href: workspaceSlug.value
+      ? contact.index.url({ slug: workspaceSlug.value, type: 'all' })
       : '/',
     icon: Users,
   },
   {
     title: t('统计'),
-    href: workspacePath.value ? stats.index.url(workspacePath.value) : '/',
+    href: workspaceSlug.value ? stats.index.url(workspaceSlug.value) : '/',
     icon: BarChart,
   },
   {
     title: t('管理中心'),
-    href: workspacePath.value
-      ? workspaceSetting.workspace.general.url(workspacePath.value)
+    href: workspaceSlug.value
+      ? workspaceSetting.workspace.general.url(workspaceSlug.value)
       : '/',
     icon: Building2,
   },
@@ -84,8 +84,8 @@ const footerNavItems = computed<NavItem[]>(() => [
   },
   {
     title: t('系统设置'),
-    href: workspacePath.value
-      ? systemSetting.getGeneralSettings.url(workspacePath.value)
+    href: workspaceSlug.value
+      ? systemSetting.getGeneralSettings.url(workspaceSlug.value)
       : '/',
     icon: Settings,
   },
@@ -103,7 +103,7 @@ const footerNavItems = computed<NavItem[]>(() => [
             <div class="flex items-center gap-2 w-full px-0 py-0 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               <!-- 系统 Logo - 可点击跳转当前工作区首页 -->
               <Link
-                :href="workspacePath ? workspace.dashboard.url(workspacePath) : '/'"
+                :href="workspaceSlug ? workspace.dashboard.url(workspaceSlug) : '/'"
                 class="shrink-0 p-2 group-data-[collapsible=icon]:p-0"
               >
                 <div

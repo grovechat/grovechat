@@ -12,7 +12,7 @@ withDefaults(
   },
 );
 
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 </script>
 
 <template>
@@ -43,8 +43,8 @@ const { workspacePath } = useWorkspace();
         class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
       >
         <Link
-          v-if="$page.props.auth.user && workspacePath"
-          :href="dashboard(workspacePath)"
+          v-if="$page.props.auth.user && workspaceSlug"
+          :href="dashboard(workspaceSlug)"
           class="inline-flex w-full items-center justify-center rounded-lg bg-gray-900 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 sm:w-auto dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
         >
           进入控制台

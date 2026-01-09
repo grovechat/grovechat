@@ -33,7 +33,7 @@ class WorkspaceSettingController extends Controller
     {
         $this->workspace->update($dto->toArray());
 
-        return redirect(route('workspace-setting.workspace.general', $this->workspace->path));
+        return redirect(route('workspace-setting.workspace.general', $this->workspace->slug));
     }
 
     public function storeWorkspace(CreateWorkspaceDTO $dto)
@@ -49,7 +49,7 @@ class WorkspaceSettingController extends Controller
             return $workspace;
         });
 
-        return redirect(route('workspace-setting.workspace.general', $newWorkspace->path));
+        return redirect(route('workspace-setting.workspace.general', $newWorkspace->slug));
     }
 
     public function deleteWorkspace()
@@ -66,6 +66,6 @@ class WorkspaceSettingController extends Controller
             'type' => 'success',
             'message' => '工作区已删除'
         ]);
-        return redirect(route('workspace-setting.workspace.general', $defaultWorkspace->path));
+        return redirect(route('workspace-setting.workspace.general', $defaultWorkspace->slug));
     }
 }

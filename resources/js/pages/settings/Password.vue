@@ -16,12 +16,12 @@ import { Label } from '@/components/ui/label';
 import { type BreadcrumbItem } from '@/types';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('密码设置'),
-    href: workspacePath.value ? edit(workspacePath.value).url : '#',
+    href: workspaceSlug.value ? edit(workspaceSlug.value).url : '#',
   },
 ]);
 </script>
@@ -38,7 +38,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="workspacePath ? PasswordController.update.form(workspacePath) : {}"
+          v-bind="workspaceSlug ? PasswordController.update.form(workspaceSlug) : {}"
           :options="{
             preserveScroll: true,
           }"

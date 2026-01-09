@@ -20,19 +20,19 @@ import { computed, ref } from 'vue';
 const props = defineProps<GeneralSettingsData>();
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: workspacePath.value
-      ? systemSetting.getGeneralSettings.url(workspacePath.value)
+    href: workspaceSlug.value
+      ? systemSetting.getGeneralSettings.url(workspaceSlug.value)
       : '#',
   },
 ]);
 
-const logoPreview = ref<string>(props.logo || '');
-const logoUrl = ref<string>(props.logo || '');
+const logoPreview = ref<string>(props.logoUrl || '');
+const logoId = ref<string>(props.logoId || '');
 const uploading = ref(false);
 
 const handleLogoChange = async (event: Event) => {
@@ -59,11 +59,11 @@ const handleLogoChange = async (event: Event) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    // 上传成功后更新logo URL
-    logoUrl.value = response.data.url;
+    // 上传成功后更新logo
+    logoId.value = response.data.id;
   } catch {
     // 上传失败，恢复原来的logo
-    logoPreview.value = props.logo || '';
+    logoPreview.value = props.logoUrl || '';
   } finally {
     uploading.value = false;
   }
@@ -83,8 +83,8 @@ const handleLogoChange = async (event: Event) => {
 
         <Form
           v-bind="
-            workspacePath
-              ? SystemSettingController.updateGeneralSettings.form(workspacePath)
+            workspaceSlug
+              ? SystemSettingController.updateGeneralSettings.form(workspaceSlug)
               : {}
           "
           class="space-y-6"
@@ -118,7 +118,7 @@ const handleLogoChange = async (event: Event) => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="logo">{{ t('系统Logo') }}</Label>
+            <Label for="logoId">{{ t('系统Logo') }}</Label>
             <div class="mt-1 space-y-3">
               <div
                 v-if="logoPreview"
@@ -137,10 +137,10 @@ const handleLogoChange = async (event: Event) => {
                 </div>
               </div>
               <input
-                id="logo"
-                name="logo"
+                id="logoId"
+                name="logoId"
                 type="hidden"
-                :value="logoUrl"
+                :value="logoId"
               />
               <Input
                 id="logoFile"
@@ -154,7 +154,7 @@ const handleLogoChange = async (event: Event) => {
                 {{ t('支持上传图片格式文件，选择后自动上传') }}
               </p>
             </div>
-            <InputError class="mt-2" :message="errors.logo" />
+            <InputError class="mt-2" :message="errors.logoId" />
           </div>
 
           <div class="grid gap-2">

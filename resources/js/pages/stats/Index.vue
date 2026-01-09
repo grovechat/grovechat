@@ -7,12 +7,12 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: '统计',
-    href: workspacePath.value ? stats.index(workspacePath.value).url : '#',
+    href: workspaceSlug.value ? stats.index(workspaceSlug.value).url : '#',
   },
 ]);
 </script>

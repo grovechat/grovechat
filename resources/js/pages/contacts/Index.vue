@@ -10,7 +10,7 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 const page = usePage();
 
 // 从路由参数获取类型
@@ -34,8 +34,8 @@ const typeLabels: Record<string, string> = {
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: typeLabels[type.value],
-    href: workspacePath.value
-      ? contact.index.url({ workspace_path: workspacePath.value, type: type.value })
+    href: workspaceSlug.value
+      ? contact.index.url({ slug: workspaceSlug.value, type: type.value })
       : '#',
   },
 ]);

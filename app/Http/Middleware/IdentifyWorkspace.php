@@ -17,8 +17,8 @@ class IdentifyWorkspace
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $path = $request->route('workspace_path');
-        $workspace = Workspace::where('path', $path)->first();
+        $slug = $request->route('slug');
+        $workspace = Workspace::where('slug', $slug)->first();
         if (!$workspace) {
             abort(404, '工作区不存在');
         }

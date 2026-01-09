@@ -10,12 +10,12 @@ import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const { workspaceSlug } = useWorkspace();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('我负责的'),
-    href: workspacePath.value ? dashboard(workspacePath.value).url : '#',
+    href: workspaceSlug.value ? dashboard(workspaceSlug.value).url : '#',
   },
 ]);
 </script>

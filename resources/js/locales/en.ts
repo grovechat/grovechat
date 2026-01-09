@@ -242,7 +242,7 @@ export default {
   工作区名称: 'Workspace Name',
   请输入工作区名称: 'Please enter workspace name',
   工作区Logo: 'Workspace Logo',
-  '访问路径 (path)': 'Access Path',
+  '访问路径（slug）': 'Access Path',
   请输入访问路径: 'Please enter access path',
   危险操作: 'Danger Zone',
   '删除工作区将无法恢复，请谨慎操作': 'Deleting a workspace is irreversible, please proceed with caution',
