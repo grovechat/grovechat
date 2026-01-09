@@ -74,53 +74,59 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         })->name('system-setting.get-maintenance-settings');
     });
         
-    // 管理中心--工作区--常规设置
-    Route::prefix('workspace-settings/workspaces')->group(function () {
-        Route::get('/', [WorkspaceSettingController::class, 'showWorkspaceGeneralPage'])->name('workspace-setting.workspace.general');
-        Route::get('/create', [WorkspaceSettingController::class, 'showCreateWorkspacePage'])->name('workspace-settings.workspace.create');
-        Route::put('/', [WorkspaceSettingController::class, 'updateWorkspace'])->name('workspace-settings.workspace.update');
-        Route::post('/', [WorkspaceSettingController::class, 'storeWorkspace'])->name('workspace-settings.workspace.addWorkspace');
-        Route::delete('/', [WorkspaceSettingController::class, 'deleteWorkspace'])->name('workspace-settings.workspace.delete');
-    });
-    
-    // 管理中心--客服--多客服
-    Route::prefix('workspace-settings/teammates')->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('workspaceSettings/teammate/Index');
-        })->name('workspace-setting.teammate.index');
-    });
-    
-    // 管理中心--渠道--网站
-    Route::prefix('workspace-settings/channels/web')->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('workspaceSettings/channels/Web');
-        })->name('workspace-setting.channels.web');
-    }); 
-    
-    // 管理中心--数据--标签
-    Route::prefix('workspace-settings/tags')->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('workspaceSettings/datas/Tag');
-        })->name('workspace-setting.datas.tag');
-    });
-    
-    // 管理中心--数据--自定义属性
-    Route::prefix('workspace-settings/attributes')->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('workspaceSettings/datas/Attribute');
-        })->name('workspace-setting.datas.attribute');
+    // 管理中心
+    Route::prefix('manage')->group(function () {
+        // 工作区
+        Route::prefix('workspaces')->controller(WorkspaceSettingController::class)->group(function () { // 常规设置
+            Route::get('general', 'showWorkspaceGeneralPage')->name('workspace-setting.workspace.general');
+            Route::get('general/create', 'showCreateWorkspacePage')->name('workspace-settings.workspace.create');
+            Route::put('general', 'updateWorkspace')->name('workspace-settings.workspace.update');
+            Route::post('general', 'storeWorkspace')->name('workspace-settings.workspace.addWorkspace');
+            Route::delete('general', 'deleteWorkspace')->name('workspace-settings.workspace.delete');
+        });        
+        
+        // 客服
+        Route::prefix('teammates')->group(function () {
+            Route::get('/', function () {
+                return Inertia::render('workspaceSettings/teammate/Index');
+            })->name('workspace-setting.teammate.index');
+        });
+        
+        // 渠道
+        Route::prefix('channels')->group(function () {
+            // 网站
+            Route::prefix('web')->group(function () {
+                Route::get('/', function () {
+                    return Inertia::render('workspaceSettings/channels/Web');
+                })->name('workspace-setting.channels.web');
+            });      
+        });
+        
+        // 标签
+        Route::prefix('tags')->group(function () {
+            Route::get('/', function () {
+                return Inertia::render('workspaceSettings/datas/Tag');
+            })->name('workspace-setting.datas.tag');
+        });
+        
+        // 自定义属性
+        Route::prefix('attributes')->group(function () {
+            Route::get('/', function () {
+                return Inertia::render('workspaceSettings/datas/Attribute');
+            })->name('workspace-setting.datas.attribute');
+        });
     });
     
     // 联系人
-    Route::prefix('/contacts')->group(function () {
-        Route::get('contacts/{type}/index', function () {
+    Route::prefix('contacts')->group(function () {
+        Route::get('/{type}/index', function () {
             return Inertia::render('contacts/Index');
         })
         ->whereIn('type', ['all', 'customers', 'leads'])
         ->name('contact.index');
     }); 
 
-    // 管理中心--访客
+    // 会话
     Route::prefix('/conversations')->group(function () {
         Route::get('/', function () {
             return Inertia::render('contacts/Conversation');
