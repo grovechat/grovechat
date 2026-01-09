@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
-import TenantSettingController from '@/actions/App/Http/Controllers/TenantSettingController';
+import WorkspaceSettingController from '@/actions/App/Http/Controllers/WorkspaceSettingController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -18,14 +18,14 @@ import { useI18n } from '@/composables/useI18n';
 import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
-import tenantSetting from '@/routes/tenant-setting';
+import workspaceSetting from '@/routes/workspace-setting';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { Check, Copy } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
-interface Tenant {
+interface Workspace {
   id: number;
   name: string;
   slug: string;
@@ -35,7 +35,7 @@ interface Tenant {
 }
 
 const props = defineProps<{
-  tenant: Tenant;
+  workspace: Workspace;
 }>();
 
 const { t } = useI18n();
@@ -46,15 +46,15 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('常规设置'),
     href: workspacePath.value
-      ? tenantSetting.tenant.general.url(workspacePath.value)
+      ? workspaceSetting.workspace.general.url(workspacePath.value)
       : '#',
   },
 ]);
 
-const logoPreview = ref<string>(props.tenant.logo || '');
-const logoUrl = ref<string>(props.tenant.logo || '');
+const logoPreview = ref<string>(props.workspace.logo || '');
+const logoUrl = ref<string>(props.workspace.logo || '');
 const uploading = ref(false);
-const pathInput = ref<string>(props.tenant.path || '');
+const pathInput = ref<string>(props.workspace.path || '');
 const copied = ref(false);
 const showDeleteDialog = ref(false);
 const deleting = ref(false);
@@ -69,8 +69,8 @@ const fullAccessUrl = computed(() => {
 });
 
 // 判断是否是默认工作区
-const isDefaultTenant = computed(() => {
-  return props.tenant.owner_id !== null;
+const isDefaultWorkspace = computed(() => {
+  return props.workspace.owner_id !== null;
 });
 
 const handleLogoChange = async (event: Event) => {
@@ -101,7 +101,7 @@ const handleLogoChange = async (event: Event) => {
     logoUrl.value = response.data.url;
   } catch {
     // 上传失败，恢复原来的logo
-    logoPreview.value = props.tenant.logo || '';
+    logoPreview.value = props.workspace.logo || '';
   } finally {
     uploading.value = false;
   }
@@ -124,7 +124,7 @@ const handleDelete = () => {
 
   deleting.value = true;
   router.delete(
-    TenantSettingController.deleteTenant.url(workspacePath.value),
+    WorkspaceSettingController.deleteWorkspace.url(workspacePath.value),
     {
       preserveState: false,
       preserveScroll: false,
@@ -153,7 +153,7 @@ const handleDelete = () => {
         <Form
           v-bind="
             workspacePath
-              ? TenantSettingController.updateTenent.form(workspacePath)
+              ? WorkspaceSettingController.updateWorkspace.form(workspacePath)
               : {}
           "
           class="space-y-6"
@@ -165,7 +165,7 @@ const handleDelete = () => {
               id="slug"
               name="slug"
               class="mt-1 block w-full bg-gray-50"
-              :default-value="tenant.slug"
+              :default-value="workspace.slug"
               disabled
               readonly
             />
@@ -180,7 +180,7 @@ const handleDelete = () => {
               id="name"
               name="name"
               class="mt-1 block w-full"
-              :default-value="tenant.name"
+              :default-value="workspace.name"
               required
               :placeholder="t('请输入工作区名称')"
             />
@@ -233,7 +233,7 @@ const handleDelete = () => {
               id="path"
               name="path"
               class="mt-1 block w-full"
-              :default-value="tenant.path"
+              :default-value="workspace.path"
               v-model="pathInput"
               required
               :placeholder="t('请输入访问路径')"
@@ -260,7 +260,7 @@ const handleDelete = () => {
             <Button
               type="submit"
               :disabled="processing"
-              data-test="update-tenant-button"
+              data-test="update-workspace-button"
             >
               {{ t('保存') }}
             </Button>
@@ -286,12 +286,12 @@ const handleDelete = () => {
           <div class="mt-6">
             <Button
               variant="destructive"
-              :disabled="isDefaultTenant"
+              :disabled="isDefaultWorkspace"
               @click="showDeleteDialog = true"
             >
               {{ t('删除工作区') }}
             </Button>
-            <p v-if="isDefaultTenant" class="text-sm text-muted-foreground mt-2">
+            <p v-if="isDefaultWorkspace" class="text-sm text-muted-foreground mt-2">
               {{ t('默认工作区不能删除') }}
             </p>
           </div>

@@ -21,8 +21,8 @@ import { cn } from '@/lib/utils';
 import contact from '@/routes/contact';
 import stats from '@/routes/stats';
 import systemSetting from '@/routes/system-setting';
-import tenant from '@/routes/tenant';
-import tenantSetting from '@/routes/tenant-setting';
+import workspace from '@/routes/workspace';
+import workspaceSetting from '@/routes/workspace-setting';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import {
@@ -43,11 +43,11 @@ const { toggleSidebar, state } = useSidebar();
 const page = usePage();
 
 const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
-const tenantLogo = computed(() => page.props.currentWorkspace?.logo || defaultWorkspaceUrl)
+const workspaceLogo = computed(() => page.props.currentWorkspace?.logo || defaultWorkspaceUrl)
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('工作台'),
-    href: workspacePath.value ? tenant.dashboard.url(workspacePath.value) : '/',
+    href: workspacePath.value ? workspace.dashboard.url(workspacePath.value) : '/',
     icon: LayoutGrid,
   },
   {
@@ -65,7 +65,7 @@ const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('管理中心'),
     href: workspacePath.value
-      ? tenantSetting.tenant.general.url(workspacePath.value)
+      ? workspaceSetting.workspace.general.url(workspacePath.value)
       : '/',
     icon: Building2,
   },
@@ -103,7 +103,7 @@ const footerNavItems = computed<NavItem[]>(() => [
             <div class="flex items-center gap-2 w-full px-0 py-0 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
               <!-- 系统 Logo - 可点击跳转当前工作区首页 -->
               <Link
-                :href="workspacePath ? tenant.dashboard.url(workspacePath) : '/'"
+                :href="workspacePath ? workspace.dashboard.url(workspacePath) : '/'"
                 class="shrink-0 p-2 group-data-[collapsible=icon]:p-0"
               >
                 <div
@@ -126,7 +126,7 @@ const footerNavItems = computed<NavItem[]>(() => [
               <div v-if="page.props.currentWorkspace" class="hidden group-data-[collapsible=icon]:block">
                 <div class="flex h-6 w-6 items-center justify-center rounded overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground">
                   <img
-                    :src="tenantLogo"
+                    :src="workspaceLogo"
                     :alt="page.props.currentWorkspace.name"
                     class="h-full w-full object-cover"
                   />

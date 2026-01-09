@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Tenant;
+use App\Models\Workspace;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -22,7 +22,7 @@ test('new users can register', function () {
     
     // 验证注册时自动创建了租户
     $user = auth()->user();
-    expect($user->tenants()->count())->toBe(1);
+    expect($user->workspaces()->count())->toBe(1);
     
     // 注册后会重定向到全局 dashboard，然后再重定向到租户 dashboard
     // 所以这里检查重定向到 dashboard 路由即可

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TenantSettingController from '@/actions/App/Http/Controllers/TenantSettingController';
+import WorkspaceSettingController from '@/actions/App/Http/Controllers/WorkspaceSettingController';
 import defaultWorkspaceUrl from '@/assets/images/workspace.png';
 import {
   DropdownMenu,
@@ -9,12 +9,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
-import tenant from '@/routes/tenant';
+import workspace from '@/routes/workspace';
 import { router, usePage } from '@inertiajs/vue3';
 import { Check, ChevronsUpDown, Plus } from 'lucide-vue-next';
 import { computed } from 'vue';
 
-interface Tenant {
+interface Workspace {
   id: number;
   name: string;
   slug: string;
@@ -26,21 +26,21 @@ interface Tenant {
 const { t } = useI18n();
 const page = usePage();
 
-const workspaces = computed(() => (page.props.workspaces as Tenant[]) || []);
-const currentWorkspace = computed(() => page.props.currentWorkspace as Tenant | null);
-const tenantLogo = computed(() => currentWorkspace.value?.logo || defaultWorkspaceUrl)
-const switchTenant = (selectedTenant: Tenant) => {
-  if (selectedTenant.path !== currentWorkspace.value?.path) {
-    router.visit(tenant.dashboard.url(selectedTenant.path), {
+const workspaces = computed(() => (page.props.workspaces as Workspace[]) || []);
+const currentWorkspace = computed(() => page.props.currentWorkspace as Workspace | null);
+const workspaceLogo = computed(() => currentWorkspace.value?.logo || defaultWorkspaceUrl)
+const switchWorkspace = (selectedWorkspace: Workspace) => {
+  if (selectedWorkspace.path !== currentWorkspace.value?.path) {
+    router.visit(workspace.dashboard.url(selectedWorkspace.path), {
       preserveState: false,
       preserveScroll: false,
     });
   }
 };
 
-const goToCreateTenant = () => {
+const goToCreateWorkspace = () => {
   if (currentWorkspace.value) {
-    router.visit(TenantSettingController.showCreateTenantPage.url(currentWorkspace.value.path));
+    router.visit(WorkspaceSettingController.showCreateWorkspacePage.url(currentWorkspace.value.path));
   }
 };
 </script>
@@ -53,7 +53,7 @@ const goToCreateTenant = () => {
       >
         <div class="flex h-5 w-5 items-center justify-center rounded overflow-hidden text-sidebar-primary-foreground shrink-0">
           <img
-            :src="tenantLogo"
+            :src="workspaceLogo"
             :alt="currentWorkspace.name"
             class="h-full w-full object-cover"
           />
@@ -69,28 +69,28 @@ const goToCreateTenant = () => {
         {{ t('切换工作区') }}
       </div>
       <DropdownMenuItem
-        v-for="tenant in workspaces"
-        :key="tenant.id"
+        v-for="workspace in workspaces"
+        :key="workspace.id"
         class="flex items-center gap-2 cursor-pointer"
-        @click="switchTenant(tenant)"
+        @click="switchWorkspace(workspace)"
       >
-        <div class="flex h-6 w-6 items-center justify-center rounded-md overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground shrink-0">
+        <div class="flex h-6 w-6 items-center justify-center rounded-md overflow-hidden text-sidebar-primary-foreground shrink-0">
           <img
-            :src="tenant.logo"
-            :alt="tenant.name"
+            :src="workspaceLogo"
+            :alt="workspace.name"
             class="h-full w-full object-cover"
           />
         </div>
-        <span class="flex-1 truncate">{{ tenant.name }}</span>
+        <span class="flex-1 truncate">{{ workspace.name }}</span>
         <Check
-          v-if="tenant.path === currentWorkspace?.path"
+          v-if="workspace.path === currentWorkspace?.path"
           class="h-4 w-4 shrink-0"
         />
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem
         class="flex items-center gap-2 cursor-pointer"
-        @click="goToCreateTenant"
+        @click="goToCreateWorkspace"
       >
         <div
           class="flex h-6 w-6 items-center justify-center rounded-md border border-dashed shrink-0"

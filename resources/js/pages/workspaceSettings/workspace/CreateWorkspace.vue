@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
-import TenantSettingController from '@/actions/App/Http/Controllers/TenantSettingController';
+import WorkspaceSettingController from '@/actions/App/Http/Controllers/WorkspaceSettingController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
-import tenantSetting from '@/routes/tenant-setting';
+import workspaceSetting from '@/routes/workspace-setting';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -104,7 +104,7 @@ const copyToClipboard = async () => {
         <Form
           v-bind="
             workspacePath
-              ? TenantSettingController.storeTenant.form(workspacePath)
+              ? WorkspaceSettingController.storeWorkspace.form(workspacePath)
               : {}
           "
           class="space-y-6"
@@ -194,7 +194,7 @@ const copyToClipboard = async () => {
             <Button
               type="submit"
               :disabled="processing"
-              data-test="create-tenant-button"
+              data-test="create-workspace-button"
             >
               {{ t('创建工作区') }}
             </Button>

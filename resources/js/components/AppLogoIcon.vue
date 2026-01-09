@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import logoUrl from '@/assets/images/logo2.png';
+import logoUrl from '@/assets/images/logo.png';
 import { usePage } from '@inertiajs/vue3';
 import { computed, type HTMLAttributes } from 'vue';
 

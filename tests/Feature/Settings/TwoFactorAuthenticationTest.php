@@ -22,7 +22,7 @@ test('two factor settings page can be rendered', function () {
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->get(route('two-factor.show', ['tenant_path' => $this->workspacePath()]))
+        ->get(route('two-factor.show', ['workspace_path' => $this->workspacePath()]))
         ->assertInertia(fn (Assert $page) => $page
             ->component('settings/TwoFactor')
             ->where('twoFactorEnabled', false)
@@ -42,7 +42,7 @@ test('two factor settings page requires password confirmation when enabled', fun
     ]);
 
     $response = $this->actingAs($user)
-        ->get(route('two-factor.show', ['tenant_path' => $this->workspacePath()]));
+        ->get(route('two-factor.show', ['workspace_path' => $this->workspacePath()]));
 
     $response->assertRedirect(route('password.confirm'));
 });
@@ -60,7 +60,7 @@ test('two factor settings page does not requires password confirmation when disa
     ]);
 
     $this->actingAs($user)
-        ->get(route('two-factor.show', ['tenant_path' => $this->workspacePath()]))
+        ->get(route('two-factor.show', ['workspace_path' => $this->workspacePath()]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('settings/TwoFactor')
@@ -78,6 +78,6 @@ test('two factor settings page returns forbidden response when two factor is dis
 
     $this->actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->get(route('two-factor.show', ['tenant_path' => $this->workspacePath()]))
+        ->get(route('two-factor.show', ['workspace_path' => $this->workspacePath()]))
         ->assertForbidden();
 });
