@@ -3,6 +3,7 @@
 use App\Actions\Dashboard\RedirectCurrentWorkspaceDashboard;
 use App\Actions\Dashboard\RedirectLastDashboardAction;
 use App\Actions\Dashboard\ShowDashboardAction;
+use App\Actions\StorageSetting\CheckStorageSettingAction;
 use App\Actions\StorageSetting\GetStorageSettingAction;
 use App\Actions\StorageSetting\UpdateStorageSettingAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
@@ -60,7 +61,8 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         // 存储设置
         Route::get('storage', GetStorageSettingAction::class)->name('system-setting.get-storage-settings');
         Route::put('storage', UpdateStorageSettingAction::class)->name('system-settings.update-storage-settings');
-
+        Route::put('check', CheckStorageSettingAction::class)->name('system-settings.check-storage-settiings');
+        
         // 邮箱服务器
         Route::get('mail', function () {
             return Inertia::render('systemSettings/MailSetting');

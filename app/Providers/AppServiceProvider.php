@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\StorageProvider;
 use App\Settings\StorageSettings;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -51,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
                 'bucket' => $settings->bucket,
                 'endpoint' => $settings->endpoint,
                 'url'    => $settings->url,
-                'use_path_style_endpoint' => $settings->path_style,
+                'use_path_style_endpoint' => $settings->provider == StorageProvider::MINIO,
             ],
         ]);
     }
