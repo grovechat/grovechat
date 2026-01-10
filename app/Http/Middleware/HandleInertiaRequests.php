@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Data\WorkspaceData;
-use App\Domain\SystemSettings\Actions\GetSettingAction;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -11,7 +11,7 @@ use Inertia\Middleware;
 class HandleInertiaRequests extends Middleware
 {
     public function __construct(
-        public GetSettingAction $getSettingAction
+        public GetGeneralSettingAction $getGeneralSettingAction
     ) { }
 
     /**
@@ -45,7 +45,7 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         $user = $request->user();
-        $workspaces = null;
+        $workspaces = collect();
         $currentWorkspace = null;
 
         if ($user) {
@@ -63,7 +63,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'generalSettings' => $this->getSettingAction->execute(),
+            'generalSettings' => $this->getGeneralSettingAction->run(),
             'workspaces' => WorkspaceData::collect($workspaces),
             'currentWorkspace' => $currentWorkspace ? WorkspaceData::from($currentWorkspace) : null,
         ];

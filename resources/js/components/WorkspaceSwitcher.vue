@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WorkspaceSettingController from '@/actions/App/Http/Controllers/WorkspaceSettingController';
+import ShowCreateWorkspacePageAction from '@/actions/App/Actions/Workspace/ShowCreateWorkspacePageAction';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +30,7 @@ const switchWorkspace = (selectedWorkspace: WorkspaceData) => {
 
 const goToCreateWorkspace = () => {
   if (currentWorkspace.value) {
-    router.visit(WorkspaceSettingController.showCreateWorkspacePage.url(currentWorkspace.value.slug));
+    router.visit(ShowCreateWorkspacePageAction.url(currentWorkspace.value.slug));
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import CreateWorkspaceAction from '@/actions/App/Actions/Workspace/CreateWorkspaceAction';
 import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
-import WorkspaceSettingController from '@/actions/App/Http/Controllers/WorkspaceSettingController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -94,7 +94,7 @@ const copyToClipboard = async () => {
         />
 
         <Form
-          v-bind="WorkspaceSettingController.storeWorkspace.form(currentWorkspace.slug)"
+          v-bind="CreateWorkspaceAction.form(currentWorkspace.slug)"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import SystemSetting from '@/actions/App/Actions/SystemSetting';
 import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
-import SystemSettingController from '@/actions/App/Http/Controllers/SystemSettingController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -74,7 +74,7 @@ const handleLogoChange = async (event: Event) => {
         />
 
         <Form
-          v-bind="SystemSettingController.updateGeneralSettings.form(currentWorkspace.slug)"
+          v-bind=" SystemSetting.UpdateGeneralSettingAction.form(currentWorkspace.slug)"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >

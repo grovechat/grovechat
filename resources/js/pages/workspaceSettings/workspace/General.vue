@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import DestroyWorkspaceAction from '@/actions/App/Actions/Workspace/DestroyWorkspaceAction';
+import UpdateWorkspaceAction from '@/actions/App/Actions/Workspace/UpdateWorkspaceAction';
 import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
-import WorkspaceSettingController from '@/actions/App/Http/Controllers/WorkspaceSettingController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -101,7 +102,7 @@ const copyToClipboard = async () => {
 const handleDelete = () => {
   deleting.value = true;
   router.delete(
-    WorkspaceSettingController.deleteWorkspace.url(currentWorkspace.value.slug),
+    DestroyWorkspaceAction.url(currentWorkspace.value.slug),
     {
       preserveState: false,
       preserveScroll: false,
@@ -128,7 +129,7 @@ const handleDelete = () => {
         />
 
         <Form
-          v-bind="WorkspaceSettingController.updateWorkspace.form(currentWorkspace.slug)"
+          v-bind="UpdateWorkspaceAction.form(currentWorkspace.slug)"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >

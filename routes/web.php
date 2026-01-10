@@ -1,12 +1,18 @@
 <?php
 
+use App\Actions\SystemSetting\GetGeneralSettingAction;
+use App\Actions\SystemSetting\UpdateGeneralSettingAction;
+use App\Actions\Workspace\CreateWorkspaceAction;
+use App\Actions\Workspace\DestroyWorkspaceAction;
+use App\Actions\Workspace\GetWorkspaceGeneralSettingAction;
+use App\Actions\Workspace\ShowCreateWorkspacePageAction;
+use App\Actions\Workspace\UpdateWorkspaceAction;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
-use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WorkspaceSettingController;
 use App\Http\Middleware\IdentifyWorkspace;
 use App\Http\Middleware\TrackLastWorkspace;
@@ -45,8 +51,8 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
     // 系统设置
     Route::prefix("system-settings")->group(function () {
         // 基础设置 
-        Route::get('general', [SystemSettingController::class, 'getGeneralSettings'])->name('system-setting.get-general-settings');
-        Route::put('general', [SystemSettingController::class, 'updateGeneralSettings'])->name('system-setting.update-general-settings');
+        Route::get('general', GetGeneralSettingAction::class)->name('system-setting.get-general-settings');
+        Route::put('general', UpdateGeneralSettingAction::class)->name('system-setting.update-general-settings');
         
         // 存储设置
         Route::get('storage', function () {
@@ -77,14 +83,14 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
     // 管理中心
     Route::prefix('manage')->group(function () {
         // 工作区
-        Route::prefix('workspaces')->controller(WorkspaceSettingController::class)->group(function () { // 常规设置
-            Route::get('general', 'showWorkspaceGeneralPage')->name('workspace-setting.workspace.general');
-            Route::get('general/create', 'showCreateWorkspacePage')->name('workspace-settings.workspace.create');
-            Route::put('general', 'updateWorkspace')->name('workspace-settings.workspace.update');
-            Route::post('general', 'storeWorkspace')->name('workspace-settings.workspace.addWorkspace');
-            Route::delete('general', 'deleteWorkspace')->name('workspace-settings.workspace.delete');
-        });        
-        
+        Route::prefix('workspace')->group(function () { // 常规设置
+            Route::get('general', GetWorkspaceGeneralSettingAction::class)->name('workspace-setting.workspace.general');
+            Route::get('general/create', ShowCreateWorkspacePageAction::class)->name('workspace-settings.workspace.create');
+            Route::put('general', UpdateWorkspaceAction::class)->name('workspace-settings.workspace.update');
+            Route::post('general', CreateWorkspaceAction::class)->name('workspace-settings.workspace.addWorkspace');
+            Route::delete('general', DestroyWorkspaceAction::class)->name('workspace-settings.workspace.delete');
+        });
+
         // 客服
         Route::prefix('teammates')->group(function () {
             Route::get('/', function () {

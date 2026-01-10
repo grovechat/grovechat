@@ -1,8 +1,6 @@
 <?php
 
-/**@typescript*/
-
-namespace App\Domain\SystemSettings\DTOs;
+namespace App\Data;
 
 use App\Models\Attachment;
 use Spatie\LaravelData\Data;
