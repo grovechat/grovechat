@@ -1,5 +1,8 @@
 <?php
 
+use App\Actions\Dashboard\RedirectCurrentWorkspaceDashboard;
+use App\Actions\Dashboard\RedirectLastDashboardAction;
+use App\Actions\Dashboard\ShowDashboardAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
 use App\Actions\Workspace\CreateWorkspaceAction;
@@ -7,24 +10,22 @@ use App\Actions\Workspace\DestroyWorkspaceAction;
 use App\Actions\Workspace\GetWorkspaceGeneralSettingAction;
 use App\Actions\Workspace\ShowCreateWorkspacePageAction;
 use App\Actions\Workspace\UpdateWorkspaceAction;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
-use App\Http\Controllers\WorkspaceSettingController;
 use App\Http\Middleware\IdentifyWorkspace;
 use App\Http\Middleware\TrackLastWorkspace;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/', ShowDashboardAction::class)->name('home');
+Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
-    Route::get('/', [HomeController::class, 'workspaceHome'])->name('workspace.home');
-    Route::get('dashboard', [HomeController::class, 'workspaceDashboard'])->name('workspace.dashboard');
+    Route::get('/', RedirectCurrentWorkspaceDashboard::class)->name('workspace.home');
+    Route::get('/dashboard', ShowDashboardAction::class)->name('workspace.dashboard');
     
     // 个人设置
     Route::prefix('settings')->group(function () {
