@@ -20,12 +20,12 @@ import systemSetting from '@/routes/system-setting';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
-import type { StorageSettingData, S3StorageData } from '@/types/generated';
+import type { StorageSettingData, StorageConfigData } from '@/types/generated';
 
 const page = usePage();
 const { t } = useI18n();
 const storageSettings = computed(() => page.props.storageSettings as StorageSettingData);
-const providers = computed(() => page.props.providers as S3StorageData[]);
+const storageConfig = computed(() => page.props.storageConfig as StorageConfigData[]);
 const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -36,18 +36,17 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 ]);
 
 const enabled = ref<boolean>(storageSettings.value.enabled);
-const selectedProvider = ref<string>(storageSettings.value.disk || 'aws');
+const provider = ref<string>(storageSettings.value.provider || 'aws');
 const selectedRegion = ref<string>(storageSettings.value.region || '');
 const endpoint = ref<string>(storageSettings.value.endpoint || '');
 const key = ref<string>(storageSettings.value.key || '');
 const secret = ref<string>(storageSettings.value.secret || '');
 const bucket = ref<string>(storageSettings.value.bucket || '');
 const url = ref<string>(storageSettings.value.url || '');
-const pathStyle = ref<boolean>(storageSettings.value.path_style);
 const useInternalEndpoint = ref<boolean>(false);
 
 const currentProvider = computed(() =>
-  providers.value.find(p => p.value === selectedProvider.value)
+  storageConfig.value.find(p => p.value === provider.value)
 );
 
 const currentRegions = computed(() =>
@@ -58,14 +57,14 @@ const currentRegionData = computed(() =>
   currentRegions.value.find(r => r.id === selectedRegion.value)
 );
 
-const isAliyun = computed(() => selectedProvider.value === 'aliyun');
+const isAliyun = computed(() => provider.value === 'aliyun');
 
 const hasInternalEndpoint = computed(() =>
   isAliyun.value && currentRegionData.value?.internal_endpoint
 );
 
-watch(selectedProvider, (newProvider) => {
-  const provider = providers.value.find(p => p.value === newProvider);
+watch(provider, (newProvider) => {
+  const provider = storageConfig.value.find(p => p.value === newProvider);
   if (provider && provider.regions.length > 0) {
     selectedRegion.value = '';
     endpoint.value = '';
@@ -133,16 +132,16 @@ const toggleInternalEndpoint = () => {
             <div class="grid gap-2">
               <Label for="provider">{{ t('存储提供商') }}</Label>
               <Select
-                v-model="selectedProvider"
-                name="disk"
-                :default-value="selectedProvider"
+                v-model="provider"
+                name="provider"
+                :default-value="provider"
               >
                 <SelectTrigger id="provider">
                   <SelectValue :placeholder="t('请选择存储提供商')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
-                    v-for="provider in providers"
+                    v-for="provider in storageConfig"
                     :key="provider.value"
                     :value="provider.value"
                   >
@@ -269,27 +268,6 @@ const toggleInternalEndpoint = () => {
                 {{ t('如果配置了 CDN 或自定义域名，请在此填写，用于生成文件访问 URL') }}
               </p>
               <InputError class="mt-2" :message="errors.url" />
-            </div>
-
-            <div class="grid gap-2">
-              <div class="flex items-center space-x-2">
-                <Checkbox
-                  id="path_style"
-                  v-model="pathStyle"
-                />
-                <Label for="path_style" class="cursor-pointer">
-                  {{ t('使用 Path Style 访问') }}
-                </Label>
-              </div>
-              <input type="hidden" name="path_style" :value="pathStyle ? 1 : 0" />
-              <p class="text-sm text-muted-foreground">
-                {{
-                  t(
-                    '启用后使用路径风格访问（path-style），如：https://s3.amazonaws.com/bucket/key，而非虚拟主机风格（virtual-hosted-style）',
-                  )
-                }}
-              </p>
-              <InputError class="mt-2" :message="errors.path_style" />
             </div>
           </div>
 

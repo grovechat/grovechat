@@ -236,7 +236,7 @@ enum StorageProvider: string
                 [
                     'id' => 'auto',
                     'name' => 'auto',
-                    'endpoint' => 'https://<ACCOUNT_ID>.r2.cloudflarestorage.com',
+                    'endpoint' => 'https://ACCOUNT_ID.r2.cloudflarestorage.com',
                 ],
             ],
             self::ALIYUN => [

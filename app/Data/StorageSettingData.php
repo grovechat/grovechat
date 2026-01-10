@@ -8,7 +8,7 @@ class StorageSettingData extends Data
 {
     public function __construct(
         public bool $enabled,
-        public ?string $disk,
+        public ?string $provider,
         public ?string $key,
         public ?string $secret,  
         
@@ -24,14 +24,14 @@ class StorageSettingData extends Data
     {
         return [
             'enabled' => 'required|boolean',
-            'disk' => 'required_if:enabled,true|string|in:s3,oss',
+            'provider' => 'required_if:enabled,true|string|in:s3,oss',
             'key' => 'required_if:enabled,true|string',
             'secret' => 'required_if:enabled,true|string',
             'bucket' => 'required_if:enabled,true|string',
             'region' => 'required_if:enabled,true|string',
             'endpoint' => 'required_if:enabled,true|string|url',
             'url' => 'nullable|string|url',
-            'path_style' => 'nullable|bool',
+            'pathStyle' => 'nullable|bool',
         ];
     }
 }

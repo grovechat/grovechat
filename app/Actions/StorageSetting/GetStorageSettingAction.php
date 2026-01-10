@@ -3,6 +3,7 @@
 namespace App\Actions\StorageSetting;
 
 use App\Data\S3StorageData;
+use App\Data\StorageConfigData;
 use App\Data\StorageSettingData;
 use App\Enums\StorageProvider;
 use App\Settings\StorageSettings;
@@ -26,8 +27,8 @@ class GetStorageSettingAction
     {
         $storageSettings = $this->handle();
 
-        $providers = collect(StorageProvider::cases())->map(function ($provider) {
-            return S3StorageData::from([
+        $storageConfig = collect(StorageProvider::cases())->map(function ($provider) {
+            return StorageConfigData::from([
                 'value' => $provider->value,
                 'label' => $provider->label(),
                 'helpLink' => $provider->getHelpLink(),
@@ -37,7 +38,7 @@ class GetStorageSettingAction
 
         return Inertia::render('systemSettings/StorageSetting', [
             'storageSettings' => $storageSettings,
-            'providers' => $providers,
+            'storageConfig' => $storageConfig,
         ]);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Data;
 
 use Spatie\LaravelData\Data;
 
-class S3StorageRegionData extends Data
+class StorageRegionData extends Data
 {
     public function __construct(
         public string $id,
