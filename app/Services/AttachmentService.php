@@ -49,6 +49,9 @@ class AttachmentService
         ]); 
     }
     
+    /**
+     * 更新附件模型
+     */
     public static function replace(string $oldId, string $newId, Model $attachable)
     {
         self::delete($oldId);
