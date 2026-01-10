@@ -20,11 +20,12 @@ import systemSetting from '@/routes/system-setting';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
-import type { StorageSettingData } from '@/types/generated';
+import type { StorageSettingData, S3StorageData } from '@/types/generated';
 
 const page = usePage();
 const { t } = useI18n();
 const storageSettings = computed(() => page.props.storageSettings as StorageSettingData);
+const providers = computed(() => page.props.providers as S3StorageData[]);
 const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -35,15 +36,63 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 ]);
 
 const enabled = ref<boolean>(storageSettings.value.enabled);
-const selectedDisk = ref<string>(storageSettings.value.disk || 's3');
+const selectedProvider = ref<string>(storageSettings.value.disk || 'aws');
+const selectedRegion = ref<string>(storageSettings.value.region || '');
+const endpoint = ref<string>(storageSettings.value.endpoint || '');
+const key = ref<string>(storageSettings.value.key || '');
+const secret = ref<string>(storageSettings.value.secret || '');
+const bucket = ref<string>(storageSettings.value.bucket || '');
+const url = ref<string>(storageSettings.value.url || '');
 const pathStyle = ref<boolean>(storageSettings.value.path_style);
+const useInternalEndpoint = ref<boolean>(false);
 
-watch(enabled, (newValue) => {
-  if (!newValue) {
-    // When disabled, reset to default values
-    selectedDisk.value = 's3';
+const currentProvider = computed(() =>
+  providers.value.find(p => p.value === selectedProvider.value)
+);
+
+const currentRegions = computed(() =>
+  currentProvider.value?.regions || []
+);
+
+const currentRegionData = computed(() =>
+  currentRegions.value.find(r => r.id === selectedRegion.value)
+);
+
+const isAliyun = computed(() => selectedProvider.value === 'aliyun');
+
+const hasInternalEndpoint = computed(() =>
+  isAliyun.value && currentRegionData.value?.internal_endpoint
+);
+
+watch(selectedProvider, (newProvider) => {
+  const provider = providers.value.find(p => p.value === newProvider);
+  if (provider && provider.regions.length > 0) {
+    selectedRegion.value = '';
+    endpoint.value = '';
+    useInternalEndpoint.value = false;
   }
 });
+
+// Watch region changes
+watch(selectedRegion, (newRegion) => {
+  const region = currentRegions.value.find(r => r.id === newRegion);
+  if (region) {
+    endpoint.value = region.endpoint;
+    useInternalEndpoint.value = false;
+  }
+});
+
+const toggleInternalEndpoint = () => {
+  if (currentRegionData.value) {
+    if (useInternalEndpoint.value) {
+      endpoint.value = currentRegionData.value.endpoint;
+      useInternalEndpoint.value = false;
+    } else {
+      endpoint.value = currentRegionData.value.internal_endpoint || currentRegionData.value.endpoint;
+      useInternalEndpoint.value = true;
+    }
+  }
+};
 </script>
 
 <template>
@@ -66,7 +115,6 @@ watch(enabled, (newValue) => {
             <div class="flex items-center space-x-2">
               <Checkbox
                 id="enabled"
-                name="enabled"
                 v-model="enabled"
               />
               <Label for="enabled" class="cursor-pointer">
@@ -79,23 +127,89 @@ watch(enabled, (newValue) => {
             <InputError class="mt-2" :message="errors.enabled" />
           </div>
 
-          <div v-if="enabled" class="space-y-6">
+          <input type="hidden" name="enabled" :value="enabled" />
+
+          <div v-show="enabled" class="space-y-6">
             <div class="grid gap-2">
-              <Label for="disk">{{ t('存储类型') }}</Label>
+              <Label for="provider">{{ t('存储提供商') }}</Label>
               <Select
-                v-model="selectedDisk"
+                v-model="selectedProvider"
                 name="disk"
-                :default-value="selectedDisk"
+                :default-value="selectedProvider"
               >
-                <SelectTrigger id="disk">
-                  <SelectValue :placeholder="t('请选择存储类型')" />
+                <SelectTrigger id="provider">
+                  <SelectValue :placeholder="t('请选择存储提供商')" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="s3">Amazon S3</SelectItem>
-                  <SelectItem value="oss">{{ t('阿里云 OSS') }}</SelectItem>
+                  <SelectItem
+                    v-for="provider in providers"
+                    :key="provider.value"
+                    :value="provider.value"
+                  >
+                    {{ provider.label }}
+                  </SelectItem>
                 </SelectContent>
               </Select>
+              <p class="text-sm text-muted-foreground">
+                <a :href="currentProvider?.help_link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary hover:underline"
+                >
+                  {{ t('查看文档') }}
+                </a>
+              </p>
               <InputError class="mt-2" :message="errors.disk" />
+            </div>
+
+            <div class="grid gap-2">
+              <Label for="region">{{ t('区域 (Region)') }}</Label>
+              <Select
+                v-model="selectedRegion"
+                name="region"
+                :default-value="selectedRegion"
+              >
+                <SelectTrigger id="region">
+                  <SelectValue :placeholder="t('请选择区域')" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="region in currentRegions"
+                    :key="region.id"
+                    :value="region.id"
+                  >
+                    {{ region.id }} ({{ region.name }})
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <InputError class="mt-2" :message="errors.region" />
+            </div>
+
+            <div class="grid gap-2">
+              <div class="flex items-center justify-between">
+                <Label for="endpoint">{{ t('Endpoint 地址') }}</Label>
+                <Button
+                  v-if="hasInternalEndpoint"
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  @click="toggleInternalEndpoint"
+                >
+                  {{ useInternalEndpoint ? t('使用外网 Endpoint') : t('使用内网 Endpoint') }}
+                </Button>
+              </div>
+              <Input
+                id="endpoint"
+                name="endpoint"
+                type="url"
+                class="mt-1 block w-full"
+                v-model="endpoint"
+                :placeholder="t('例如：https://s3.amazonaws.com')"
+              />
+              <p v-if="hasInternalEndpoint && useInternalEndpoint" class="text-sm text-amber-600">
+                {{ t('如果服务器和对象存储在同一区域，建议使用内网 Endpoint 以提高速度并节省流量费用') }}
+              </p>
+              <InputError class="mt-2" :message="errors.endpoint" />
             </div>
 
             <div class="grid gap-2">
@@ -105,7 +219,7 @@ watch(enabled, (newValue) => {
                 name="key"
                 type="text"
                 class="mt-1 block w-full"
-                :default-value="storageSettings.key || undefined"
+                v-model="key"
                 required
                 :placeholder="t('请输入 Access Key')"
               />
@@ -120,7 +234,7 @@ watch(enabled, (newValue) => {
                 type="password"
                 autocomplete="off"
                 class="mt-1 block w-full"
-                :default-value="storageSettings.secret || undefined"
+                v-model="secret"
                 required
                 :placeholder="t('请输入 Secret Key')"
               />
@@ -134,61 +248,11 @@ watch(enabled, (newValue) => {
                 name="bucket"
                 type="text"
                 class="mt-1 block w-full"
-                :default-value="storageSettings.bucket || undefined"
+                v-model="bucket"
                 required
                 :placeholder="t('请输入 Bucket 名称')"
               />
               <InputError class="mt-2" :message="errors.bucket" />
-            </div>
-
-            <div class="grid gap-2">
-              <Label for="region">{{ t('区域 (Region)') }}</Label>
-              <Input
-                id="region"
-                name="region"
-                type="text"
-                class="mt-1 block w-full"
-                :default-value="storageSettings.region || undefined"
-                required
-                :placeholder="
-                  selectedDisk === 'oss'
-                    ? t('例如：oss-cn-hangzhou')
-                    : t('例如：us-east-1')
-                "
-              />
-              <p class="text-sm text-muted-foreground">
-                {{
-                  selectedDisk === 'oss'
-                    ? t('阿里云 OSS 区域，如：oss-cn-hangzhou, oss-cn-beijing')
-                    : t('AWS 区域，如：us-east-1, ap-northeast-1')
-                }}
-              </p>
-              <InputError class="mt-2" :message="errors.region" />
-            </div>
-
-            <div class="grid gap-2">
-              <Label for="endpoint">{{ t('Endpoint 地址') }}</Label>
-              <Input
-                id="endpoint"
-                name="endpoint"
-                type="url"
-                class="mt-1 block w-full"
-                :default-value="storageSettings.endpoint || undefined"
-                required
-                :placeholder="
-                  selectedDisk === 'oss'
-                    ? t('例如：https://oss-cn-hangzhou.aliyuncs.com')
-                    : t('例如：https://s3.amazonaws.com')
-                "
-              />
-              <p class="text-sm text-muted-foreground">
-                {{
-                  selectedDisk === 'oss'
-                    ? t('阿里云 OSS Endpoint，通常为 https://oss-{region}.aliyuncs.com')
-                    : t('S3 Endpoint，留空使用默认值或填写自定义 S3 兼容服务地址')
-                }}
-              </p>
-              <InputError class="mt-2" :message="errors.endpoint" />
             </div>
 
             <div class="grid gap-2">
@@ -198,7 +262,7 @@ watch(enabled, (newValue) => {
                 name="url"
                 type="url"
                 class="mt-1 block w-full"
-                :default-value="storageSettings.url || undefined"
+                v-model="url"
                 :placeholder="t('例如：https://cdn.example.com')"
               />
               <p class="text-sm text-muted-foreground">
@@ -211,13 +275,13 @@ watch(enabled, (newValue) => {
               <div class="flex items-center space-x-2">
                 <Checkbox
                   id="path_style"
-                  name="path_style"
                   v-model="pathStyle"
                 />
                 <Label for="path_style" class="cursor-pointer">
                   {{ t('使用 Path Style 访问') }}
                 </Label>
               </div>
+              <input type="hidden" name="path_style" :value="pathStyle ? 1 : 0" />
               <p class="text-sm text-muted-foreground">
                 {{
                   t(

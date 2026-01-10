@@ -867,6 +867,6 @@ enum StorageProvider: string
                     'endpoint'  => '',
                 ],
             ],
-        }
+        };
     }
 }
