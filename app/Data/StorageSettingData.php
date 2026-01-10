@@ -17,7 +17,6 @@ class StorageSettingData extends Data
         public ?string $endpoint, 
         
         public ?string $url,    
-        public bool $pathStyle = false,
     ) {}
     
     public function rule()
@@ -31,7 +30,6 @@ class StorageSettingData extends Data
             'region' => 'required_if:enabled,true|string',
             'endpoint' => 'required_if:enabled,true|string|url',
             'url' => 'nullable|string|url',
-            'pathStyle' => 'nullable|bool',
         ];
     }
 }
