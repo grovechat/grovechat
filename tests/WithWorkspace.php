@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use App\Models\Workspace;
 use App\Models\User;
+use App\Models\Workspace;
 
 trait WithWorkspace
 {

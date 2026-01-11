@@ -12,6 +12,6 @@ class GetDefaultWorkspaceAction
 
     public function handle(User $user)
     {
-        return Workspace::query()->where('owner_id', $user->id)->firstOrFail(); 
+        return Workspace::query()->where('owner_id', $user->id)->firstOrFail();
     }
 }

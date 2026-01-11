@@ -12,4 +12,3 @@ class StorageSettingPagePropsData extends Data
         public array $storageConfig,
     ) {}
 }
-

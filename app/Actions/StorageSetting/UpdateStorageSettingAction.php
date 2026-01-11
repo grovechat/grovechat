@@ -14,25 +14,24 @@ use Throwable;
 class UpdateStorageSettingAction
 {
     use AsAction;
-    
+
     public function __construct(
         public StorageSettings $settings,
         protected CheckStorageSettingAction $checker,
-    )
-    {
-    }
+    ) {}
 
     public function handle(StorageSettingData $data, bool $secretProvided): void
     {
         // 禁用时只更新 enabled，避免意外覆盖已配置的连接信息
-        if (!$data->enabled) {
+        if (! $data->enabled) {
             $this->settings->enabled = false;
             $this->settings->save();
+
             return;
         }
 
         // Secret 允许留空（表示保持原值）；但首次启用且未配置过 secret 时必须提供
-        if (!$secretProvided && blank($this->settings->secret)) {
+        if (! $secretProvided && blank($this->settings->secret)) {
             throw ValidationException::withMessages([
                 'secret' => __('storage_settings.secret_required'),
             ]);
@@ -72,13 +71,13 @@ class UpdateStorageSettingAction
         $payload = $data->toArray();
 
         // Secret 仅在明确提交时覆盖，否则保持原值
-        if (!$secretProvided) {
+        if (! $secretProvided) {
             unset($payload['secret']);
         }
 
         $this->settings->fill($payload)->save();
     }
-    
+
     public function asController(Request $request)
     {
         $data = StorageSettingData::validateAndCreate($request->all());

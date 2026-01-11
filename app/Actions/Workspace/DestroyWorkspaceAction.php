@@ -14,24 +14,24 @@ class DestroyWorkspaceAction
 
     public function handle(Workspace $workspace)
     {
-        if (!empty($workspace->owner_id)) {
-            throw new BusinessException("不能删除默认工作区");
+        if (! empty($workspace->owner_id)) {
+            throw new BusinessException('不能删除默认工作区');
         }
 
         $workspace->delete();
     }
-    
+
     public function asController(Request $request, Workspace $currentWorkspace)
     {
         $this->handle($currentWorkspace);
-        
+
         $defaultWorkspace = GetDefaultWorkspaceAction::run($request->user());
-        
+
         Inertia::flash('toast', [
             'type' => 'success',
-            'message' => '工作区已删除'
+            'message' => '工作区已删除',
         ]);
-        
+
         return redirect(route('workspace-setting.workspace.general', $defaultWorkspace->slug));
     }
 }

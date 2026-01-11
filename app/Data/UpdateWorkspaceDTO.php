@@ -15,9 +15,9 @@ class UpdateWorkspaceDTO extends Data
     public function rule()
     {
         return [
-            'name'          => 'required|string|max:30',
-            'slug'          => 'required|string|max:50',
-            'logoId'       => 'nullable|string',
+            'name' => 'required|string|max:30',
+            'slug' => 'required|string|max:50',
+            'logoId' => 'nullable|string',
         ];
     }
 }

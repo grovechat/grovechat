@@ -48,7 +48,7 @@ return [
     'casts' => [
         DateTimeInterface::class => Spatie\LaravelData\Casts\DateTimeInterfaceCast::class,
         BackedEnum::class => Spatie\LaravelData\Casts\EnumCast::class,
-//        Enumerable::class => Spatie\LaravelData\Casts\EnumerableCast::class,
+        //        Enumerable::class => Spatie\LaravelData\Casts\EnumerableCast::class,
     ],
 
     /*
@@ -132,7 +132,7 @@ return [
      * global strategy here, or override it on a specific data object.
      */
     'name_mapping_strategy' => [
-        'input' => \Spatie\LaravelData\Mappers\SnakeCaseMapper::class, 
+        'input' => \Spatie\LaravelData\Mappers\SnakeCaseMapper::class,
         'output' => \Spatie\LaravelData\Mappers\SnakeCaseMapper::class,
     ],
 

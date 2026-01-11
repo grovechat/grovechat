@@ -15,11 +15,11 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->timestamps();
             $table->string('disk');
-            $table->string('path'); 
+            $table->string('path');
             $table->string('file_name');
             $table->string('file_type');
             $table->unsignedBigInteger('file_size');
-            $table->nullableUlidMorphs('attachable'); 
+            $table->nullableUlidMorphs('attachable');
         });
     }
 

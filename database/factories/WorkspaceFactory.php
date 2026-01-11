@@ -22,7 +22,7 @@ class WorkspaceFactory extends Factory
     {
         $name = fake()->company();
         $slug = Str::slug($name);
-        
+
         return [
             'name' => $name,
             'slug' => $slug,

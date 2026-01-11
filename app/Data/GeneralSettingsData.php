@@ -15,29 +15,29 @@ class GeneralSettingsData extends Data
         public ?string $icpRecord = null,
         public ?string $version = null,
         public ?string $logoUrl = null,
-    )
-    {}
+    ) {}
 
     public static function rules(): array
     {
         return [
-            'baseUrl'   => 'required|string|max:255|url',
-            'name'      => 'required|string|max:255',
-            'logoId'    => 'nullable|string|max:500',
+            'baseUrl' => 'required|string|max:255|url',
+            'name' => 'required|string|max:255',
+            'logoId' => 'nullable|string|max:500',
             'copyright' => 'nullable|string|max:255',
             'icpRecord' => 'nullable|string|max:255',
         ];
     }
-    
+
     public function logoUrl(): string
     {
-        return once(fn() => Attachment::find($this->logoId)?->full_url ?? asset('images/logo.png'));
+        return once(fn () => Attachment::find($this->logoId)?->full_url ?? asset('images/logo.png'));
     }
-    
-    public function toArray(): array 
+
+    public function toArray(): array
     {
         $data = parent::toArray();
         $data['logoUrl'] = $this->logoUrl();
+
         return $data;
     }
 }

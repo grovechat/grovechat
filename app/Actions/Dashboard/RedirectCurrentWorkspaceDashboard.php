@@ -13,7 +13,7 @@ class RedirectCurrentWorkspaceDashboard
     {
         // ...
     }
-    
+
     public function asController(Workspace $currentWorkspace)
     {
         return redirect()->route('workspace.dashboard', $currentWorkspace->slug);

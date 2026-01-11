@@ -14,7 +14,7 @@ class ShowHomePageAction
     {
         // ...
     }
-    
+
     public function asController()
     {
         return Inertia::render('Welcome', [

@@ -30,7 +30,7 @@ Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth'
 Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
     Route::get('/', RedirectCurrentWorkspaceDashboard::class)->name('workspace.home');
     Route::get('/dashboard', ShowDashboardAction::class)->name('workspace.dashboard');
-    
+
     // 个人设置
     Route::prefix('settings')->group(function () {
         // 个人资料
@@ -38,32 +38,32 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        
+
         // 密码
         Route::get('password', [PasswordController::class, 'edit'])->name('user-password.edit');
         Route::put('password', [PasswordController::class, 'update'])->middleware('throttle:6,1')->name('user-password.update');
-        
+
         // 两步认证
         Route::get('two-factor', [TwoFactorAuthenticationController::class, 'show'])->name('two-factor.show');
-        
+
         // 语言和时区
         Route::get('language', [LanguageController::class, 'edit'])->name('language.edit');
-        
+
         // 外观
         Route::get('appearance', [AppearanceController::class, 'edit'])->name('appearance.edit');
     });
-        
+
     // 系统设置
-    Route::prefix("system-settings")->group(function () {
-        // 基础设置 
+    Route::prefix('system-settings')->group(function () {
+        // 基础设置
         Route::get('general', GetGeneralSettingAction::class)->name('system-setting.get-general-settings');
         Route::put('general', UpdateGeneralSettingAction::class)->name('system-setting.update-general-settings');
-        
+
         // 存储设置
         Route::get('storage', GetStorageSettingAction::class)->name('system-setting.get-storage-settings');
         Route::put('storage', UpdateStorageSettingAction::class)->name('system-settings.update-storage-settings');
         Route::put('check', CheckStorageSettingAction::class)->name('system-settings.check-storage-settiings');
-        
+
         // 邮箱服务器
         Route::get('mail', function () {
             return Inertia::render('systemSettings/MailSetting');
@@ -84,7 +84,7 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
             return Inertia::render('systemSettings/MaintenanceSetting');
         })->name('system-setting.get-maintenance-settings');
     });
-        
+
     // 管理中心
     Route::prefix('manage')->group(function () {
         // 工作区
@@ -102,7 +102,7 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
                 return Inertia::render('workspaceSettings/teammate/Index');
             })->name('workspace-setting.teammate.index');
         });
-        
+
         // 渠道
         Route::prefix('channels')->group(function () {
             // 网站
@@ -110,16 +110,16 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
                 Route::get('/', function () {
                     return Inertia::render('workspaceSettings/channels/Web');
                 })->name('workspace-setting.channels.web');
-            });      
+            });
         });
-        
+
         // 标签
         Route::prefix('tags')->group(function () {
             Route::get('/', function () {
                 return Inertia::render('workspaceSettings/datas/Tag');
             })->name('workspace-setting.datas.tag');
         });
-        
+
         // 自定义属性
         Route::prefix('attributes')->group(function () {
             Route::get('/', function () {
@@ -127,15 +127,15 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
             })->name('workspace-setting.datas.attribute');
         });
     });
-    
+
     // 联系人
     Route::prefix('contacts')->group(function () {
         Route::get('/{type}/index', function () {
             return Inertia::render('contacts/Index');
         })
-        ->whereIn('type', ['all', 'customers', 'leads'])
-        ->name('contact.index');
-    }); 
+            ->whereIn('type', ['all', 'customers', 'leads'])
+            ->name('contact.index');
+    });
 
     // 会话
     Route::prefix('/conversations')->group(function () {
@@ -143,9 +143,9 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
             return Inertia::render('contacts/Conversation');
         })->name('contact.conversations');
     });
-    
+
     // 统计
     Route::get('/stats', function () {
         return Inertia::render('stats/Index');
-    })->name('stats.index'); 
+    })->name('stats.index');
 });

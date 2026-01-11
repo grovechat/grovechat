@@ -16,7 +16,7 @@ class CreateWorkspaceAction
 
     public function handle(User $user, CreateWorkspaceDTO $dto)
     {
-         return DB::transaction(function () use ($user, $dto) {
+        return DB::transaction(function () use ($user, $dto) {
             $workspace = Workspace::query()->create($dto->toArray());
             $workspace->createSlug();
             $user->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::ADMIN]);
@@ -24,12 +24,12 @@ class CreateWorkspaceAction
             return $workspace;
         });
     }
-    
+
     public function asController(Request $request)
     {
         $data = CreateWorkspaceDTO::from($request->all());
         $newWorkspace = $this->handle($request->user(), $data);
 
-        return redirect(route('workspace-setting.workspace.general', $newWorkspace->slug));     
+        return redirect(route('workspace-setting.workspace.general', $newWorkspace->slug));
     }
 }

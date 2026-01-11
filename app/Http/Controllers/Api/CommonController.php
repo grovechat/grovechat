@@ -19,9 +19,9 @@ class CommonController extends Controller
         $attachment = AttachmentService::upload($request->file('file'), $folder);
 
         return response()->json([
-            'id'   => $attachment->id,
+            'id' => $attachment->id,
             'path' => $attachment->path,
-            'full_url'  => $attachment->full_url,
+            'full_url' => $attachment->full_url,
             'name' => $attachment->file_name,
             'size' => $attachment->file_size,
         ]);

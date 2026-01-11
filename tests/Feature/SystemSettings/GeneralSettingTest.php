@@ -3,6 +3,7 @@
 use App\Settings\GeneralSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\WithWorkspace;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\put;
@@ -101,7 +102,7 @@ test('unauthenticated user cannot update general settings', function () {
         'baseUrl' => 'https://app.grovechat.com',
         'name' => 'GroveChat',
     ])
-    ->assertRedirect('/login');
+        ->assertRedirect('/login');
 });
 
 test('logo url cannot exceed 500 characters', function () {
@@ -109,7 +110,7 @@ test('logo url cannot exceed 500 characters', function () {
         ->put(route('system-setting.update-general-settings', ['workspace_path' => $this->workspacePath()]), [
             'baseUrl' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
-            'logo' => 'https://example.com/' . str_repeat('a', 500),
+            'logo' => 'https://example.com/'.str_repeat('a', 500),
         ])
         ->assertSessionHasErrors('logo');
 });

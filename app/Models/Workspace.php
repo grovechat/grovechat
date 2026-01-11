@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 class Workspace extends Model
 {
     use HasFactory, HasUlids;
-    
+
     protected $guarded = [];
 
     protected $fillable = [
@@ -22,7 +22,7 @@ class Workspace extends Model
         'logo_id',
         'owner_id',
     ];
-    
+
     protected $appends = [
         'logo_url',
     ];
@@ -31,19 +31,19 @@ class Workspace extends Model
     {
         return $this->belongsToMany(User::class)->withPivot('role')->withTimestamps();
     }
-    
+
     public function logo()
     {
         return $this->morphOne(Attachment::class, 'attachable');
     }
-    
+
     protected function logoUrl(): Attribute
     {
         return Attribute::make(
             get: fn () => $this->logo?->full_url ?? asset('images/workspace.png'),
         );
     }
-    
+
     protected static function booted()
     {
         static::updated(function (Model $workspace) {
@@ -58,7 +58,7 @@ class Workspace extends Model
             }
         });
     }
-    
+
     public function createSlug()
     {
         $this->update(['slug' => Str::ulid()]);

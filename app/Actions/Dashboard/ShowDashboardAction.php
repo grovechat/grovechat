@@ -13,7 +13,7 @@ class ShowDashboardAction
     {
         // ...
     }
-    
+
     public function asController()
     {
         return Inertia::render('Dashboard');

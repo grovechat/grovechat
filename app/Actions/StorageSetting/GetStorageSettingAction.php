@@ -3,8 +3,8 @@
 namespace App\Actions\StorageSetting;
 
 use App\Data\StorageConfigData;
-use App\Data\StorageSettingPagePropsData;
 use App\Data\StorageSettingData;
+use App\Data\StorageSettingPagePropsData;
 use App\Enums\StorageProvider;
 use App\Settings\StorageSettings;
 use Inertia\Inertia;
@@ -14,9 +14,7 @@ class GetStorageSettingAction
 {
     use AsAction;
 
-    public function __construct(public StorageSettings $settings)
-    {
-    }
+    public function __construct(public StorageSettings $settings) {}
 
     public function handle()
     {

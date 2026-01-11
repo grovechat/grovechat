@@ -3,8 +3,8 @@
 namespace App\Data;
 
 use App\Enums\StorageProvider;
-use Spatie\LaravelData\Data;
 use Illuminate\Validation\Rule;
+use Spatie\LaravelData\Data;
 
 class StorageSettingData extends Data
 {
@@ -12,15 +12,15 @@ class StorageSettingData extends Data
         public bool $enabled,
         public ?string $provider,
         public ?string $key,
-        public ?string $secret,  
-        
-        public ?string $bucket,  
+        public ?string $secret,
+
+        public ?string $bucket,
         public ?string $region,
-        public ?string $endpoint, 
-        
+        public ?string $endpoint,
+
         public ?string $url,
     ) {}
-    
+
     public static function rules(): array
     {
         $providers = array_map(static fn (StorageProvider $p) => $p->value, StorageProvider::cases());

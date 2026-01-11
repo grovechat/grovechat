@@ -10,14 +10,14 @@ return new class extends SettingsMigration
         $this->migrator->add('storage.provider', false);
         $this->migrator->add('storage.key', null);
         $this->migrator->addEncrypted('storage.secret', null);
-        
+
         $this->migrator->add('storage.bucket', null);
         $this->migrator->add('storage.region', 'us-east-1');
         $this->migrator->add('storage.endpoint', null);
-        
+
         $this->migrator->add('storage.url');
     }
-    
+
     public function down(): void
     {
         $this->migrator->delete('storage.enabled');

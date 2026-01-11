@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // 
+        //
     }
 
     /**
@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->runningInConsole() || !Schema::hasTable('settings')) {
+        if (app()->runningInConsole() || ! Schema::hasTable('settings')) {
             return;
         }
 
@@ -31,14 +31,15 @@ class AppServiceProvider extends ServiceProvider
             $settings = app(StorageSettings::class);
             $this->injectStorageConfig($settings);
         } catch (\Exception $e) {
-            Log::warning("Storage settings could not be loaded: " . $e->getMessage());
-        }        
+            Log::warning('Storage settings could not be loaded: '.$e->getMessage());
+        }
     }
-    
+
     protected function injectStorageConfig(StorageSettings $settings): void
     {
-        if (!$settings->enabled) {
+        if (! $settings->enabled) {
             config(['filesystems.default' => 'public']);
+
             return;
         }
 
@@ -46,12 +47,12 @@ class AppServiceProvider extends ServiceProvider
             'filesystems.default' => 's3',
             'filesystems.disks.s3' => [
                 'driver' => 's3',
-                'key'    => $settings->key,
+                'key' => $settings->key,
                 'secret' => $settings->secret,
                 'region' => $settings->region ?? 'us-east-1',
                 'bucket' => $settings->bucket,
                 'endpoint' => $settings->endpoint,
-                'url'    => $settings->url,
+                'url' => $settings->url,
                 'use_path_style_endpoint' => $settings->provider == StorageProvider::MINIO,
             ],
         ]);

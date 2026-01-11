@@ -25,7 +25,7 @@ class CheckStorageSettingAction
     {
         $payload = $data->toArray();
 
-        if (!filled($payload['secret'] ?? null)) {
+        if (! filled($payload['secret'] ?? null)) {
             throw ValidationException::withMessages([
                 'secret' => __('storage_settings.secret_required'),
             ]);
@@ -43,21 +43,21 @@ class CheckStorageSettingAction
             'throw' => true,
         ];
 
-        $diskName = 'storage_check_' . md5(uniqid('', true));
+        $diskName = 'storage_check_'.md5(uniqid('', true));
         config(["filesystems.disks.{$diskName}" => $config]);
 
         Storage::disk($diskName)->files('/', false);
     }
-    
+
     public function asController(Request $request)
     {
         $data = StorageSettingCheckData::validateAndCreate($request->all());
 
         // 如果用户未填写 secret，则尝试使用系统已保存的 secret
-        if (!filled($data->secret)) {
+        if (! filled($data->secret)) {
             $data->secret = $this->settings->secret;
         }
-        
+
         try {
             $this->handle($data);
 
@@ -87,7 +87,7 @@ class CheckStorageSettingAction
                 'secret' => $message,
             ]);
         }
-        
+
         return back();
     }
 }

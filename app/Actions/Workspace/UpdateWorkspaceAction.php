@@ -15,12 +15,12 @@ class UpdateWorkspaceAction
     {
         $workspace->update($data->toArray());
     }
-    
+
     public function asController(Request $request, Workspace $currentWorkspace)
     {
         $data = UpdateWorkspaceDTO::from($request->all());
         $this->handle($currentWorkspace, $data);
-        
-        return redirect(route('workspace-setting.workspace.general', $currentWorkspace->slug)); 
+
+        return redirect(route('workspace-setting.workspace.general', $currentWorkspace->slug));
     }
 }

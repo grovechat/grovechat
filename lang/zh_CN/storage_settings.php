@@ -5,4 +5,3 @@ return [
     'validation_failed' => '验证未通过，请检查存储配置后重试。',
     'secret_required' => 'Secret Key 不能为空',
 ];
-

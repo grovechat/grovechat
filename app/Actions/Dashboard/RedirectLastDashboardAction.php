@@ -13,7 +13,7 @@ class RedirectLastDashboardAction
     {
         // ...
     }
-    
+
     public function asController(Request $request)
     {
         $lastWorkspaceSlug = session('last_workspace_slug');
@@ -27,6 +27,7 @@ class RedirectLastDashboardAction
         if ($firstWorkspace = $request->user()->workspaces()->first()) {
             return redirect()->route('workspace.dashboard', ['slug' => $firstWorkspace->slug]);
         }
+
         return redirect()->route('home');
     }
 }
