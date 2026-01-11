@@ -236,37 +236,29 @@ export default {
   启用对象存储: '启用对象存储',
   '启用后，文件将上传到配置的对象存储服务':
     '启用后，文件将上传到配置的对象存储服务',
-  存储类型: '存储类型',
-  请选择存储类型: '请选择存储类型',
-  '阿里云 OSS': '阿里云 OSS',
+  存储提供商: '存储提供商',
+  请选择存储提供商: '请选择存储提供商',
+  查看文档: '查看文档',
   'Access Key / Access Key ID': 'Access Key / Access Key ID',
   '请输入 Access Key': '请输入 Access Key',
   'Secret Key / Access Key Secret': 'Secret Key / Access Key Secret',
   '请输入 Secret Key': '请输入 Secret Key',
+  '留空表示不修改（首次启用必须填写）': '留空表示不修改（首次启用必须填写）',
   'Bucket 名称': 'Bucket 名称',
   '请输入 Bucket 名称': '请输入 Bucket 名称',
   '区域 (Region)': '区域 (Region)',
-  '例如：oss-cn-hangzhou': '例如：oss-cn-hangzhou',
-  '例如：us-east-1': '例如：us-east-1',
-  '阿里云 OSS 区域，如：oss-cn-hangzhou, oss-cn-beijing':
-    '阿里云 OSS 区域，如：oss-cn-hangzhou, oss-cn-beijing',
-  'AWS 区域，如：us-east-1, ap-northeast-1':
-    'AWS 区域，如：us-east-1, ap-northeast-1',
+  请选择区域: '请选择区域',
   'Endpoint 地址': 'Endpoint 地址',
-  '例如：https://oss-cn-hangzhou.aliyuncs.com':
-    '例如：https://oss-cn-hangzhou.aliyuncs.com',
   '例如：https://s3.amazonaws.com': '例如：https://s3.amazonaws.com',
-  '阿里云 OSS Endpoint，通常为 https://oss-{region}.aliyuncs.com':
-    '阿里云 OSS Endpoint，通常为 https://oss-{region}.aliyuncs.com',
-  'S3 Endpoint，留空使用默认值或填写自定义 S3 兼容服务地址':
-    'S3 Endpoint，留空使用默认值或填写自定义 S3 兼容服务地址',
+  '使用外网 Endpoint': '使用外网 Endpoint',
+  '使用内网 Endpoint': '使用内网 Endpoint',
+  '如果服务器和对象存储在同一区域，建议使用内网 Endpoint 以提高速度并节省流量费用':
+    '如果服务器和对象存储在同一区域，建议使用内网 Endpoint 以提高速度并节省流量费用',
   '自定义域名 (可选)': '自定义域名 (可选)',
   '例如：https://cdn.example.com': '例如：https://cdn.example.com',
   '如果配置了 CDN 或自定义域名，请在此填写，用于生成文件访问 URL':
     '如果配置了 CDN 或自定义域名，请在此填写，用于生成文件访问 URL',
-  '使用 Path Style 访问': '使用 Path Style 访问',
-  '启用后使用路径风格访问（path-style），如：https://s3.amazonaws.com/bucket/key，而非虚拟主机风格（virtual-hosted-style）':
-    '启用后使用路径风格访问（path-style），如：https://s3.amazonaws.com/bucket/key，而非虚拟主机风格（virtual-hosted-style）',
+  检测连接: '检测连接',
 
   // 工作区设置 - 常规设置
   配置工作区的基本信息和设置: '配置工作区的基本信息和设置',

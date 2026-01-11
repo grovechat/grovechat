@@ -241,37 +241,30 @@ export default {
   启用对象存储: 'Enable Object Storage',
   '启用后，文件将上传到配置的对象存储服务':
     'When enabled, files will be uploaded to the configured object storage service',
-  存储类型: 'Storage Type',
-  请选择存储类型: 'Please select storage type',
-  '阿里云 OSS': 'Alibaba Cloud OSS',
+  存储提供商: 'Storage Provider',
+  请选择存储提供商: 'Select a storage provider',
+  查看文档: 'View docs',
   'Access Key / Access Key ID': 'Access Key / Access Key ID',
   '请输入 Access Key': 'Please enter Access Key',
   'Secret Key / Access Key Secret': 'Secret Key / Access Key Secret',
   '请输入 Secret Key': 'Please enter Secret Key',
+  '留空表示不修改（首次启用必须填写）':
+    'Leave blank to keep unchanged (required on first enable)',
   'Bucket 名称': 'Bucket Name',
   '请输入 Bucket 名称': 'Please enter bucket name',
   '区域 (Region)': 'Region',
-  '例如：oss-cn-hangzhou': 'e.g.: oss-cn-hangzhou',
-  '例如：us-east-1': 'e.g.: us-east-1',
-  '阿里云 OSS 区域，如：oss-cn-hangzhou, oss-cn-beijing':
-    'Alibaba Cloud OSS region, e.g.: oss-cn-hangzhou, oss-cn-beijing',
-  'AWS 区域，如：us-east-1, ap-northeast-1':
-    'AWS region, e.g.: us-east-1, ap-northeast-1',
+  请选择区域: 'Select a region',
   'Endpoint 地址': 'Endpoint URL',
-  '例如：https://oss-cn-hangzhou.aliyuncs.com':
-    'e.g.: https://oss-cn-hangzhou.aliyuncs.com',
   '例如：https://s3.amazonaws.com': 'e.g.: https://s3.amazonaws.com',
-  '阿里云 OSS Endpoint，通常为 https://oss-{region}.aliyuncs.com':
-    'Alibaba Cloud OSS Endpoint, usually https://oss-{region}.aliyuncs.com',
-  'S3 Endpoint，留空使用默认值或填写自定义 S3 兼容服务地址':
-    'S3 Endpoint, leave empty for default or enter custom S3-compatible service URL',
+  '使用外网 Endpoint': 'Use public Endpoint',
+  '使用内网 Endpoint': 'Use internal Endpoint',
+  '如果服务器和对象存储在同一区域，建议使用内网 Endpoint 以提高速度并节省流量费用':
+    'If the server and the object storage are in the same region, using the internal Endpoint is recommended for better performance and lower traffic costs',
   '自定义域名 (可选)': 'Custom Domain (Optional)',
   '例如：https://cdn.example.com': 'e.g.: https://cdn.example.com',
   '如果配置了 CDN 或自定义域名，请在此填写，用于生成文件访问 URL':
     'If you have configured CDN or custom domain, enter it here for generating file access URLs',
-  '使用 Path Style 访问': 'Use Path Style Access',
-  '启用后使用路径风格访问（path-style），如：https://s3.amazonaws.com/bucket/key，而非虚拟主机风格（virtual-hosted-style）':
-    'When enabled, use path-style access (e.g.: https://s3.amazonaws.com/bucket/key) instead of virtual-hosted-style',
+  检测连接: 'Test connection',
 
   // 工作区设置 - 常规设置
   配置工作区的基本信息和设置: 'Configure basic workspace information and settings',
