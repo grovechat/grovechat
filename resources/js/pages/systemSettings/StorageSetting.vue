@@ -18,14 +18,15 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import systemSetting from '@/routes/system-setting';
 import { type BreadcrumbItem } from '@/types';
-import { Form, Head, usePage } from '@inertiajs/vue3';
-import { computed, reactive, ref, watch } from 'vue';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 import type { StorageSettingData, StorageConfigData } from '@/types/generated';
 
 const page = usePage();
 const { t } = useI18n();
 const storageSettings = computed(() => page.props.storageSettings as StorageSettingData);
 const storageConfig = computed(() => page.props.storageConfig as StorageConfigData[]);
+const storageSecretConfigured = computed(() => page.props.storageSecretConfigured as boolean);
 const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -35,15 +36,26 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   },
 ]);
 
-const form = reactive({
+const form = useForm({
   enabled: storageSettings.value.enabled,
   provider: storageSettings.value.provider || 'aws',
   region: storageSettings.value.region || '',
   endpoint: storageSettings.value.endpoint || '',
   key: storageSettings.value.key || '',
-  secret: storageSettings.value.secret || '',
+  // 出于安全原因：后端不回传已保存的 secret；留空表示“不修改”
+  secret: '',
   bucket: storageSettings.value.bucket || '',
   url: storageSettings.value.url || '',
+});
+
+const checkForm = useForm({
+  provider: '',
+  region: '',
+  endpoint: '',
+  key: '',
+  secret: '',
+  bucket: '',
+  url: '',
 });
 const useInternalEndpoint = ref<boolean>(false);
 
@@ -94,6 +106,35 @@ const toggleInternalEndpoint = () => {
     }
   }
 };
+
+const submit = () => {
+  form.put(StorageSetting.UpdateStorageSettingAction.url(currentWorkspace.value.slug), {
+    preserveScroll: true,
+    onSuccess: () => {
+      // 安全：保存成功后清空输入框，避免把 secret 留在内存里
+      form.secret = '';
+    },
+  });
+};
+
+const checkConnection = () => {
+  checkForm.clearErrors();
+  checkForm.provider = form.provider;
+  checkForm.region = form.region;
+  checkForm.endpoint = form.endpoint;
+  checkForm.key = form.key;
+  checkForm.secret = form.secret;
+  checkForm.bucket = form.bucket;
+  checkForm.url = form.url;
+
+  checkForm.put(StorageSetting.CheckStorageSettingAction.url(currentWorkspace.value.slug), {
+    preserveScroll: true,
+    onSuccess: () => {
+      // 安全：检测完成后清空输入框，避免把 secret 留在内存里
+      checkForm.secret = '';
+    },
+  });
+};
 </script>
 
 <template>
@@ -107,11 +148,7 @@ const toggleInternalEndpoint = () => {
           :description="t('配置对象存储服务，支持 Amazon S3 和阿里云 OSS 等兼容服务')"
         />
 
-        <Form
-          v-bind="StorageSetting.UpdateStorageSettingAction.form(currentWorkspace.slug)"
-          class="space-y-6"
-          v-slot="{ errors, processing, recentlySuccessful }"
-        >
+        <form class="space-y-6" @submit.prevent="submit">
           <div class="grid gap-2">
             <div class="flex items-center space-x-2">
               <Checkbox
@@ -125,17 +162,14 @@ const toggleInternalEndpoint = () => {
             <p class="text-sm text-muted-foreground">
               {{ t('启用后，文件将上传到配置的对象存储服务') }}
             </p>
-            <InputError class="mt-2" :message="errors.enabled" />
+            <InputError class="mt-2" :message="form.errors.enabled" />
           </div>
-
-          <input type="hidden" name="enabled" :value="form.enabled" />
 
           <div v-show="form.enabled" class="space-y-6">
             <div class="grid gap-2">
               <Label for="provider">{{ t('存储提供商') }}</Label>
               <Select
                 v-model="form.provider"
-                name="provider"
                 :default-value="form.provider"
               >
                 <SelectTrigger id="provider">
@@ -160,14 +194,13 @@ const toggleInternalEndpoint = () => {
                   {{ t('查看文档') }}
                 </a>
               </p>
-              <InputError class="mt-2" :message="errors.provider" />
+              <InputError class="mt-2" :message="form.errors.provider" />
             </div>
 
             <div class="grid gap-2">
               <Label for="region">{{ t('区域 (Region)') }}</Label>
               <Select
                 v-model="form.region"
-                name="region"
                 :default-value="form.region"
               >
                 <SelectTrigger id="region">
@@ -183,7 +216,7 @@ const toggleInternalEndpoint = () => {
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <InputError class="mt-2" :message="errors.region" />
+              <InputError class="mt-2" :message="form.errors.region || checkForm.errors.region" />
             </div>
 
             <div class="grid gap-2">
@@ -201,7 +234,6 @@ const toggleInternalEndpoint = () => {
               </div>
               <Input
                 id="endpoint"
-                name="endpoint"
                 type="url"
                 class="mt-1 block w-full"
                 v-model="form.endpoint"
@@ -210,57 +242,52 @@ const toggleInternalEndpoint = () => {
               <p v-if="hasInternalEndpoint && useInternalEndpoint" class="text-sm text-amber-600">
                 {{ t('如果服务器和对象存储在同一区域，建议使用内网 Endpoint 以提高速度并节省流量费用') }}
               </p>
-              <InputError class="mt-2" :message="errors.endpoint" />
+              <InputError class="mt-2" :message="form.errors.endpoint || checkForm.errors.endpoint" />
             </div>
 
             <div class="grid gap-2">
               <Label for="key">{{ t('Access Key / Access Key ID') }}</Label>
               <Input
                 id="key"
-                name="key"
                 type="text"
                 class="mt-1 block w-full"
                 v-model="form.key"
                 required
                 :placeholder="t('请输入 Access Key')"
               />
-              <InputError class="mt-2" :message="errors.key" />
+              <InputError class="mt-2" :message="form.errors.key || checkForm.errors.key" />
             </div>
 
             <div class="grid gap-2">
               <Label for="secret">{{ t('Secret Key / Access Key Secret') }}</Label>
               <Input
                 id="secret"
-                name="secret"
                 type="password"
                 autocomplete="off"
                 class="mt-1 block w-full"
                 v-model="form.secret"
-                required
-                :placeholder="t('请输入 Secret Key')"
+                :placeholder="storageSecretConfigured ? t('留空表示不修改') : t('请输入 Secret Key')"
               />
-              <InputError class="mt-2" :message="errors.secret" />
+              <InputError class="mt-2" :message="form.errors.secret || checkForm.errors.secret" />
             </div>
 
             <div class="grid gap-2">
               <Label for="bucket">{{ t('Bucket 名称') }}</Label>
               <Input
                 id="bucket"
-                name="bucket"
                 type="text"
                 class="mt-1 block w-full"
                 v-model="form.bucket"
                 required
                 :placeholder="t('请输入 Bucket 名称')"
               />
-              <InputError class="mt-2" :message="errors.bucket" />
+              <InputError class="mt-2" :message="form.errors.bucket || checkForm.errors.bucket" />
             </div>
 
             <div class="grid gap-2">
               <Label for="url">{{ t('自定义域名 (可选)') }}</Label>
               <Input
                 id="url"
-                name="url"
                 type="url"
                 class="mt-1 block w-full"
                 v-model="form.url"
@@ -269,14 +296,23 @@ const toggleInternalEndpoint = () => {
               <p class="text-sm text-muted-foreground">
                 {{ t('如果配置了 CDN 或自定义域名，请在此填写，用于生成文件访问 URL') }}
               </p>
-              <InputError class="mt-2" :message="errors.url" />
+              <InputError class="mt-2" :message="form.errors.url || checkForm.errors.url" />
             </div>
           </div>
 
           <div class="flex items-center gap-4">
             <Button
+              type="button"
+              variant="outline"
+              :disabled="form.processing || checkForm.processing"
+              @click="checkConnection"
+            >
+              {{ t('检测连接') }}
+            </Button>
+
+            <Button
               type="submit"
-              :disabled="processing"
+              :disabled="form.processing || checkForm.processing"
               data-test="update-storage-settings-button"
             >
               {{ t('保存') }}
@@ -288,12 +324,12 @@ const toggleInternalEndpoint = () => {
               leave-active-class="transition ease-in-out"
               leave-to-class="opacity-0"
             >
-              <p v-show="recentlySuccessful" class="text-sm text-neutral-600">
+              <p v-show="form.recentlySuccessful" class="text-sm text-neutral-600">
                 {{ t('已保存。') }}
               </p>
             </Transition>
           </div>
-        </Form>
+        </form>
       </div>
     </SystemSettingsLayout>
   </AppLayout>

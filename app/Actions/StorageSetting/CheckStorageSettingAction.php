@@ -2,10 +2,12 @@
 
 namespace App\Actions\StorageSetting;
 
-use App\Data\StorageSettingData;
-use App\Services\StorageService;
+use App\Data\StorageSettingCheckData;
+use App\Enums\StorageProvider;
+use App\Settings\StorageSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Throwable;
@@ -15,33 +17,48 @@ class CheckStorageSettingAction
     use AsAction;
 
     public function __construct(
-        protected StorageService $storageService
+        public StorageSettings $settings,
     ) {}
 
-    public function handle(StorageSettingData $data)
+    public function handle(StorageSettingCheckData $data)
     {
+        $payload = $data->toArray();
+
+        if (!filled($payload['secret'] ?? null)) {
+            throw ValidationException::withMessages([
+                'secret' => 'Secret Key 不能为空',
+            ]);
+        }
+
         $config = [
             'driver' => 's3',
-            'key' => $data->key,
-            'secret' => $data->secret,
-            'region' => $data->region,
-            'bucket' => $data->bucket,
-            'url' => $data->url,
-            'endpoint' => $data->endpoint,
+            'key' => $payload['key'],
+            'secret' => $payload['secret'],
+            'region' => $payload['region'] ?? 'us-east-1',
+            'bucket' => $payload['bucket'],
+            'url' => $payload['url'] ?? null,
+            'endpoint' => $payload['endpoint'] ?? null,
+            'use_path_style_endpoint' => ($payload['provider'] ?? null) === StorageProvider::MINIO->value,
             'throw' => true,
         ];
+
         $diskName = 'storage_check_' . md5(uniqid('', true));
         config(["filesystems.disks.{$diskName}" => $config]);
-        
+
         Storage::disk($diskName)->files('/', false);
     }
     
     public function asController(Request $request)
     {
-        $data = StorageSettingData::from($request->all());
+        $data = StorageSettingCheckData::validateAndCreate($request->all());
+
+        // 如果用户未填写 secret，则尝试使用系统已保存的 secret
+        if (!filled($data->secret)) {
+            $data->secret = $this->settings->secret;
+        }
         
         try {
-            $result = $this->handle($data); 
+            $this->handle($data);
             Inertia::flash('toast', [
                 'type' => 'success',
                 'message' => '检测成功'

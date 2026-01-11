@@ -26,6 +26,9 @@ class GetStorageSettingAction
     public function asController()
     {
         $storageSettings = $this->handle();
+        // 安全起见：不要把已保存的 Secret 回传到前端
+        $storageSecretConfigured = filled($this->settings->secret);
+        $storageSettings->secret = null;
 
         $storageConfig = collect(StorageProvider::cases())->map(function ($provider) {
             return StorageConfigData::from([
@@ -39,6 +42,7 @@ class GetStorageSettingAction
         return Inertia::render('systemSettings/StorageSetting', [
             'storageSettings' => $storageSettings,
             'storageConfig' => $storageConfig,
+            'storageSecretConfigured' => $storageSecretConfigured,
         ]);
     }
 }
