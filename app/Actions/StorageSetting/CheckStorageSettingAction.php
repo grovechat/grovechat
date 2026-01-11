@@ -84,7 +84,7 @@ class CheckStorageSettingAction
             ]);
 
             return back()->withErrors([
-                'endpoint' => $message,
+                'secret' => $message,
             ]);
         }
         

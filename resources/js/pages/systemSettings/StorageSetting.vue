@@ -82,7 +82,6 @@ watch(() => form.provider, (newProvider) => {
   }
 });
 
-// Watch region changes
 watch(() => form.region, (newRegion) => {
   const region = currentRegions.value.find(r => r.id === newRegion);
   if (region) {
@@ -107,7 +106,6 @@ const submit = () => {
   form.put(StorageSetting.UpdateStorageSettingAction.url(page.props.currentWorkspace.slug), {
     preserveScroll: true,
     onSuccess: () => {
-      // 安全：保存成功后清空输入框，避免把 secret 留在内存里
       form.secret = '';
     },
   });
@@ -126,7 +124,6 @@ const checkConnection = () => {
   checkForm.put(StorageSetting.CheckStorageSettingAction.url(page.props.currentWorkspace.slug), {
     preserveScroll: true,
     onSuccess: () => {
-      // 安全：检测完成后清空输入框，避免把 secret 留在内存里
       checkForm.secret = '';
     },
   });
@@ -200,7 +197,17 @@ const checkConnection = () => {
                 :default-value="form.region"
               >
                 <SelectTrigger id="region">
-                  <SelectValue :placeholder="t('请选择区域')" />
+                  <template v-if="currentRegionData">
+                    <div class="flex items-baseline gap-2">
+                      <span class="text-sm">
+                        {{ currentRegionData.name }}
+                      </span>
+                      <span class="font-mono text-xs text-muted-foreground">
+                        {{ currentRegionData.id }}
+                      </span>
+                    </div>
+                  </template>
+                  <SelectValue v-else :placeholder="t('请选择区域')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
@@ -208,7 +215,14 @@ const checkConnection = () => {
                     :key="regionOption.id"
                     :value="regionOption.id"
                   >
-                    {{ regionOption.id }} ({{ regionOption.name }})
+                    <div class="flex items-baseline gap-2">
+                      <span class="text-sm">
+                        {{ regionOption.name }}
+                      </span>
+                      <span class="font-mono text-xs text-muted-foreground">
+                        {{ regionOption.id }}
+                      </span>
+                    </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -233,12 +247,24 @@ const checkConnection = () => {
                 type="url"
                 class="mt-1 block w-full"
                 v-model="form.endpoint"
-                :placeholder="t('例如：https://s3.amazonaws.com')"
               />
               <p v-if="hasInternalEndpoint && useInternalEndpoint" class="text-sm text-amber-600">
                 {{ t('如果服务器和对象存储在同一区域，建议使用内网 Endpoint 以提高速度并节省流量费用') }}
               </p>
               <InputError class="mt-2" :message="form.errors.endpoint || checkForm.errors.endpoint" />
+            </div>
+
+            <div class="grid gap-2">
+              <Label for="bucket">{{ t('Bucket 名称') }}</Label>
+              <Input
+                id="bucket"
+                type="text"
+                class="mt-1 block w-full"
+                v-model="form.bucket"
+                required
+                :placeholder="t('请输入 Bucket 名称')"
+              />
+              <InputError class="mt-2" :message="form.errors.bucket || checkForm.errors.bucket" />
             </div>
 
             <div class="grid gap-2">
@@ -268,19 +294,6 @@ const checkConnection = () => {
             </div>
 
             <div class="grid gap-2">
-              <Label for="bucket">{{ t('Bucket 名称') }}</Label>
-              <Input
-                id="bucket"
-                type="text"
-                class="mt-1 block w-full"
-                v-model="form.bucket"
-                required
-                :placeholder="t('请输入 Bucket 名称')"
-              />
-              <InputError class="mt-2" :message="form.errors.bucket || checkForm.errors.bucket" />
-            </div>
-
-            <div class="grid gap-2">
               <Label for="url">{{ t('自定义域名 (可选)') }}</Label>
               <Input
                 id="url"
@@ -298,20 +311,20 @@ const checkConnection = () => {
 
           <div class="flex items-center gap-4">
             <Button
+              type="submit"
+              :disabled="form.processing || checkForm.processing"
+              data-test="update-storage-settings-button"
+            >
+              {{ t('保存') }}
+            </Button>
+
+            <Button
               type="button"
               variant="outline"
               :disabled="form.processing || checkForm.processing"
               @click="checkConnection"
             >
               {{ t('检测连接') }}
-            </Button>
-
-            <Button
-              type="submit"
-              :disabled="form.processing || checkForm.processing"
-              data-test="update-storage-settings-button"
-            >
-              {{ t('保存') }}
             </Button>
 
             <Transition

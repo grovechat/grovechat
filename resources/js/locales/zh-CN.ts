@@ -249,7 +249,6 @@ export default {
   '区域 (Region)': '区域 (Region)',
   请选择区域: '请选择区域',
   'Endpoint 地址': 'Endpoint 地址',
-  '例如：https://s3.amazonaws.com': '例如：https://s3.amazonaws.com',
   '使用外网 Endpoint': '使用外网 Endpoint',
   '使用内网 Endpoint': '使用内网 Endpoint',
   '如果服务器和对象存储在同一区域，建议使用内网 Endpoint 以提高速度并节省流量费用':

@@ -39,7 +39,7 @@ const goToCreateWorkspace = () => {
   <DropdownMenu v-if="currentWorkspace">
     <DropdownMenuTrigger as-child>
       <button
-        class="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-left text-xs hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+        class="flex w-full items-center gap-1 rounded-md py-1 text-left text-xs hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
       >
         <div class="flex h-5 w-5 items-center justify-center rounded overflow-hidden text-sidebar-primary-foreground shrink-0">
           <img

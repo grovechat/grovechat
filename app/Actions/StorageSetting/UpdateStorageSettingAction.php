@@ -65,7 +65,7 @@ class UpdateStorageSettingAction
 
             $message = __('storage_settings.validation_failed');
             throw ValidationException::withMessages([
-                'endpoint' => $message,
+                'secret' => $message,
             ]);
         }
 
