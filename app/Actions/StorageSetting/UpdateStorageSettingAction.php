@@ -34,7 +34,7 @@ class UpdateStorageSettingAction
         // Secret 允许留空（表示保持原值）；但首次启用且未配置过 secret 时必须提供
         if (!$secretProvided && blank($this->settings->secret)) {
             throw ValidationException::withMessages([
-                'secret' => 'Secret Key 不能为空',
+                'secret' => __('storage_settings.secret_required'),
             ]);
         }
 
@@ -63,7 +63,7 @@ class UpdateStorageSettingAction
                 'exception' => $e,
             ]);
 
-            $message = '验证不通过，请检查 Provider、Region、Endpoint、Access Key/Secret、Bucket 是否正确';
+            $message = __('storage_settings.validation_failed');
             throw ValidationException::withMessages([
                 'endpoint' => $message,
             ]);

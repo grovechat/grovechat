@@ -27,7 +27,7 @@ class CheckStorageSettingAction
 
         if (!filled($payload['secret'] ?? null)) {
             throw ValidationException::withMessages([
-                'secret' => 'Secret Key 不能为空',
+                'secret' => __('storage_settings.secret_required'),
             ]);
         }
 
@@ -63,7 +63,7 @@ class CheckStorageSettingAction
 
             Inertia::flash('toast', [
                 'type' => 'success',
-                'message' => '检测成功',
+                'message' => __('storage_settings.check_success'),
             ]);
         } catch (ValidationException $e) {
             // 让 Inertia 正常回传字段错误
@@ -76,7 +76,7 @@ class CheckStorageSettingAction
                 'bucket' => $data->bucket ?? null,
                 'exception' => $e,
             ]);
-            $message = '验证不通过，请检查 Provider、Region、Endpoint、Access Key/Secret、Bucket 是否正确';
+            $message = __('storage_settings.validation_failed');
 
             Inertia::flash('toast', [
                 'type' => 'warning',
