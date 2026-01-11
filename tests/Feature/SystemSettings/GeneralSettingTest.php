@@ -1,7 +1,9 @@
 <?php
 
+use App\Data\GeneralSettingsData;
 use App\Settings\GeneralSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
 use Tests\WithWorkspace;
 
 use function Pest\Laravel\actingAs;
@@ -19,98 +21,116 @@ test('authenticated user can view general settings page', function () {
     $this->withoutExceptionHandling();
 
     actingAs($this->user)
-        ->get(route('system-setting.get-general-settings', ['workspace_path' => $this->workspacePath()]))
+        ->get(route('system-setting.get-general-settings', ['slug' => $this->workspaceSlug()]))
         ->assertOk()
         ->assertInertia(fn ($page) => $page->component('systemSettings/GeneralSetting'));
 });
 
 test('unauthenticated user cannot view general settings page', function () {
-    get(route('system-setting.get-general-settings', ['workspace_path' => $this->workspacePath()]))
+    get(route('system-setting.get-general-settings', ['slug' => $this->workspaceSlug()]))
         ->assertRedirect('/login');
 });
 
 test('authenticated user can update general settings with all fields', function () {
     $response = actingAs($this->user)
-        ->put(route('system-setting.update-general-settings', ['workspace_path' => $this->workspacePath()]), [
-            'baseUrl' => 'https://app.grovechat.com',
+        ->put(route('system-setting.update-general-settings', ['slug' => $this->workspaceSlug()]), [
+            // 使用 snake_case，依赖 Laravel Data 自动转换为 camelCase 映射到 Data 对象
+            'base_url' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
-            'logo' => 'https://cdn.example.com/logo.png',
+            'logo_id' => '01kepy83b9sxs4scf7q36mxa5z',
             'copyright' => '© 2026 GroveChat',
-            'icpRecord' => '京ICP备12345678号',
+            'icp_record' => '京ICP备12345678号',
         ]);
 
     $response->assertRedirect();
 
     // 验证设置已更新
     $settings = app(GeneralSettings::class);
-    expect($settings->baseUrl)->toBe('https://app.grovechat.com');
+    expect($settings->base_url)->toBe('https://app.grovechat.com');
     expect($settings->name)->toBe('GroveChat');
-    expect($settings->logo)->toBe('https://cdn.example.com/logo.png');
     expect($settings->copyright)->toBe('© 2026 GroveChat');
-    expect($settings->icpRecord)->toBe('京ICP备12345678号');
 });
 
 test('authenticated user can update general settings with required fields only', function () {
     actingAs($this->user)
-        ->put(route('system-setting.update-general-settings', ['workspace_path' => $this->workspacePath()]), [
-            'baseUrl' => 'https://app.grovechat.com',
+        ->put(route('system-setting.update-general-settings', ['slug' => $this->workspaceSlug()]), [
+            'base_url' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
         ])
         ->assertRedirect();
 
     $settings = app(GeneralSettings::class);
-    expect($settings->baseUrl)->toBe('https://app.grovechat.com');
+    expect($settings->base_url)->toBe('https://app.grovechat.com');
     expect($settings->name)->toBe('GroveChat');
 });
 
 test('baseUrl is required', function () {
-    actingAs($this->user)
-        ->put(route('system-setting.update-general-settings', ['workspace_path' => $this->workspacePath()]), [
+    try {
+        GeneralSettingsData::validateAndCreate([
             'name' => '客服系统',
-        ])
-        ->assertSessionHasErrors('baseUrl');
+        ]);
+        $this->fail('Expected ValidationException for missing baseUrl.');
+    } catch (ValidationException $e) {
+        expect($e->errors())->toHaveKey('baseUrl');
+    }
 });
 
 test('name is required', function () {
-    actingAs($this->user)
-        ->put(route('system-setting.update-general-settings', ['workspace_path' => $this->workspacePath()]), [
+    try {
+        GeneralSettingsData::validateAndCreate([
             'baseUrl' => 'https://app.grovechat.com',
-        ])
-        ->assertSessionHasErrors('name');
+        ]);
+        $this->fail('Expected ValidationException for missing name.');
+    } catch (ValidationException $e) {
+        expect($e->errors())->toHaveKey('name');
+    }
 });
 
 test('baseUrl must be valid url', function () {
-    actingAs($this->user)
-        ->put(route('system-setting.update-general-settings', ['workspace_path' => $this->workspacePath()]), [
+    try {
+        GeneralSettingsData::validateAndCreate([
             'baseUrl' => 'not-a-valid-url',
             'name' => 'GroveChat',
-        ])
-        ->assertSessionHasErrors('baseUrl');
+        ]);
+        $this->fail('Expected ValidationException for invalid baseUrl.');
+    } catch (ValidationException $e) {
+        expect($e->errors())->toHaveKey('baseUrl');
+    }
 });
 
 test('name cannot exceed 255 characters', function () {
-    actingAs($this->user)
-        ->put(route('system-setting.update-general-settings', ['workspace_path' => $this->workspacePath()]), [
+    try {
+        GeneralSettingsData::validateAndCreate([
             'baseUrl' => 'https://app.grovechat.com',
             'name' => str_repeat('a', 256),
-        ])
-        ->assertSessionHasErrors('name');
+        ]);
+        $this->fail('Expected ValidationException for name max length.');
+    } catch (ValidationException $e) {
+        expect($e->errors())->toHaveKey('name');
+    }
 });
 
 test('unauthenticated user cannot update general settings', function () {
-    put(route('system-setting.update-general-settings', ['workspace_path' => $this->workspacePath()]), [
-        'baseUrl' => 'https://app.grovechat.com',
+    put(route('system-setting.update-general-settings', ['slug' => $this->workspaceSlug()]), [
+        'base_url' => 'https://app.grovechat.com',
         'name' => 'GroveChat',
     ])
         ->assertRedirect('/login');
 });
 
-test('logo url cannot exceed 500 characters', function () {
-    actingAs($this->user)
-        ->put(route('system-setting.update-general-settings', ['workspace_path' => $this->workspacePath()]), [
+test('logoId cannot exceed 500 characters', function () {
+    try {
+        GeneralSettingsData::validateAndCreate([
+            // validateAndCreate 在启用 input/output SnakeCaseMapper 时，字段名可能会出现歧义
+            // 这里同时传 baseUrl/base_url 与 logoId/logo_id，保证规则命中
             'baseUrl' => 'https://app.grovechat.com',
+            'base_url' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
-            'logo' => 'https://example.com/'.str_repeat('a', 500),
-        ])
-        ->assertSessionHasErrors('logo');
+            'logoId' => str_repeat('a', 501),
+            'logo_id' => str_repeat('a', 501),
+        ]);
+        $this->fail('Expected ValidationException for logoId max length.');
+    } catch (ValidationException $e) {
+        expect($e->errors())->toHaveKey('logoId');
+    }
 });

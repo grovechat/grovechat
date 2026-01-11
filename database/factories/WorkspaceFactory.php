@@ -26,8 +26,8 @@ class WorkspaceFactory extends Factory
         return [
             'name' => $name,
             'slug' => $slug,
-            'path' => $slug,
-            'logo' => '',
+            'logo_id' => null,
+            'owner_id' => null,
         ];
     }
 }

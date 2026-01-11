@@ -19,9 +19,9 @@ test('authenticated users can visit the dashboard', function () {
 
     // 访问全局 dashboard 会重定向到租户 dashboard
     $response = $this->get(route('dashboard'));
-    $response->assertRedirect(route('workspace.dashboard', ['workspace_path' => $workspace->path]));
+    $response->assertRedirect(route('workspace.dashboard', ['slug' => $workspace->slug]));
 
     // 访问租户 dashboard 应该成功
-    $response = $this->get(route('workspace.dashboard', ['workspace_path' => $workspace->path]));
+    $response = $this->get(route('workspace.dashboard', ['slug' => $workspace->slug]));
     $response->assertStatus(200);
 });

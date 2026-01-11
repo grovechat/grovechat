@@ -37,9 +37,9 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        $workspacePath = $request->route('workspace_path');
+        $slug = $request->route('slug');
 
-        return to_route('profile.edit', ['workspace_path' => $workspacePath]);
+        return to_route('profile.edit', ['slug' => $slug]);
     }
 
     /**
