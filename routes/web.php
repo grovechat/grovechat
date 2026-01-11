@@ -3,6 +3,7 @@
 use App\Actions\Dashboard\RedirectCurrentWorkspaceDashboard;
 use App\Actions\Dashboard\RedirectLastDashboardAction;
 use App\Actions\Dashboard\ShowDashboardAction;
+use App\Actions\Home\ShowHomePageAction;
 use App\Actions\StorageSetting\CheckStorageSettingAction;
 use App\Actions\StorageSetting\GetStorageSettingAction;
 use App\Actions\StorageSetting\UpdateStorageSettingAction;
@@ -23,7 +24,7 @@ use App\Http\Middleware\TrackLastWorkspace;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', ShowDashboardAction::class)->name('home');
+Route::get('/', ShowHomePageAction::class)->name('home');
 Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {

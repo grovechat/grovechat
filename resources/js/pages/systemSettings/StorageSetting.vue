@@ -19,7 +19,7 @@ import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import systemSetting from '@/routes/system-setting';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import type { StorageSettingData, StorageConfigData } from '@/types/generated';
 
 const page = usePage();
@@ -35,18 +35,20 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   },
 ]);
 
-const enabled = ref<boolean>(storageSettings.value.enabled);
-const provider = ref<string>(storageSettings.value.provider || 'aws');
-const selectedRegion = ref<string>(storageSettings.value.region || '');
-const endpoint = ref<string>(storageSettings.value.endpoint || '');
-const key = ref<string>(storageSettings.value.key || '');
-const secret = ref<string>(storageSettings.value.secret || '');
-const bucket = ref<string>(storageSettings.value.bucket || '');
-const url = ref<string>(storageSettings.value.url || '');
+const form = reactive({
+  enabled: storageSettings.value.enabled,
+  provider: storageSettings.value.provider || 'aws',
+  region: storageSettings.value.region || '',
+  endpoint: storageSettings.value.endpoint || '',
+  key: storageSettings.value.key || '',
+  secret: storageSettings.value.secret || '',
+  bucket: storageSettings.value.bucket || '',
+  url: storageSettings.value.url || '',
+});
 const useInternalEndpoint = ref<boolean>(false);
 
 const currentProvider = computed(() =>
-  storageConfig.value.find(p => p.value === provider.value)
+  storageConfig.value.find(p => p.value === form.provider)
 );
 
 const currentRegions = computed(() =>
@@ -54,29 +56,29 @@ const currentRegions = computed(() =>
 );
 
 const currentRegionData = computed(() =>
-  currentRegions.value.find(r => r.id === selectedRegion.value)
+  currentRegions.value.find(r => r.id === form.region)
 );
 
-const isAliyun = computed(() => provider.value === 'aliyun');
+const isAliyun = computed(() => form.provider === 'aliyun');
 
 const hasInternalEndpoint = computed(() =>
   isAliyun.value && currentRegionData.value?.internal_endpoint
 );
 
-watch(provider, (newProvider) => {
+watch(() => form.provider, (newProvider) => {
   const provider = storageConfig.value.find(p => p.value === newProvider);
   if (provider && provider.regions.length > 0) {
-    selectedRegion.value = '';
-    endpoint.value = '';
+    form.region = '';
+    form.endpoint = '';
     useInternalEndpoint.value = false;
   }
 });
 
 // Watch region changes
-watch(selectedRegion, (newRegion) => {
+watch(() => form.region, (newRegion) => {
   const region = currentRegions.value.find(r => r.id === newRegion);
   if (region) {
-    endpoint.value = region.endpoint;
+    form.endpoint = region.endpoint;
     useInternalEndpoint.value = false;
   }
 });
@@ -84,10 +86,10 @@ watch(selectedRegion, (newRegion) => {
 const toggleInternalEndpoint = () => {
   if (currentRegionData.value) {
     if (useInternalEndpoint.value) {
-      endpoint.value = currentRegionData.value.endpoint;
+      form.endpoint = currentRegionData.value.endpoint;
       useInternalEndpoint.value = false;
     } else {
-      endpoint.value = currentRegionData.value.internal_endpoint || currentRegionData.value.endpoint;
+      form.endpoint = currentRegionData.value.internal_endpoint || currentRegionData.value.endpoint;
       useInternalEndpoint.value = true;
     }
   }
@@ -114,7 +116,7 @@ const toggleInternalEndpoint = () => {
             <div class="flex items-center space-x-2">
               <Checkbox
                 id="enabled"
-                v-model="enabled"
+                v-model="form.enabled"
               />
               <Label for="enabled" class="cursor-pointer">
                 {{ t('启用对象存储') }}
@@ -126,26 +128,26 @@ const toggleInternalEndpoint = () => {
             <InputError class="mt-2" :message="errors.enabled" />
           </div>
 
-          <input type="hidden" name="enabled" :value="enabled" />
+          <input type="hidden" name="enabled" :value="form.enabled" />
 
-          <div v-show="enabled" class="space-y-6">
+          <div v-show="form.enabled" class="space-y-6">
             <div class="grid gap-2">
               <Label for="provider">{{ t('存储提供商') }}</Label>
               <Select
-                v-model="provider"
+                v-model="form.provider"
                 name="provider"
-                :default-value="provider"
+                :default-value="form.provider"
               >
                 <SelectTrigger id="provider">
                   <SelectValue :placeholder="t('请选择存储提供商')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
-                    v-for="provider in storageConfig"
-                    :key="provider.value"
-                    :value="provider.value"
+                    v-for="providerOption in storageConfig"
+                    :key="providerOption.value"
+                    :value="providerOption.value"
                   >
-                    {{ provider.label }}
+                    {{ providerOption.label }}
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -158,26 +160,26 @@ const toggleInternalEndpoint = () => {
                   {{ t('查看文档') }}
                 </a>
               </p>
-              <InputError class="mt-2" :message="errors.disk" />
+              <InputError class="mt-2" :message="errors.provider" />
             </div>
 
             <div class="grid gap-2">
               <Label for="region">{{ t('区域 (Region)') }}</Label>
               <Select
-                v-model="selectedRegion"
+                v-model="form.region"
                 name="region"
-                :default-value="selectedRegion"
+                :default-value="form.region"
               >
                 <SelectTrigger id="region">
                   <SelectValue :placeholder="t('请选择区域')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
-                    v-for="region in currentRegions"
-                    :key="region.id"
-                    :value="region.id"
+                    v-for="regionOption in currentRegions"
+                    :key="regionOption.id"
+                    :value="regionOption.id"
                   >
-                    {{ region.id }} ({{ region.name }})
+                    {{ regionOption.id }} ({{ regionOption.name }})
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -202,7 +204,7 @@ const toggleInternalEndpoint = () => {
                 name="endpoint"
                 type="url"
                 class="mt-1 block w-full"
-                v-model="endpoint"
+                v-model="form.endpoint"
                 :placeholder="t('例如：https://s3.amazonaws.com')"
               />
               <p v-if="hasInternalEndpoint && useInternalEndpoint" class="text-sm text-amber-600">
@@ -218,7 +220,7 @@ const toggleInternalEndpoint = () => {
                 name="key"
                 type="text"
                 class="mt-1 block w-full"
-                v-model="key"
+                v-model="form.key"
                 required
                 :placeholder="t('请输入 Access Key')"
               />
@@ -233,7 +235,7 @@ const toggleInternalEndpoint = () => {
                 type="password"
                 autocomplete="off"
                 class="mt-1 block w-full"
-                v-model="secret"
+                v-model="form.secret"
                 required
                 :placeholder="t('请输入 Secret Key')"
               />
@@ -247,7 +249,7 @@ const toggleInternalEndpoint = () => {
                 name="bucket"
                 type="text"
                 class="mt-1 block w-full"
-                v-model="bucket"
+                v-model="form.bucket"
                 required
                 :placeholder="t('请输入 Bucket 名称')"
               />
@@ -261,7 +263,7 @@ const toggleInternalEndpoint = () => {
                 name="url"
                 type="url"
                 class="mt-1 block w-full"
-                v-model="url"
+                v-model="form.url"
                 :placeholder="t('例如：https://cdn.example.com')"
               />
               <p class="text-sm text-muted-foreground">
