@@ -39,6 +39,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 const logoPreview = ref<string>(currentWorkspace.value.logo_url || '');
 const logoId = ref<string>(currentWorkspace.value.logo_id || '');
 const uploading = ref(false);
+const selectedLogoFileName = ref<string>('');
 const slugInput = ref<string>(currentWorkspace.value.slug || '');
 const copied = ref(false);
 const showDeleteDialog = ref(false);
@@ -60,6 +61,7 @@ const handleLogoChange = async (event: Event) => {
   const file = target.files?.[0];
 
   if (!file) return;
+  selectedLogoFileName.value = file.name;
 
   // 先显示本地预览
   const reader = new FileReader();
@@ -82,6 +84,7 @@ const handleLogoChange = async (event: Event) => {
     logoId.value = response.data.id;
   } catch {
     logoPreview.value = currentWorkspace.value.logo_url || '';
+    selectedLogoFileName.value = '';
   } finally {
     uploading.value = false;
   }
@@ -186,14 +189,24 @@ const handleDelete = () => {
                 type="hidden"
                 :value="logoId"
               />
-              <Input
-                id="logoFile"
-                type="file"
-                accept="image/*"
-                class="block w-full"
-                :disabled="uploading"
-                @change="handleLogoChange"
-              />
+              <div class="flex items-center gap-3">
+                <input
+                  id="logoFile"
+                  type="file"
+                  accept="image/*"
+                  class="sr-only"
+                  :disabled="uploading"
+                  @change="handleLogoChange"
+                />
+                <Button as-child variant="outline" :disabled="uploading">
+                  <Label for="logoFile" class="cursor-pointer">
+                    {{ t('选择文件') }}
+                  </Label>
+                </Button>
+                <span class="text-sm text-muted-foreground">
+                  {{ selectedLogoFileName || t('未选择任何文件') }}
+                </span>
+              </div>
               <p class="text-sm text-muted-foreground">
                 {{ t('支持上传图片格式文件，选择后自动上传') }}
               </p>
@@ -202,7 +215,7 @@ const handleDelete = () => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="slug">{{ t('访问路径 (slug)') }}</Label>
+            <Label for="slug">{{ t('访问路径') }}</Label>
             <Input
               id="slug"
               name="slug"

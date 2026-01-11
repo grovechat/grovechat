@@ -28,12 +28,14 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 const logoPreview = ref<string>(generalSettings.value.logo_url || '');
 const logoId = ref<string>(generalSettings.value.logo_id || '');
 const uploading = ref(false);
+const selectedLogoFileName = ref<string>('');
 
 const handleLogoChange = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
 
   if (!file) return;
+  selectedLogoFileName.value = file.name;
 
   // 先显示本地预览
   const reader = new FileReader();
@@ -56,6 +58,7 @@ const handleLogoChange = async (event: Event) => {
     logoId.value = response.data.id;
   } catch {
     logoPreview.value = generalSettings.value.logo_url || '';
+    selectedLogoFileName.value = '';
   } finally {
     uploading.value = false;
   }
@@ -130,14 +133,24 @@ const handleLogoChange = async (event: Event) => {
                 type="hidden"
                 :value="logoId"
               />
-              <Input
-                id="logoFile"
-                type="file"
-                accept="image/*"
-                class="block w-full"
-                :disabled="uploading"
-                @change="handleLogoChange"
-              />
+              <div class="flex items-center gap-3">
+                <input
+                  id="logoFile"
+                  type="file"
+                  accept="image/*"
+                  class="sr-only"
+                  :disabled="uploading"
+                  @change="handleLogoChange"
+                />
+                <Button as-child variant="outline" :disabled="uploading">
+                  <Label for="logoFile" class="cursor-pointer">
+                    {{ t('选择文件') }}
+                  </Label>
+                </Button>
+                <span class="text-sm text-muted-foreground">
+                  {{ selectedLogoFileName || t('未选择任何文件') }}
+                </span>
+              </div>
               <p class="text-sm text-muted-foreground">
                 {{ t('支持上传图片格式文件，选择后自动上传') }}
               </p>

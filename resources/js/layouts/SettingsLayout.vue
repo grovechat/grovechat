@@ -46,7 +46,7 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
 
 <template>
   <div class="flex flex-1 flex-col lg:flex-row">
-    <aside class="w-full lg:w-48 lg:self-stretch">
+    <aside class="w-full lg:w-50 lg:self-stretch">
       <nav
         class="flex h-full flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm"
       >
