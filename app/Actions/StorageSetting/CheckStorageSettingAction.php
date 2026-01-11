@@ -6,6 +6,7 @@ use App\Data\StorageSettingCheckData;
 use App\Enums\StorageProvider;
 use App\Settings\StorageSettings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -59,14 +60,31 @@ class CheckStorageSettingAction
         
         try {
             $this->handle($data);
+
             Inertia::flash('toast', [
                 'type' => 'success',
-                'message' => '检测成功'
+                'message' => '检测成功',
             ]);
+        } catch (ValidationException $e) {
+            // 让 Inertia 正常回传字段错误
+            throw $e;
         } catch (Throwable $e) {
+            Log::warning('Storage connection check failed', [
+                'provider' => $data->provider ?? null,
+                'region' => $data->region ?? null,
+                'endpoint' => $data->endpoint ?? null,
+                'bucket' => $data->bucket ?? null,
+                'exception' => $e,
+            ]);
+            $message = '验证不通过，请检查 Provider、Region、Endpoint、Access Key/Secret、Bucket 是否正确';
+
             Inertia::flash('toast', [
                 'type' => 'warning',
-                'message' => $e->getMessage(),
+                'message' => $message,
+            ]);
+
+            return back()->withErrors([
+                'endpoint' => $message,
             ]);
         }
         

@@ -2,8 +2,8 @@
 
 namespace App\Actions\StorageSetting;
 
-use App\Data\S3StorageData;
 use App\Data\StorageConfigData;
+use App\Data\StorageSettingPagePropsData;
 use App\Data\StorageSettingData;
 use App\Enums\StorageProvider;
 use App\Settings\StorageSettings;
@@ -20,14 +20,9 @@ class GetStorageSettingAction
 
     public function handle()
     {
-        return StorageSettingData::from($this->settings);
-    }
+        $storageSettings = StorageSettingData::from($this->settings);
 
-    public function asController()
-    {
-        $storageSettings = $this->handle();
         // 安全起见：不要把已保存的 Secret 回传到前端
-        $storageSecretConfigured = filled($this->settings->secret);
         $storageSettings->secret = null;
 
         $storageConfig = collect(StorageProvider::cases())->map(function ($provider) {
@@ -37,12 +32,16 @@ class GetStorageSettingAction
                 'helpLink' => $provider->getHelpLink(),
                 'regions' => $provider->getRegions(),
             ]);
-        })->toArray();
+        })->all();
 
-        return Inertia::render('systemSettings/StorageSetting', [
-            'storageSettings' => $storageSettings,
-            'storageConfig' => $storageConfig,
-            'storageSecretConfigured' => $storageSecretConfigured,
-        ]);
+        return new StorageSettingPagePropsData(
+            storageSettings: $storageSettings,
+            storageConfig: $storageConfig,
+        );
+    }
+
+    public function asController()
+    {
+        return Inertia::render('systemSettings/StorageSetting', $this->handle()->toArray());
     }
 }

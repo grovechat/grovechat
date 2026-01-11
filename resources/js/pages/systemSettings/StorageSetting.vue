@@ -18,34 +18,30 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import systemSetting from '@/routes/system-setting';
 import { type BreadcrumbItem } from '@/types';
+import type { AppPageProps } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
-import type { StorageSettingData, StorageConfigData } from '@/types/generated';
+import type { StorageSettingPagePropsData } from '@/types/generated';
 
-const page = usePage();
+const page = usePage<AppPageProps<StorageSettingPagePropsData>>();
 const { t } = useI18n();
-const storageSettings = computed(() => page.props.storageSettings as StorageSettingData);
-const storageConfig = computed(() => page.props.storageConfig as StorageConfigData[]);
-const storageSecretConfigured = computed(() => page.props.storageSecretConfigured as boolean);
-const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('存储设置'),
-    href: systemSetting.getStorageSettings.url(currentWorkspace.value.slug),
+    href: systemSetting.getStorageSettings.url(page.props.currentWorkspace.slug),
   },
 ]);
 
 const form = useForm({
-  enabled: storageSettings.value.enabled,
-  provider: storageSettings.value.provider || 'aws',
-  region: storageSettings.value.region || '',
-  endpoint: storageSettings.value.endpoint || '',
-  key: storageSettings.value.key || '',
-  // 出于安全原因：后端不回传已保存的 secret；留空表示“不修改”
+  enabled: page.props.storage_settings.enabled,
+  provider: page.props.storage_settings.provider || 'aws',
+  region: page.props.storage_settings.region || '',
+  endpoint: page.props.storage_settings.endpoint || '',
+  key: page.props.storage_settings.key || '',
   secret: '',
-  bucket: storageSettings.value.bucket || '',
-  url: storageSettings.value.url || '',
+  bucket: page.props.storage_settings.bucket || '',
+  url: page.props.storage_settings.url || '',
 });
 
 const checkForm = useForm({
@@ -60,7 +56,7 @@ const checkForm = useForm({
 const useInternalEndpoint = ref<boolean>(false);
 
 const currentProvider = computed(() =>
-  storageConfig.value.find(p => p.value === form.provider)
+  page.props.storage_config.find(p => p.value === form.provider)
 );
 
 const currentRegions = computed(() =>
@@ -78,7 +74,7 @@ const hasInternalEndpoint = computed(() =>
 );
 
 watch(() => form.provider, (newProvider) => {
-  const provider = storageConfig.value.find(p => p.value === newProvider);
+  const provider = page.props.storage_config.find(p => p.value === newProvider);
   if (provider && provider.regions.length > 0) {
     form.region = '';
     form.endpoint = '';
@@ -108,7 +104,7 @@ const toggleInternalEndpoint = () => {
 };
 
 const submit = () => {
-  form.put(StorageSetting.UpdateStorageSettingAction.url(currentWorkspace.value.slug), {
+  form.put(StorageSetting.UpdateStorageSettingAction.url(page.props.currentWorkspace.slug), {
     preserveScroll: true,
     onSuccess: () => {
       // 安全：保存成功后清空输入框，避免把 secret 留在内存里
@@ -127,7 +123,7 @@ const checkConnection = () => {
   checkForm.bucket = form.bucket;
   checkForm.url = form.url;
 
-  checkForm.put(StorageSetting.CheckStorageSettingAction.url(currentWorkspace.value.slug), {
+  checkForm.put(StorageSetting.CheckStorageSettingAction.url(page.props.currentWorkspace.slug), {
     preserveScroll: true,
     onSuccess: () => {
       // 安全：检测完成后清空输入框，避免把 secret 留在内存里
@@ -177,7 +173,7 @@ const checkConnection = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
-                    v-for="providerOption in storageConfig"
+                    v-for="providerOption in page.props.storage_config"
                     :key="providerOption.value"
                     :value="providerOption.value"
                   >
@@ -266,7 +262,7 @@ const checkConnection = () => {
                 autocomplete="off"
                 class="mt-1 block w-full"
                 v-model="form.secret"
-                :placeholder="storageSecretConfigured ? t('留空表示不修改') : t('请输入 Secret Key')"
+                :placeholder="t('留空表示不修改（首次启用必须填写）')"
               />
               <InputError class="mt-2" :message="form.errors.secret || checkForm.errors.secret" />
             </div>

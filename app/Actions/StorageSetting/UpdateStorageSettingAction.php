@@ -2,17 +2,23 @@
 
 namespace App\Actions\StorageSetting;
 
+use App\Data\StorageSettingCheckData;
 use App\Data\StorageSettingData;
 use App\Settings\StorageSettings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Throwable;
 
 class UpdateStorageSettingAction
 {
     use AsAction;
     
-    public function __construct(public StorageSettings $settings)
+    public function __construct(
+        public StorageSettings $settings,
+        protected CheckStorageSettingAction $checker,
+    )
     {
     }
 
@@ -29,6 +35,37 @@ class UpdateStorageSettingAction
         if (!$secretProvided && blank($this->settings->secret)) {
             throw ValidationException::withMessages([
                 'secret' => 'Secret Key 不能为空',
+            ]);
+        }
+
+        // 保存前先进行连接检测：检测通过才落库
+        $secretForCheck = $secretProvided ? $data->secret : $this->settings->secret;
+        $checkData = StorageSettingCheckData::from([
+            'provider' => $data->provider,
+            'key' => $data->key,
+            'secret' => $secretForCheck,
+            'bucket' => $data->bucket,
+            'region' => $data->region,
+            'endpoint' => $data->endpoint,
+            'url' => $data->url,
+        ]);
+
+        try {
+            $this->checker->handle($checkData);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            Log::warning('Storage connection check failed during save', [
+                'provider' => $data->provider,
+                'region' => $data->region,
+                'endpoint' => $data->endpoint,
+                'bucket' => $data->bucket,
+                'exception' => $e,
+            ]);
+
+            $message = '验证不通过，请检查 Provider、Region、Endpoint、Access Key/Secret、Bucket 是否正确';
+            throw ValidationException::withMessages([
+                'endpoint' => $message,
             ]);
         }
 
