@@ -33,7 +33,10 @@ const typeLabels: Record<string, string> = {
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: typeLabels[type.value],
-    href: contact.index.url({ slug: currentWorkspace.value.slug, type: type.value }),
+    href: contact.index.url({
+      slug: currentWorkspace.value.slug,
+      type: type.value,
+    }),
   },
 ]);
 </script>

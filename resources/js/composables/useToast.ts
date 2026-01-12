@@ -1,5 +1,5 @@
-import { ref, onUnmounted } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { onUnmounted, ref } from 'vue';
 import { useI18n } from './useI18n';
 
 export type ToastType = 'default' | 'success' | 'error' | 'warning' | 'info';
@@ -37,19 +37,35 @@ export function useToast() {
 
   const toast = {
     success: (message: string) => {
-      return addToast({ title: t('成功'), description: message, type: 'success' });
+      return addToast({
+        title: t('成功'),
+        description: message,
+        type: 'success',
+      });
     },
     error: (message: string) => {
-      return addToast({ title: t('错误'), description: message, type: 'error' });
+      return addToast({
+        title: t('错误'),
+        description: message,
+        type: 'error',
+      });
     },
     warning: (message: string) => {
-      return addToast({ title: t('警告'), description: message, type: 'warning' });
+      return addToast({
+        title: t('警告'),
+        description: message,
+        type: 'warning',
+      });
     },
     info: (message: string) => {
       return addToast({ title: t('提示'), description: message, type: 'info' });
     },
     default: (message: string) => {
-      return addToast({ title: t('通知'), description: message, type: 'default' });
+      return addToast({
+        title: t('通知'),
+        description: message,
+        type: 'default',
+      });
     },
   };
 
@@ -119,7 +135,7 @@ export function useErrorHandling() {
           toast.error(message);
 
           return Promise.reject(error);
-        }
+        },
       );
 
       apiInterceptorSetup = true;

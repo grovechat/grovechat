@@ -9,14 +9,13 @@ import {
 import { useI18n } from '@/composables/useI18n';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
-import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const page = usePage();
-const auth = computed(() => page.props.auth)
+const auth = computed(() => page.props.auth);
 const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const handleLogout = () => {

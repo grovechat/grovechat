@@ -15,14 +15,14 @@ import { Form, Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, ref } from 'vue';
 
-const page = usePage()
+const page = usePage();
 const { t } = useI18n();
 const generalSettings = computed(() => page.props.generalSettings);
 const currentWorkspace = computed(() => page.props.currentWorkspace);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: systemSetting.getGeneralSettings.url(currentWorkspace.value.slug)
+    href: systemSetting.getGeneralSettings.url(currentWorkspace.value.slug),
   },
 ]);
 const logoPreview = ref<string>(generalSettings.value.logo_url || '');
@@ -50,11 +50,15 @@ const handleLogoChange = async (event: Event) => {
 
   try {
     uploading.value = true;
-    const response = await axios.post(CommonController.uploadImage.url(), formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    const response = await axios.post(
+      CommonController.uploadImage.url(),
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       },
-    });
+    );
     logoId.value = response.data.id;
   } catch {
     logoPreview.value = generalSettings.value.logo_url || '';
@@ -77,7 +81,9 @@ const handleLogoChange = async (event: Event) => {
         />
 
         <Form
-          v-bind=" SystemSetting.UpdateGeneralSettingAction.form(currentWorkspace.slug)"
+          v-bind="
+            SystemSetting.UpdateGeneralSettingAction.form(currentWorkspace.slug)
+          "
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
@@ -113,18 +119,18 @@ const handleLogoChange = async (event: Event) => {
             <div class="mt-1 space-y-3">
               <div
                 v-if="logoPreview"
-                class="w-32 h-32 border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center relative"
+                class="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-md border bg-gray-50"
               >
                 <img
                   :src="logoPreview"
                   alt="Logo预览"
-                  class="max-w-full max-h-full object-contain"
+                  class="max-h-full max-w-full object-contain"
                 />
                 <div
                   v-if="uploading"
-                  class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+                  class="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black"
                 >
-                  <span class="text-white text-sm">{{ t('上传中...') }}</span>
+                  <span class="text-sm text-white">{{ t('上传中...') }}</span>
                 </div>
               </div>
               <input
@@ -184,7 +190,7 @@ const handleLogoChange = async (event: Event) => {
 
           <div class="grid gap-2">
             <Label>{{ t('版本号') }}</Label>
-            <div class="text-sm text-muted-foreground py-2">
+            <div class="py-2 text-sm text-muted-foreground">
               {{ generalSettings.version || t('未设置') }}
             </div>
           </div>

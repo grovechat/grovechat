@@ -15,7 +15,9 @@ defineProps<Props>();
 
 const page = usePage();
 const logo = computed(() => page.props.generalSettings?.logoUrl || logoUrl);
-const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
+const systemName = computed(
+  () => page.props.generalSettings?.name || 'GroveChat',
+);
 </script>
 
 <template>

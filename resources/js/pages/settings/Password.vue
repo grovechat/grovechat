@@ -37,7 +37,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           :description="t('确保你的账户使用长且随机的密码以保证安全')"
         />
 
-        <Form v-bind="PasswordController.update.form(currentWorkspace.slug)" :options="{preserveScroll: true}"
+        <Form
+          v-bind="PasswordController.update.form(currentWorkspace.slug)"
+          :options="{ preserveScroll: true }"
           reset-on-success
           :reset-on-error="[
             'password',

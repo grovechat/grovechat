@@ -50,34 +50,32 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
       <nav
         class="flex h-full flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm"
       >
-          <div class="space-y-0.5">
-            <h2 class="text-xl font-semibold tracking-tight">
-              {{ t('设置') }}
-            </h2>
-            <p class="text-sm text-muted-foreground">
-              {{ t('管理你的个人资料和账户设置') }}
-            </p>
-          </div>
+        <div class="space-y-0.5">
+          <h2 class="text-xl font-semibold tracking-tight">
+            {{ t('设置') }}
+          </h2>
+          <p class="text-sm text-muted-foreground">
+            {{ t('管理你的个人资料和账户设置') }}
+          </p>
+        </div>
 
-          <div class="flex flex-col space-y-1">
-            <Button
-              v-for="item in sidebarNavItems"
-              :key="toUrl(item.href)"
-              variant="ghost"
-              :class="[
-                'w-full justify-start',
-                { 'bg-muted': urlIsActive(item.href, currentPath) },
-              ]"
-              as-child
-            >
-              <Link
-                :href="typeof item.href === 'string' ? item.href : item.href"
-              >
-                <component :is="item.icon" class="h-4 w-4" />
-                {{ item.title }}
-              </Link>
-            </Button>
-          </div>
+        <div class="flex flex-col space-y-1">
+          <Button
+            v-for="item in sidebarNavItems"
+            :key="toUrl(item.href)"
+            variant="ghost"
+            :class="[
+              'w-full justify-start',
+              { 'bg-muted': urlIsActive(item.href, currentPath) },
+            ]"
+            as-child
+          >
+            <Link :href="typeof item.href === 'string' ? item.href : item.href">
+              <component :is="item.icon" class="h-4 w-4" />
+              {{ item.title }}
+            </Link>
+          </Button>
+        </div>
       </nav>
     </aside>
 
