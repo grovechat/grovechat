@@ -5,6 +5,7 @@ use App\Actions\Dashboard\RedirectLastDashboardAction;
 use App\Actions\Dashboard\ShowDashboardAction;
 use App\Actions\Home\ShowHomePageAction;
 use App\Actions\manage\CreateWorkspaceAction;
+use App\Actions\Manage\DeleteCurrentWorkspaceAction;
 use App\Actions\Manage\GetCurrentWorkspaceAction;
 use App\Actions\Manage\ShowCreateWorkspacePageAction;
 use App\Actions\Manage\UpdateWorkspaceAction;
@@ -92,10 +93,7 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         Route::get('workspaces/create', ShowCreateWorkspacePageAction::class)->name('show-create-workspace-page');
         Route::put('workspaces', UpdateWorkspaceAction::class)->name('update-current-workspace');
         Route::post('workspaces', CreateWorkspaceAction::class)->name('create-workspace');
-
-        Route::prefix('workspace')->group(function () { // 常规设置
-            Route::delete('general', DestroyWorkspaceAction::class)->name('workspace-settings.workspace.delete');
-        });
+        Route::delete('workspaces/current', DeleteCurrentWorkspaceAction::class)->name('delete-current-workspace');
 
         // 客服
         Route::prefix('teammates')->group(function () {

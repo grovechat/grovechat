@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Actions\Workspace;
+namespace App\Actions\Manage;
 
+use App\Actions\Workspace\GetDefaultWorkspaceAction;
 use App\Exceptions\BusinessException;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class DestroyWorkspaceAction
+class DeleteCurrentWorkspaceAction
 {
     use AsAction;
 
@@ -32,6 +33,6 @@ class DestroyWorkspaceAction
             'message' => '工作区已删除',
         ]);
 
-        return redirect(route('workspace-setting.workspace.general', $defaultWorkspace->slug));
+        return redirect(route('get-current-workspace', $defaultWorkspace->slug));
     }
 }

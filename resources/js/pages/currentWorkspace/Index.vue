@@ -1,6 +1,6 @@
 <script setup lang="ts">
+  import DeleteCurrentWorkspaceAction from '@/actions/App/Actions/Manage/DeleteCurrentWorkspaceAction';
   import UpdateWorkspaceAction from '@/actions/App/Actions/Manage/UpdateWorkspaceAction';
-  import DestroyWorkspaceAction from '@/actions/App/Actions/Workspace/DestroyWorkspaceAction';
   import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
   import HeadingSmall from '@/components/HeadingSmall.vue';
   import InputError from '@/components/InputError.vue';
@@ -105,7 +105,7 @@
   const handleDelete = () => {
     deleting.value = true;
     router.delete(
-      DestroyWorkspaceAction.url(currentWorkspace.value.slug),
+      DeleteCurrentWorkspaceAction.url(currentWorkspace.value.slug),
       {
         preserveState: false,
         preserveScroll: false,
