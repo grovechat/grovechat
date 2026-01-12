@@ -4,7 +4,7 @@ use App\Actions\Dashboard\RedirectCurrentWorkspaceDashboard;
 use App\Actions\Dashboard\RedirectLastDashboardAction;
 use App\Actions\Dashboard\ShowDashboardAction;
 use App\Actions\Home\ShowHomePageAction;
-use App\Actions\manage\CreateWorkspaceAction;
+use App\Actions\Manage\CreateWorkspaceAction;
 use App\Actions\Manage\DeleteCurrentWorkspaceAction;
 use App\Actions\Manage\GetCurrentWorkspaceAction;
 use App\Actions\Manage\ShowCreateWorkspacePageAction;
@@ -98,7 +98,7 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         // 工作区
         Route::get('workspaces/current', GetCurrentWorkspaceAction::class)->name('get-current-workspace');  
         Route::get('workspaces/create', ShowCreateWorkspacePageAction::class)->name('show-create-workspace-page');
-        Route::put('workspaces', UpdateWorkspaceAction::class)->name('update-current-workspace');
+        Route::put('workspaces/current', UpdateWorkspaceAction::class)->name('update-current-workspace');
         Route::post('workspaces', CreateWorkspaceAction::class)->name('create-workspace');
         Route::delete('workspaces/current', DeleteCurrentWorkspaceAction::class)->name('delete-current-workspace');
 

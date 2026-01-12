@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\manage;
+namespace App\Actions\Manage;
 
 use App\Data\CreateWorkspaceDTO;
 use App\Enums\WorkspaceRole;
