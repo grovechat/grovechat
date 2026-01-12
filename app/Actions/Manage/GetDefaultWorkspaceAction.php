@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Workspace;
+namespace App\Actions\Manage;
 
 use App\Models\User;
 use App\Models\Workspace;

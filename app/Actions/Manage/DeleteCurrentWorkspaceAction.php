@@ -2,7 +2,6 @@
 
 namespace App\Actions\Manage;
 
-use App\Actions\Workspace\GetDefaultWorkspaceAction;
 use App\Exceptions\BusinessException;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
