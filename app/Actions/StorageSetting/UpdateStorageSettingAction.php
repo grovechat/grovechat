@@ -31,20 +31,20 @@ class UpdateStorageSettingAction
 
         if (! filled($data->current_profile_id)) {
             throw ValidationException::withMessages([
-                'current_profile_id' => '启用对象存储必须选择一个存储配置',
+                'current_profile_id' => __('storage_settings.storage_not_selected'),
             ]);
         }
 
         $profile = StorageProfile::query()->find($data->current_profile_id);
         if (! $profile) {
             throw ValidationException::withMessages([
-                'current_profile_id' => '所选存储配置不存在',
+                'current_profile_id' => __('storage_settings.storage_not_found'),
             ]);
         }
 
         if (! filled($profile->key) || ! filled($profile->secret)) {
             throw ValidationException::withMessages([
-                'current_profile_id' => '所选存储配置缺少 Key/Secret，请先更新凭证',
+                'current_profile_id' => __('storage_settings.storage_key_secret_required'),
             ]);
         }
 
@@ -57,7 +57,7 @@ class UpdateStorageSettingAction
             ]);
 
             throw ValidationException::withMessages([
-                'current_profile_id' => '连接检测失败，请检查配置与网络连通性',
+                'current_profile_id' => __('storage_settings.connection_check_failed'),
             ]);
         }
 

@@ -18,7 +18,6 @@ class CreateWorkspaceAction
     {
         return DB::transaction(function () use ($user, $dto) {
             $workspace = Workspace::query()->create($dto->toArray());
-            $workspace->createSlug();
             $user->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::ADMIN]);
 
             return $workspace;

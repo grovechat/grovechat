@@ -41,7 +41,8 @@ class CreateNewUser implements CreatesNewUsers
                 'name' => 'Default',
                 'owner_id' => $user->id,
             ]);
-            $workspace->createSlug();
+            $workspace->slug = $workspace->id;
+            $workspace->save();
 
             $user->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::ADMIN]);
 

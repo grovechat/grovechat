@@ -68,9 +68,4 @@ class Workspace extends Model
             }
         });
     }
-
-    public function createSlug()
-    {
-        $this->update(['slug' => Str::ulid()]);
-    }
 }

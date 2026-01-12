@@ -19,7 +19,7 @@ class CreateStorageProfileAction
         protected CheckStorageSettingAction $checker,
     ) {}
 
-    public function asController(Request $request, string $slug)
+    public function asController(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:64'],

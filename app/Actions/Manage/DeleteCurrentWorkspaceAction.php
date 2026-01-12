@@ -15,7 +15,7 @@ class DeleteCurrentWorkspaceAction
     public function handle(Workspace $workspace)
     {
         if (! empty($workspace->owner_id)) {
-            throw new BusinessException('不能删除默认工作区');
+            throw new BusinessException(__('workspace.delete_default_workspace'));
         }
 
         $workspace->delete();
@@ -29,7 +29,7 @@ class DeleteCurrentWorkspaceAction
 
         Inertia::flash('toast', [
             'type' => 'success',
-            'message' => '工作区已删除',
+            'message' => __('workspace.workspace_deleted'),
         ]);
 
         return redirect(route('get-current-workspace', $defaultWorkspace->slug));

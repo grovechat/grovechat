@@ -21,7 +21,7 @@ class CheckStorageProfileAction
 
             Inertia::flash('toast', [
                 'type' => 'success',
-                'message' => '连接正常',
+                'message' => __('storage_settings.connection_check_success'),
             ]);
         } catch (Throwable $e) {
             Log::warning('Storage profile connection check failed', [
@@ -31,7 +31,7 @@ class CheckStorageProfileAction
 
             Inertia::flash('toast', [
                 'type' => 'warning',
-                'message' => '连接检测失败，请检查配置与网络连通性',
+                'message' => __('storage_settings.connection_check_failed'),
             ]);
         }
 
