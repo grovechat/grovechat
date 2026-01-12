@@ -27,7 +27,7 @@ class CreateWorkspaceAction
 
     public function asController(Request $request)
     {
-        $data = CreateWorkspaceDTO::from($request->all());
+        $data = CreateWorkspaceDTO::from($request);
         $newWorkspace = $this->handle($request->user(), $data);
 
         return redirect(route('workspace-setting.workspace.general', $newWorkspace->slug));

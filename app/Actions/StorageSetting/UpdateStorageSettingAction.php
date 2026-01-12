@@ -80,7 +80,7 @@ class UpdateStorageSettingAction
 
     public function asController(Request $request)
     {
-        $data = StorageSettingData::validateAndCreate($request->all());
+        $data = StorageSettingData::from($request);
         $this->handle($data, $request->filled('secret'));
 
         return back();

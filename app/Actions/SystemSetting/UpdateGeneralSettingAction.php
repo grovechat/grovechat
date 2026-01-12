@@ -18,12 +18,12 @@ class UpdateGeneralSettingAction
     public function handle(GeneralSettingsData $data)
     {
         $this->settings->lock('version');
-        $this->settings->fill($data)->save();
+        $this->settings->fill($data->toArray())->save();
     }
 
     public function asController(Request $request)
     {
-        $this->handle(GeneralSettingsData::from($request->all()));
+        $this->handle(GeneralSettingsData::from($request));
 
         return back();
     }

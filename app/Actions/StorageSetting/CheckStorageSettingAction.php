@@ -51,7 +51,7 @@ class CheckStorageSettingAction
 
     public function asController(Request $request)
     {
-        $data = StorageSettingCheckData::validateAndCreate($request->all());
+        $data = StorageSettingCheckData::from($request);
 
         // 如果用户未填写 secret，则尝试使用系统已保存的 secret
         if (! filled($data->secret)) {

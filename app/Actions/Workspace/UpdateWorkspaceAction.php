@@ -18,7 +18,7 @@ class UpdateWorkspaceAction
 
     public function asController(Request $request, Workspace $currentWorkspace)
     {
-        $data = UpdateWorkspaceDTO::from($request->all());
+        $data = UpdateWorkspaceDTO::from($request);
         $this->handle($currentWorkspace, $data);
 
         return redirect(route('workspace-setting.workspace.general', $currentWorkspace->slug));
