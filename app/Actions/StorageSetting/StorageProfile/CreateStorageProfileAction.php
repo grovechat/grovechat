@@ -3,6 +3,7 @@
 namespace App\Actions\StorageSetting\StorageProfile;
 
 use App\Actions\StorageSetting\CheckStorageSettingAction;
+use App\Data\StorageProfileCreateData;
 use App\Data\StorageSettingCheckData;
 use App\Models\StorageProfile;
 use Illuminate\Http\Request;
@@ -19,27 +20,16 @@ class CreateStorageProfileAction
         protected CheckStorageSettingAction $checker,
     ) {}
 
-    public function asController(Request $request)
+    public function handle(StorageProfileCreateData $data): StorageProfile
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:64'],
-            'provider' => ['required', 'string'],
-            'region' => ['required', 'string'],
-            'endpoint' => ['required', 'string', 'url'],
-            'bucket' => ['required', 'string'],
-            'key' => ['required', 'string'],
-            'secret' => ['required', 'string'],
-            'url' => ['nullable', 'string', 'url'],
-        ]);
-
         $checkData = StorageSettingCheckData::from([
-            'provider' => $validated['provider'],
-            'key' => $validated['key'],
-            'secret' => $validated['secret'],
-            'bucket' => $validated['bucket'],
-            'region' => $validated['region'],
-            'endpoint' => $validated['endpoint'],
-            'url' => $validated['url'] ?? null,
+            'provider' => $data->provider,
+            'key' => $data->key,
+            'secret' => $data->secret,
+            'bucket' => $data->bucket,
+            'region' => $data->region,
+            'endpoint' => $data->endpoint,
+            'url' => $data->url,
         ]);
 
         try {
@@ -48,24 +38,30 @@ class CreateStorageProfileAction
             throw $e;
         } catch (Throwable $e) {
             throw ValidationException::withMessages([
-                'secret' => '连接检测失败，请检查配置与网络连通性',
+                'secret' => __('storage_settings.connection_check_failed'),
             ]);
         }
 
-        StorageProfile::query()->create([
-            'name' => $validated['name'],
-            'provider' => $validated['provider'],
-            'region' => $validated['region'],
-            'endpoint' => $validated['endpoint'],
-            'bucket' => $validated['bucket'],
-            'key' => $validated['key'],
-            'secret' => $validated['secret'],
-            'url' => $validated['url'] ?? null,
+        return StorageProfile::query()->create([
+            'name' => $data->name,
+            'provider' => $data->provider,
+            'region' => $data->region,
+            'endpoint' => $data->endpoint,
+            'bucket' => $data->bucket,
+            'key' => $data->key,
+            'secret' => $data->secret,
+            'url' => $data->url,
         ]);
+    }
+
+    public function asController(Request $request, string $slug)
+    {
+        $data = StorageProfileCreateData::validateAndCreate($request->all());
+        $this->handle($data);
 
         Inertia::flash('toast', [
             'type' => 'success',
-            'message' => '已创建存储配置',
+            'message' => __('storage_settings.profile_created'),
         ]);
 
         return back();

@@ -44,7 +44,7 @@ class CheckStorageSettingAction
 
     public function asController(Request $request)
     {
-        $data = StorageSettingCheckData::from($request);
+        $data = StorageSettingCheckData::validateAndCreate($request->all());
 
         try {
             $this->handle($data);

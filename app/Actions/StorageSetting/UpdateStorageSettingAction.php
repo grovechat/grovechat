@@ -68,7 +68,7 @@ class UpdateStorageSettingAction
 
     public function asController(Request $request)
     {
-        $data = StorageSettingData::from($request);
+        $data = StorageSettingData::validateAndCreate($request->all());
         $this->handle($data);
 
         return back();
