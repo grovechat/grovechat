@@ -13,14 +13,11 @@ class AttachmentService
     /**
      * 上传附件并记录到数据库
      */
-    public static function upload(
-        UploadedFile $file,
-        string $folder = 'uploads',
-        ?Model $attachable = null
-    ): Attachment {
+    public static function upload(UploadedFile $file, string $folder = 'uploads', ?Model $attachable = null): Attachment {
+        Attachment::setFilesystem();
         $disk = config('filesystems.default');
         $fileName = Str::uuid().'.'.$file->getClientOriginalExtension();
-        $path = $file->storeAs($folder, $fileName, $disk);
+        $path = $file->storePubliclyAs($folder, $fileName, $disk);
 
         return Attachment::create([
             'disk' => $disk,

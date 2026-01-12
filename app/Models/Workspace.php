@@ -48,7 +48,7 @@ class Workspace extends Model
     {
         static::updated(function (Model $workspace) {
             if ($workspace->wasChanged('logo_id') && $workspace->logo_id) {
-                AttachmentService::replace($workspace->getOriginal('logo_id'), $workspace->logo_id, $workspace);
+                AttachmentService::replace($workspace->getOriginal('logo_id') ?: '', $workspace->logo_id, $workspace);
             }
         });
 

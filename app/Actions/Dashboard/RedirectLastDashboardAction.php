@@ -3,6 +3,7 @@
 namespace App\Actions\Dashboard;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class RedirectLastDashboardAction
@@ -19,6 +20,7 @@ class RedirectLastDashboardAction
         $lastWorkspaceSlug = session('last_workspace_slug');
         if ($lastWorkspaceSlug) {
             if ($workspace = $request->user()->workspaces()->where('slug', $lastWorkspaceSlug)->first()) {
+                Log::error('aaaaaaaaaaaaaaa');
                 return redirect()->route('workspace.dashboard', ['slug' => $workspace->slug]);
             }
         }

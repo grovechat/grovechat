@@ -37,7 +37,7 @@ class CreateNewUser implements CreatesNewUsers
             ]);
 
             // 创建工作区
-            $workspace = Workspace::create([
+            $workspace = Workspace::query()->create([
                 'name' => 'Default',
                 'owner_id' => $user->id,
             ]);
