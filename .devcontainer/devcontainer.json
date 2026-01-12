@@ -16,7 +16,8 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "Anthropic.claude-code",
-        "saoudrizwan.claude-dev"
+        "saoudrizwan.claude-dev",
+        "qwtel.sqlite-viewer"
       ],
 
       "settings": {
