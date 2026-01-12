@@ -2,11 +2,10 @@
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import InputError from '@/components/InputError.vue';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { edit } from '@/routes/user-password';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
@@ -16,12 +15,13 @@ import { Label } from '@/components/ui/label';
 import { type BreadcrumbItem } from '@/types';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('密码设置'),
-    href: workspacePath.value ? edit(workspacePath.value).url : '#',
+    href: edit(currentWorkspace.value.slug).url,
   },
 ]);
 </script>
@@ -38,10 +38,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="workspacePath ? PasswordController.update.form(workspacePath) : {}"
-          :options="{
-            preserveScroll: true,
-          }"
+          v-bind="PasswordController.update.form(currentWorkspace.slug)"
+          :options="{ preserveScroll: true }"
           reset-on-success
           :reset-on-error="[
             'password',
@@ -51,6 +49,17 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
+          <!-- Hidden username field for password managers -->
+          <input
+            type="text"
+            name="username"
+            :value="page.props.auth.user.email"
+            autocomplete="username"
+            style="display: none"
+            aria-hidden="true"
+            tabindex="-1"
+          />
+
           <div class="grid gap-2">
             <Label for="current_password">{{ t('当前密码') }}</Label>
             <Input

@@ -17,12 +17,12 @@ class IdentifyWorkspace
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $path = $request->route('workspace_path');
-        $workspace = Workspace::where('path', $path)->first();
-        if (!$workspace) {
+        $slug = $request->route('slug');
+        $workspace = Workspace::where('slug', $slug)->first();
+        if (! $workspace) {
             abort(404, '工作区不存在');
         }
-        if (!$request->user()->workspaces()->where('workspaces.id', $workspace->id)->exists()) {
+        if (! $request->user()->workspaces()->where('workspaces.id', $workspace->id)->exists()) {
             abort(403, '你不是该工作区的成员');
         }
 

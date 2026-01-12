@@ -1,6 +1,6 @@
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
-import type { GeneralSettingsData } from './generated';
+import type { GeneralSettingsData, WorkspaceData } from './generated';
 
 export interface Auth {
   user: User;
@@ -26,6 +26,8 @@ export type AppPageProps<
   auth: Auth;
   sidebarOpen: boolean;
   generalSettings: GeneralSettingsData;
+  currentWorkspace: WorkspaceData;
+  workspaces: WorkspaceData[];
 };
 
 export interface User {

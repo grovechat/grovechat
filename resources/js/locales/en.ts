@@ -3,6 +3,10 @@ export default {
   // 通用
   '加载中...': 'Loading...',
   发生错误: 'An error occurred',
+  选择文件: 'Choose file',
+  未选择任何文件: 'No file chosen',
+  切换工作区: 'Switch workspace',
+  添加工作区: 'Add workspace',
 
   // Toast 通知
   成功: 'Success',
@@ -235,17 +239,65 @@ export default {
   版本号: 'Version',
   未设置: 'Not set',
 
+  // 存储设置页面
+  '配置对象存储服务，支持 Amazon S3 和阿里云 OSS 等兼容服务':
+    'Configure object storage services, supports Amazon S3, Alibaba Cloud OSS and compatible services',
+  启用对象存储: 'Enable Object Storage',
+  '启用后，文件将上传到配置的对象存储服务':
+    'When enabled, files will be uploaded to the configured object storage service',
+  当前使用的存储配置: 'Current storage profile',
+  请选择存储配置: 'Select a storage profile',
+  存储配置管理: 'Storage Profile Management',
+  '支持创建多个存储配置，并选择其中一个作为当前上传目标':
+    'Create multiple storage profiles and choose one as the current upload target',
+  新增配置: 'New profile',
+  收起: 'Collapse',
+  配置名称: 'Profile name',
+  存储提供商: 'Storage Provider',
+  请选择存储提供商: 'Select a storage provider',
+  查看文档: 'View docs',
+  'Access Key / Access Key ID': 'Access Key / Access Key ID',
+  '请输入 Access Key': 'Please enter Access Key',
+  'Secret Key / Access Key Secret': 'Secret Key / Access Key Secret',
+  '请输入 Secret Key': 'Please enter Secret Key',
+  '留空表示不修改（首次启用必须填写）':
+    'Leave blank to keep unchanged (required on first enable)',
+  留空表示不修改: 'Leave blank to keep unchanged',
+  'Bucket 名称': 'Bucket Name',
+  '请输入 Bucket 名称': 'Please enter bucket name',
+  '区域 (Region)': 'Region',
+  请选择区域: 'Select a region',
+  'Endpoint 地址': 'Endpoint URL',
+  '使用外网 Endpoint': 'Use public Endpoint',
+  '使用内网 Endpoint': 'Use internal Endpoint',
+  '如果服务器和对象存储在同一区域，建议使用内网 Endpoint 以提高速度并节省流量费用':
+    'If the server and the object storage are in the same region, using the internal Endpoint is recommended for better performance and lower traffic costs',
+  '自定义域名 (可选)': 'Custom Domain (Optional)',
+  '例如：https://cdn.example.com': 'e.g.: https://cdn.example.com',
+  '如果配置了 CDN 或自定义域名，请在此填写，用于生成文件访问 URL':
+    'If you have configured CDN or custom domain, enter it here for generating file access URLs',
+  检测连接: 'Test connection',
+  创建: 'Create',
+  编辑: 'Edit',
+  删除: 'Delete',
+
   // 工作区设置 - 常规设置
-  配置工作区的基本信息和设置: 'Configure basic workspace information and settings',
+  配置工作区的基本信息和设置:
+    'Configure basic workspace information and settings',
+  创建工作区: 'Create workspace',
+  创建一个新的工作区来组织你的团队和项目:
+    'Create a new workspace to organize your team and projects',
+  '创建成功。': 'Created.',
   工作区ID: 'Workspace ID',
   工作区ID不可修改: 'Workspace ID cannot be modified',
   工作区名称: 'Workspace Name',
   请输入工作区名称: 'Please enter workspace name',
   工作区Logo: 'Workspace Logo',
-  '访问路径 (path)': 'Access Path',
+  访问路径: 'Access path',
   请输入访问路径: 'Please enter access path',
   危险操作: 'Danger Zone',
-  '删除工作区将无法恢复，请谨慎操作': 'Deleting a workspace is irreversible, please proceed with caution',
+  '删除工作区将无法恢复，请谨慎操作':
+    'Deleting a workspace is irreversible, please proceed with caution',
   删除工作区: 'Delete Workspace',
   默认工作区不能删除: 'Default workspace cannot be deleted',
   确认删除工作区: 'Confirm Delete Workspace',

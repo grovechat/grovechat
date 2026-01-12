@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import WorkspaceSettingController from '@/actions/App/Http/Controllers/WorkspaceSettingController';
-import defaultWorkspaceUrl from '@/assets/images/workspace.png';
+import ShowCreateWorkspacePageAction from '@/actions/App/Actions/Manage/ShowCreateWorkspacePageAction';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,28 +9,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
 import workspace from '@/routes/workspace';
+import { WorkspaceData } from '@/types/generated';
 import { router, usePage } from '@inertiajs/vue3';
 import { Check, ChevronsUpDown, Plus } from 'lucide-vue-next';
 import { computed } from 'vue';
 
-interface Workspace {
-  id: number;
-  name: string;
-  slug: string;
-  logo: string | null;
-  path: string;
-  owner_id: number | null;
-}
-
 const { t } = useI18n();
 const page = usePage();
+const workspaces = computed(() => page.props.workspaces);
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
-const workspaces = computed(() => (page.props.workspaces as Workspace[]) || []);
-const currentWorkspace = computed(() => page.props.currentWorkspace as Workspace | null);
-const workspaceLogo = computed(() => currentWorkspace.value?.logo || defaultWorkspaceUrl)
-const switchWorkspace = (selectedWorkspace: Workspace) => {
-  if (selectedWorkspace.path !== currentWorkspace.value?.path) {
-    router.visit(workspace.dashboard.url(selectedWorkspace.path), {
+const switchWorkspace = (selectedWorkspace: WorkspaceData) => {
+  if (selectedWorkspace.slug !== currentWorkspace.value?.slug) {
+    router.visit(workspace.dashboard.url(selectedWorkspace.slug), {
       preserveState: false,
       preserveScroll: false,
     });
@@ -40,7 +30,9 @@ const switchWorkspace = (selectedWorkspace: Workspace) => {
 
 const goToCreateWorkspace = () => {
   if (currentWorkspace.value) {
-    router.visit(WorkspaceSettingController.showCreateWorkspacePage.url(currentWorkspace.value.path));
+    router.visit(
+      ShowCreateWorkspacePageAction.url(currentWorkspace.value.slug),
+    );
   }
 };
 </script>
@@ -49,11 +41,13 @@ const goToCreateWorkspace = () => {
   <DropdownMenu v-if="currentWorkspace">
     <DropdownMenuTrigger as-child>
       <button
-        class="flex w-full items-center gap-1.5 rounded-md px-1.5 py-1 text-left text-xs hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+        class="flex w-full items-center gap-1 rounded-md py-1 text-left text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       >
-        <div class="flex h-5 w-5 items-center justify-center rounded overflow-hidden text-sidebar-primary-foreground shrink-0">
+        <div
+          class="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded text-sidebar-primary-foreground"
+        >
           <img
-            :src="workspaceLogo"
+            :src="currentWorkspace.logo_url"
             :alt="currentWorkspace.name"
             class="h-full w-full object-cover"
           />
@@ -71,29 +65,31 @@ const goToCreateWorkspace = () => {
       <DropdownMenuItem
         v-for="workspace in workspaces"
         :key="workspace.id"
-        class="flex items-center gap-2 cursor-pointer"
+        class="flex cursor-pointer items-center gap-2"
         @click="switchWorkspace(workspace)"
       >
-        <div class="flex h-6 w-6 items-center justify-center rounded-md overflow-hidden text-sidebar-primary-foreground shrink-0">
+        <div
+          class="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-md text-sidebar-primary-foreground"
+        >
           <img
-            :src="workspaceLogo"
+            :src="workspace.logo_url"
             :alt="workspace.name"
             class="h-full w-full object-cover"
           />
         </div>
         <span class="flex-1 truncate">{{ workspace.name }}</span>
         <Check
-          v-if="workspace.path === currentWorkspace?.path"
+          v-if="workspace.slug === currentWorkspace?.slug"
           class="h-4 w-4 shrink-0"
         />
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem
-        class="flex items-center gap-2 cursor-pointer"
+        class="flex cursor-pointer items-center gap-2"
         @click="goToCreateWorkspace"
       >
         <div
-          class="flex h-6 w-6 items-center justify-center rounded-md border border-dashed shrink-0"
+          class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-dashed"
         >
           <Plus class="h-4 w-4" />
         </div>

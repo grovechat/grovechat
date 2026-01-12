@@ -30,9 +30,8 @@ import {
 } from '@/components/ui/tooltip';
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/routes/workspace';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { InertiaLinkProps, Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
@@ -48,8 +47,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
-const { workspacePath } = useWorkspace();
-
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 const isCurrentRoute = computed(
   () => (url: NonNullable<InertiaLinkProps['href']>) =>
     urlIsActive(url, page.url),
@@ -65,7 +63,7 @@ const activeItemStyles = computed(
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: 'Dashboard',
-    href: workspacePath.value ? dashboard(workspacePath.value) : '/',
+    href: dashboard(currentWorkspace.value.slug),
     icon: LayoutGrid,
   },
 ]);
@@ -145,7 +143,7 @@ const rightNavItems: NavItem[] = [
         </div>
 
         <Link
-          :href="workspacePath ? dashboard(workspacePath) : '/'"
+          :href="dashboard(currentWorkspace.slug)"
           class="flex items-center gap-x-2"
         >
           <AppLogo />

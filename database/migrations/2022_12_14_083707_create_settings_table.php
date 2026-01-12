@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::connection('sqlite')->create('settings', function (Blueprint $table): void {
+        Schema::create('settings', function (Blueprint $table): void {
             $table->id();
 
             $table->string('group');
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::connection('sqlite')->dropIfExists('settings');
+        Schema::dropIfExists('settings');
     }
 };

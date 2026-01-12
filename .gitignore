@@ -33,3 +33,4 @@ frankenphp
 frankenphp-worker.php
 build/
 *.db
+_ide_helper_actions.php

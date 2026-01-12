@@ -5,7 +5,6 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import WorkspaceSwitcher from '@/components/WorkspaceSwitcher.vue';
 import { Button } from '@/components/ui/button';
-import defaultWorkspaceUrl from '@/assets/images/workspace.png';
 import {
   Sidebar,
   SidebarContent,
@@ -16,13 +15,11 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { cn } from '@/lib/utils';
+import { getCurrentWorkspace, getGeneralSetting } from '@/routes';
 import contact from '@/routes/contact';
 import stats from '@/routes/stats';
-import systemSetting from '@/routes/system-setting';
 import workspace from '@/routes/workspace';
-import workspaceSetting from '@/routes/workspace-setting';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import {
@@ -38,35 +35,30 @@ import {
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
-const { toggleSidebar, state } = useSidebar();
 const page = usePage();
+const { toggleSidebar, state } = useSidebar();
+const generalSettings = computed(() => page.props.generalSettings);
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
-const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
-const workspaceLogo = computed(() => page.props.currentWorkspace?.logo || defaultWorkspaceUrl)
 const mainNavItems = computed<NavItem[]>(() => [
   {
     title: t('工作台'),
-    href: workspacePath.value ? workspace.dashboard.url(workspacePath.value) : '/',
+    href: workspace.dashboard.url(currentWorkspace.value.slug),
     icon: LayoutGrid,
   },
   {
     title: t('联系人'),
-    href: workspacePath.value
-      ? contact.index.url({ workspace_path: workspacePath.value, type: 'all' })
-      : '/',
+    href: contact.index.url({ slug: currentWorkspace.value.slug, type: 'all' }),
     icon: Users,
   },
   {
     title: t('统计'),
-    href: workspacePath.value ? stats.index.url(workspacePath.value) : '/',
+    href: stats.index.url(currentWorkspace.value.slug),
     icon: BarChart,
   },
   {
     title: t('管理中心'),
-    href: workspacePath.value
-      ? workspaceSetting.workspace.general.url(workspacePath.value)
-      : '/',
+    href: getCurrentWorkspace.url(currentWorkspace.value.slug),
     icon: Building2,
   },
 ]);
@@ -84,9 +76,7 @@ const footerNavItems = computed<NavItem[]>(() => [
   },
   {
     title: t('系统设置'),
-    href: workspacePath.value
-      ? systemSetting.getGeneralSettings.url(workspacePath.value)
-      : '/',
+    href: getGeneralSetting.url(currentWorkspace.value.slug),
     icon: Settings,
   },
 ]);
@@ -98,35 +88,48 @@ const footerNavItems = computed<NavItem[]>(() => [
       <div
         class="flex items-center justify-between group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-2"
       >
-        <SidebarMenu class="group-data-[collapsible=icon]:!p-2 w-full">
+        <SidebarMenu class="w-full group-data-[collapsible=icon]:!p-2">
           <SidebarMenuItem>
-            <div class="flex items-center gap-2 w-full px-0 py-0 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center">
+            <div
+              class="flex w-full items-center gap-2 px-0 py-0 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:items-center"
+            >
               <!-- 系统 Logo - 可点击跳转当前工作区首页 -->
               <Link
-                :href="workspacePath ? workspace.dashboard.url(workspacePath) : '/'"
+                :href="workspace.dashboard.url(currentWorkspace.slug)"
                 class="shrink-0 p-2 group-data-[collapsible=icon]:p-0"
               >
                 <div
                   class="flex aspect-square size-12 items-center justify-center rounded-md text-sidebar-primary-foreground"
                 >
-                  <AppLogoIcon class="size-12 fill-current text-white dark:text-black" />
+                  <AppLogoIcon
+                    class="size-12 fill-current text-white dark:text-black"
+                  />
                 </div>
               </Link>
 
               <!-- 右侧：系统名称和工作区切换器 -->
-              <div class="flex flex-col gap-1 flex-1 min-w-0 group-data-[collapsible=icon]:hidden pr-2">
+              <div
+                class="flex min-w-0 flex-1 flex-col gap-1 pr-2 group-data-[collapsible=icon]:hidden"
+              >
                 <!-- 系统名称 -->
-                <span class="text-sm font-semibold leading-tight">{{ systemName }}</span>
+                <span class="text-sm leading-tight font-semibold">{{
+                  generalSettings.name
+                }}</span>
 
                 <!-- 工作区切换器 - 独立的热区 -->
                 <WorkspaceSwitcher />
               </div>
 
               <!-- 缩进时显示的工作区 Logo -->
-              <div v-if="page.props.currentWorkspace" class="hidden group-data-[collapsible=icon]:block">
-                <div class="flex h-6 w-6 items-center justify-center rounded overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground">
+              <div
+                v-if="page.props.currentWorkspace"
+                class="hidden group-data-[collapsible=icon]:block"
+              >
+                <div
+                  class="flex h-6 w-6 items-center justify-center overflow-hidden rounded bg-sidebar-primary text-sidebar-primary-foreground"
+                >
                   <img
-                    :src="workspaceLogo"
+                    :src="currentWorkspace.logo_url"
                     :alt="page.props.currentWorkspace.name"
                     class="h-full w-full object-cover"
                   />

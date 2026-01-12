@@ -8,16 +8,16 @@ class CreateWorkspaceDTO extends Data
 {
     public function __construct(
         public string $name,
-        public string $path,
-        public ?string $logo = null,
+        public string $slug,
+        public ?string $logoId = null,
     ) {}
-    
+
     public function rule()
     {
         return [
             'name' => 'required|string|max:30',
-            'path' => 'required|string|max:50',
-            'logo' => 'nullable|string',
+            'slug' => 'required|string|max:50',
+            'logoId' => 'nullable|string',
         ];
     }
 }

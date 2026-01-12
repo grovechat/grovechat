@@ -45,13 +45,13 @@ return Application::configure(basePath: dirname(__DIR__))
 
             // 处理验证异常 - 优化 API 的异常响应格式
             if ($exception instanceof \Illuminate\Validation\ValidationException) {
-                if ($request->expectsJson() && !$request->header('X-Inertia')) {
+                if ($request->expectsJson() && ! $request->header('X-Inertia')) {
                     $errors = $exception->errors();
                     $firstField = array_key_first($errors);
                     $firstError = $errors[$firstField][0];
 
                     return response()->json([
-                        'message' => $firstField . ' ' . $firstError,
+                        'message' => $firstField.' '.$firstError,
                         'errors' => $errors,
                     ], 422)->setEncodingOptions(JSON_UNESCAPED_UNICODE);
                 }

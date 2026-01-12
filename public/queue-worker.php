@@ -2,26 +2,26 @@
 
 // queue-worker.php
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Queue\WorkerOptions;
 
-if (!defined('STDIN')) {
+if (! defined('STDIN')) {
     define('STDIN', fopen('php://stdin', 'r'));
 }
-if (!defined('STDOUT')) {
+if (! defined('STDOUT')) {
     define('STDOUT', fopen('php://stdout', 'w'));
 }
-if (!defined('STDERR')) {
+if (! defined('STDERR')) {
     define('STDERR', fopen('php://stderr', 'w'));
 }
 
-$app = require __DIR__ . '/../bootstrap/app.php';
+$app = require __DIR__.'/../bootstrap/app.php';
 $kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
-$handler = static function (array $request): array  {
+$handler = static function (array $request): array {
     $connection = $request['connection'] ?? null;
     $queue = $request['queue'] ?? null;
 
@@ -73,11 +73,11 @@ $handler = static function (array $request): array  {
     return $result;
 };
 
-$maxRequests = (int)($_SERVER['MAX_REQUESTS'] ?? 0);
-for ($nbRequests = 0; !$maxRequests || $nbRequests < $maxRequests; ++$nbRequests) {
+$maxRequests = (int) ($_SERVER['MAX_REQUESTS'] ?? 0);
+for ($nbRequests = 0; ! $maxRequests || $nbRequests < $maxRequests; $nbRequests++) {
     $keepRunning = \frankenphp_handle_request($handler);
     gc_collect_cycles();
-    if (!$keepRunning) {
+    if (! $keepRunning) {
         break;
     }
 }

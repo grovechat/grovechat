@@ -9,7 +9,7 @@ enum WorkspaceRole: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::ADMIN => '管理员',
             self::CUSTOMER_SERVICE => '客服',
         };

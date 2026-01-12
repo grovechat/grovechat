@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/HeadingSmall.vue';
-import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import stats from '@/routes/stats';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const { workspacePath } = useWorkspace();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: '统计',
-    href: workspacePath.value ? stats.index(workspacePath.value).url : '#',
+    href: stats.index(currentWorkspace.value.slug).url,
   },
 ]);
 </script>

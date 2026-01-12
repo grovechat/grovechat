@@ -1,45 +1,41 @@
 <script setup lang="ts">
-import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
-import SystemSettingController from '@/actions/App/Http/Controllers/SystemSettingController';
+import UploadImageAction from '@/actions/App/Actions/Attachment/UploadImageAction';
+import SystemSetting from '@/actions/App/Actions/SystemSetting';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
-import systemSetting from '@/routes/system-setting';
+import { getGeneralSetting, uploadImage } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { type GeneralSettingsData } from '@/types/generated';
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, ref } from 'vue';
 
-const props = defineProps<GeneralSettingsData>();
-
+const page = usePage();
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
-
+const generalSettings = computed(() => page.props.generalSettings);
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: workspacePath.value
-      ? systemSetting.getGeneralSettings.url(workspacePath.value)
-      : '#',
+    href: getGeneralSetting.url(currentWorkspace.value.slug),
   },
 ]);
-
-const logoPreview = ref<string>(props.logo || '');
-const logoUrl = ref<string>(props.logo || '');
+const logoPreview = ref<string>(generalSettings.value.logo_url || '');
+const logoId = ref<string>(generalSettings.value.logo_id || '');
 const uploading = ref(false);
+const selectedLogoFileName = ref<string>('');
 
 const handleLogoChange = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
 
   if (!file) return;
+  selectedLogoFileName.value = file.name;
 
   // 先显示本地预览
   const reader = new FileReader();
@@ -54,16 +50,19 @@ const handleLogoChange = async (event: Event) => {
 
   try {
     uploading.value = true;
-    const response = await axios.post(CommonController.uploadImage.url(), formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    const response = await axios.post(
+      uploadImage.url(),
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       },
-    });
-    // 上传成功后更新logo URL
-    logoUrl.value = response.data.url;
+    );
+    logoId.value = response.data.id;
   } catch {
-    // 上传失败，恢复原来的logo
-    logoPreview.value = props.logo || '';
+    logoPreview.value = generalSettings.value.logo_url || '';
+    selectedLogoFileName.value = '';
   } finally {
     uploading.value = false;
   }
@@ -83,21 +82,19 @@ const handleLogoChange = async (event: Event) => {
 
         <Form
           v-bind="
-            workspacePath
-              ? SystemSettingController.updateGeneralSettings.form(workspacePath)
-              : {}
+            SystemSetting.UpdateGeneralSettingAction.form(currentWorkspace.slug)
           "
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
           <div class="grid gap-2">
-            <Label for="baseUrl">{{ t('主机地址') }}</Label>
+            <Label for="base_url">{{ t('主机地址') }}</Label>
             <Input
-              id="baseUrl"
-              name="baseUrl"
+              id="base_url"
+              name="base_url"
               type="url"
               class="mt-1 block w-full"
-              :default-value="baseUrl || undefined"
+              :default-value="generalSettings.base_url || undefined"
               required
               :placeholder="t('请输入主机地址，例如：https://example.com')"
             />
@@ -110,7 +107,7 @@ const handleLogoChange = async (event: Event) => {
               id="name"
               name="name"
               class="mt-1 block w-full"
-              :default-value="props.name || undefined"
+              :default-value="generalSettings.name || undefined"
               required
               :placeholder="t('请输入系统名称')"
             />
@@ -118,43 +115,53 @@ const handleLogoChange = async (event: Event) => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="logo">{{ t('系统Logo') }}</Label>
+            <Label for="logo_id">{{ t('系统Logo') }}</Label>
             <div class="mt-1 space-y-3">
               <div
                 v-if="logoPreview"
-                class="w-32 h-32 border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center relative"
+                class="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-md border bg-gray-50"
               >
                 <img
                   :src="logoPreview"
                   alt="Logo预览"
-                  class="max-w-full max-h-full object-contain"
+                  class="max-h-full max-w-full object-contain"
                 />
                 <div
                   v-if="uploading"
-                  class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+                  class="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black"
                 >
-                  <span class="text-white text-sm">{{ t('上传中...') }}</span>
+                  <span class="text-sm text-white">{{ t('上传中...') }}</span>
                 </div>
               </div>
               <input
-                id="logo"
-                name="logo"
+                id="logo_id"
+                name="logo_id"
                 type="hidden"
-                :value="logoUrl"
+                :value="logoId"
               />
-              <Input
-                id="logoFile"
-                type="file"
-                accept="image/*"
-                class="block w-full"
-                :disabled="uploading"
-                @change="handleLogoChange"
-              />
+              <div class="flex items-center gap-3">
+                <input
+                  id="logoFile"
+                  type="file"
+                  accept="image/*"
+                  class="sr-only"
+                  :disabled="uploading"
+                  @change="handleLogoChange"
+                />
+                <Button as-child variant="outline" :disabled="uploading">
+                  <Label for="logoFile" class="cursor-pointer">
+                    {{ t('选择文件') }}
+                  </Label>
+                </Button>
+                <span class="text-sm text-muted-foreground">
+                  {{ selectedLogoFileName || t('未选择任何文件') }}
+                </span>
+              </div>
               <p class="text-sm text-muted-foreground">
                 {{ t('支持上传图片格式文件，选择后自动上传') }}
               </p>
             </div>
-            <InputError class="mt-2" :message="errors.logo" />
+            <InputError class="mt-2" :message="errors.logo_id" />
           </div>
 
           <div class="grid gap-2">
@@ -163,28 +170,28 @@ const handleLogoChange = async (event: Event) => {
               id="copyright"
               name="copyright"
               class="mt-1 block w-full"
-              :default-value="copyright || undefined"
+              :default-value="generalSettings.copyright || undefined"
               :placeholder="t('请输入版权信息')"
             />
             <InputError class="mt-2" :message="errors.copyright" />
           </div>
 
           <div class="grid gap-2">
-            <Label for="icpRecord">{{ t('备案信息') }}</Label>
+            <Label for="icp_record">{{ t('备案信息') }}</Label>
             <Input
-              id="icpRecord"
-              name="icpRecord"
+              id="icp_record"
+              name="icp_record"
               class="mt-1 block w-full"
-              :default-value="icpRecord || undefined"
+              :default-value="generalSettings.icp_record || undefined"
               :placeholder="t('请输入备案信息')"
             />
-            <InputError class="mt-2" :message="errors.icpRecord" />
+            <InputError class="mt-2" :message="errors.icp_record" />
           </div>
 
           <div class="grid gap-2">
             <Label>{{ t('版本号') }}</Label>
-            <div class="text-sm text-muted-foreground py-2">
-              {{ version || t('未设置') }}
+            <div class="py-2 text-sm text-muted-foreground">
+              {{ generalSettings.version || t('未设置') }}
             </div>
           </div>
 

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 import AppearanceTabs from '@/components/AppearanceTabs.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { type BreadcrumbItem } from '@/types';
 
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -13,12 +12,13 @@ import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { edit } from '@/routes/appearance';
 
 const { t } = useI18n();
-const { workspacePath } = useWorkspace();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('外观设置'),
-    href: workspacePath.value ? edit(workspacePath.value).url : '#',
+    href: edit(currentWorkspace.value.slug).url,
   },
 ]);
 </script>

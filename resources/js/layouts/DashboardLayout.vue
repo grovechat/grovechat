@@ -2,14 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { dashboard } from '@/routes';
-import { Link } from '@inertiajs/vue3';
+import { dashboard } from '@/routes/workspace';
+import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-
-const { t } = useI18n();
-const { workspacePath } = useWorkspace();
 
 interface SubMenuItem {
   title: string;
@@ -22,16 +18,18 @@ interface MenuItem {
   children?: SubMenuItem[];
 }
 
-const sidebarNavItems = computed<MenuItem[]>(() => {
-  if (!workspacePath.value) return [];
+const { t } = useI18n();
+const page = usePage();
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
+const sidebarNavItems = computed<MenuItem[]>(() => {
   return [
     {
       title: t('人工接待'),
       children: [
         {
           title: t('我负责的'),
-          href: dashboard(workspacePath.value),
+          href: dashboard(currentWorkspace.value.slug),
         },
         {
           title: t('提到我的'),
@@ -107,67 +105,66 @@ const currentPath =
 
 <template>
   <div class="flex flex-1 flex-col lg:flex-row">
-    <aside class="w-full lg:w-48 lg:self-stretch">
+    <aside class="w-full lg:w-50 lg:self-stretch">
       <nav
         class="flex h-full flex-col space-y-3 border-r border-border/40 bg-card/50 p-4 shadow-sm backdrop-blur-sm"
       >
-          <div class="space-y-0.5">
-            <h2 class="text-xl font-semibold tracking-tight">
-              {{ t('工作台') }}
-            </h2>
-            <p class="text-sm text-muted-foreground">
-              {{ t('查看和处理会话') }}
-            </p>
-          </div>
+        <div class="space-y-0.5">
+          <h2 class="text-xl font-semibold tracking-tight">
+            {{ t('工作台') }}
+          </h2>
+          <p class="text-sm text-muted-foreground">
+            {{ t('查看和处理会话') }}
+          </p>
+        </div>
 
-          <div class="flex flex-col space-y-1">
-            <template v-for="item in sidebarNavItems" :key="item.title">
-              <!-- 有子菜单的分组 -->
-              <div v-if="item.children" class="space-y-1">
-                <div class="px-2 py-2 text-sm font-semibold text-foreground">
-                  {{ item.title }}
-                </div>
-                <Button
-                  v-for="child in item.children"
-                  :key="toUrl(child.href)"
-                  variant="ghost"
-                  :class="[
-                    'w-full justify-start pl-6 text-sm font-normal',
-                    { 'bg-muted': urlIsActive(child.href, currentPath) },
-                  ]"
-                  as-child
-                >
-                  <Link
-                    :href="
-                      typeof child.href === 'string' ? child.href : child.href
-                    "
-                  >
-                    {{ child.title }}
-                  </Link>
-                </Button>
+        <div class="flex flex-col space-y-1">
+          <template v-for="item in sidebarNavItems" :key="item.title">
+            <!-- 有子菜单的分组 -->
+            <div v-if="item.children" class="space-y-1">
+              <div class="px-2 py-2 text-sm font-semibold text-foreground">
+                {{ item.title }}
               </div>
-
-              <!-- 无子菜单的单项 -->
               <Button
-                v-else
+                v-for="child in item.children"
+                :key="toUrl(child.href)"
                 variant="ghost"
                 :class="[
-                  'w-full justify-start',
-                  {
-                    'bg-muted':
-                      item.href && urlIsActive(item.href, currentPath),
-                  },
+                  'w-full justify-start pl-6 text-sm font-normal',
+                  { 'bg-muted': urlIsActive(child.href, currentPath) },
                 ]"
                 as-child
               >
                 <Link
-                  :href="typeof item.href === 'string' ? item.href : item.href"
+                  :href="
+                    typeof child.href === 'string' ? child.href : child.href
+                  "
                 >
-                  {{ item.title }}
+                  {{ child.title }}
                 </Link>
               </Button>
-            </template>
-          </div>
+            </div>
+
+            <!-- 无子菜单的单项 -->
+            <Button
+              v-else
+              variant="ghost"
+              :class="[
+                'w-full justify-start',
+                {
+                  'bg-muted': item.href && urlIsActive(item.href, currentPath),
+                },
+              ]"
+              as-child
+            >
+              <Link
+                :href="typeof item.href === 'string' ? item.href : item.href"
+              >
+                {{ item.title }}
+              </Link>
+            </Button>
+          </template>
+        </div>
       </nav>
     </aside>
 

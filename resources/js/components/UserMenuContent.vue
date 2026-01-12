@@ -7,31 +7,26 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
-import { useWorkspace } from '@/composables/useWorkspace';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
-import type { User } from '@/types';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
+import { computed } from 'vue';
 
-interface Props {
-  user: User;
-}
+const { t } = useI18n();
+const page = usePage();
+const auth = computed(() => page.props.auth);
+const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const handleLogout = () => {
   router.flushAll();
 };
-
-defineProps<Props>();
-
-const { t } = useI18n();
-const { workspacePath } = useWorkspace();
 </script>
 
 <template>
   <DropdownMenuLabel class="p-0 font-normal">
     <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-      <UserInfo :user="user" :show-email="true" />
+      <UserInfo :user="auth.user" :show-email="true" />
     </div>
   </DropdownMenuLabel>
   <DropdownMenuSeparator />
@@ -39,7 +34,7 @@ const { workspacePath } = useWorkspace();
     <DropdownMenuItem :as-child="true">
       <Link
         class="block w-full"
-        :href="workspacePath ? edit(workspacePath) : '#'"
+        :href="edit(currentWorkspace.slug)"
         prefetch
         as="button"
       >

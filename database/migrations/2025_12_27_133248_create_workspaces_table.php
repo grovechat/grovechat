@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection('sqlite')->create('workspaces', function (Blueprint $table) {
-            $table->id();
+        Schema::create('workspaces', function (Blueprint $table) {
+            $table->ulid('id')->primary();
             $table->timestamps();
             $table->string('name')->comment('工作区名');
-            $table->string('slug')->nullable()->comment('工作区标识');
-            $table->string('logo')->nullable()->comment('工作区logo');
-            $table->string('path')->comment('工作区url访问路径');
-            $table->integer('owner_id')->nullable()->comment('所有者ID');
+            $table->string('slug')->nullable()->unique()->comment('访问标识');
+            $table->ulid('logo_id')->nullable()->comment('工作区logo');
+            $table->ulid('owner_id')->nullable()->comment('所有者ID');
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::connection('sqlite')->dropIfExists('workspaces');
+        Schema::dropIfExists('workspaces');
     }
 };

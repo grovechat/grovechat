@@ -2,14 +2,18 @@
 
 namespace App\Http\Middleware;
 
-use App\Domain\SystemSettings\DTOs\GeneralSettingsData;
-use App\Settings\GeneralSettings;
+use App\Actions\SystemSetting\GetGeneralSettingAction;
+use App\Data\WorkspaceData;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
+    public function __construct(
+        public GetGeneralSettingAction $getGeneralSettingAction
+    ) {}
+
     /**
      * The root template that's loaded on the first page visit.
      *
@@ -41,18 +45,13 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         $user = $request->user();
-        $workspaces = null;
+        $workspaces = collect();
         $currentWorkspace = null;
 
         if ($user) {
-            // 获取用户的所有工作区
-            $workspaces = $user->workspaces()->get()->toArray();
-
-            // 获取当前工作区（从请求中）
-            if ($request->route('workspace_path')) {
-                $currentWorkspace = $user->workspaces()
-                    ->where('path', $request->route('workspace_path'))
-                    ->first();
+            $workspaces = $user->workspaces()->get();
+            if ($request->route('slug')) {
+                $currentWorkspace = $user->workspaces()->where('slug', $request->route('slug'))->first();
             }
         }
 
@@ -64,9 +63,9 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'generalSettings' => GeneralSettingsData::from(app(GeneralSettings::class)),
-            'workspaces' => $workspaces,
-            'currentWorkspace' => $currentWorkspace,
+            'generalSettings' => $this->getGeneralSettingAction->run(),
+            'workspaces' => WorkspaceData::collect($workspaces),
+            'currentWorkspace' => $currentWorkspace ? WorkspaceData::from($currentWorkspace) : null,
         ];
     }
 }

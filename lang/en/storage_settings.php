@@ -1,0 +1,18 @@
+<?php
+
+return [
+    'check_success' => 'Connection test succeeded.',
+    'validation_failed' => 'Validation failed. Please check your storage settings and try again.',
+    'secret_required' => 'Secret Key is required.',
+    'storage_not_selected' => 'Object storage is enabled, but no storage configuration is selected.',
+    'storage_not_found' => 'Current storage configuration not found, please select again.',
+    'storage_key_secret_required' => 'Storage configuration requires Key/Secret. Please update credentials first.',
+    'connection_check_success' => 'Connection test succeeded.',
+    'connection_check_failed' => 'Connection test failed. Please check your storage settings and network connectivity.',
+    'profile_created' => 'Storage profile created.',
+    'profile_updated' => 'Storage profile updated.',
+    'profile_deleted' => 'Storage profile deleted.',
+    'profile_is_active_cannot_delete' => 'This profile is currently active and cannot be deleted.',
+    'profile_is_referenced_cannot_delete' => 'This profile is referenced by attachments and cannot be deleted.',
+    'profile_credentials_pair_required' => 'Updating credentials requires both Key and Secret.',
+];

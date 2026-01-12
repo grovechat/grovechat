@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use App\Models\Workspace;
 use App\Models\User;
+use App\Models\Workspace;
 
 trait WithWorkspace
 {
@@ -33,10 +33,10 @@ trait WithWorkspace
     }
 
     /**
-     * Get the workspace path for route generation
+     * Get the workspace slug for route generation
      */
-    protected function workspacePath(): string
+    protected function workspaceSlug(): string
     {
-        return $this->workspace?->path ?? 'default';
+        return $this->workspace?->slug ?? 'default';
     }
 }
