@@ -16,12 +16,13 @@ import {
 import { useI18n } from '@/composables/useI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
-import systemSetting from '@/routes/system-setting';
 import { type BreadcrumbItem } from '@/types';
 import type { AppPageProps } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import type { StorageSettingPagePropsData } from '@/types/generated';
+import UpdateStorageSettingAction from '@/actions/App/Actions/StorageSetting/UpdateStorageSettingAction';
+import { getStorageSetting } from '@/routes';
 
 const page = usePage<AppPageProps<StorageSettingPagePropsData>>();
 const { t } = useI18n();
@@ -29,7 +30,7 @@ const { t } = useI18n();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('存储设置'),
-    href: systemSetting.getStorageSettings.url(page.props.currentWorkspace.slug),
+    href: getStorageSetting.url(page.props.currentWorkspace.slug),
   },
 ]);
 
@@ -103,7 +104,7 @@ const toggleInternalEndpoint = () => {
 };
 
 const submit = () => {
-  form.put(StorageSetting.UpdateStorageSettingAction.url(page.props.currentWorkspace.slug), {
+  form.put(UpdateStorageSettingAction.url(page.props.currentWorkspace.slug), {
     preserveScroll: true,
     onSuccess: () => {
       form.secret = '';

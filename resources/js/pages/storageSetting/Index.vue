@@ -22,6 +22,7 @@
   import { computed, ref, watch } from 'vue';
   import type { StorageSettingPagePropsData } from '@/types/generated';
   import { getStorageSetting } from '@/routes';
+import UpdateStorageSettingAction from '@/actions/App/Actions/StorageSetting/UpdateStorageSettingAction';
   
   const page = usePage<AppPageProps<StorageSettingPagePropsData>>();
   const { t } = useI18n();
@@ -103,7 +104,7 @@
   };
   
   const submit = () => {
-    form.put(StorageSetting.UpdateStorageSettingAction.url(page.props.currentWorkspace.slug), {
+    form.put(UpdateStorageSettingAction.url(page.props.currentWorkspace.slug), {
       preserveScroll: true,
       onSuccess: () => {
         form.secret = '';
