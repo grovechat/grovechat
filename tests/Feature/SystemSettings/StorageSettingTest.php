@@ -14,7 +14,7 @@ beforeEach(function () {
 });
 
 test('unauthenticated user cannot view storage settings page', function () {
-    $this->get(route('system-setting.get-storage-settings', ['slug' => $this->workspaceSlug()]))
+    $this->get(route('get-storage-setting', ['slug' => $this->workspaceSlug()]))
         ->assertRedirect('/login');
 });
 
@@ -32,10 +32,10 @@ test('authenticated user can view storage settings page and secret is not return
     $settings->save();
 
     $this->actingAs($this->user)
-        ->get(route('system-setting.get-storage-settings', ['slug' => $this->workspaceSlug()]))
+        ->get(route('get-storage-setting', ['slug' => $this->workspaceSlug()]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('systemSettings/StorageSetting')
+            ->component('storageSetting/Index')
             ->has('storage_settings')
             ->has('storage_config')
             ->where('storage_settings.enabled', true)
@@ -58,7 +58,7 @@ test('authenticated user can disable storage without overwriting existing config
     $settings->save();
 
     $this->actingAs($this->user)
-        ->put(route('system-settings.update-storage-settings', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
             'enabled' => false,
         ])
         ->assertRedirect()
@@ -79,7 +79,7 @@ test('enabling storage requires secret when no secret has been saved yet', funct
     $settings->save();
 
     $this->actingAs($this->user)
-        ->put(route('system-settings.update-storage-settings', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
             'enabled' => true,
             'provider' => StorageProvider::AWS->value,
             'region' => 'us-east-1',
@@ -105,7 +105,7 @@ test('authenticated user can enable storage and save settings when connection ch
         });
 
     $this->actingAs($this->user)
-        ->put(route('system-settings.update-storage-settings', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
             'enabled' => true,
             'provider' => StorageProvider::AWS->value,
             'region' => 'us-east-1',
@@ -150,7 +150,7 @@ test('updating storage without providing secret keeps existing secret', function
         });
 
     $this->actingAs($this->user)
-        ->put(route('system-settings.update-storage-settings', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
             'enabled' => true,
             'provider' => StorageProvider::AWS->value,
             'region' => 'us-east-1',
@@ -176,7 +176,7 @@ test('check connection requires secret when neither provided nor saved', functio
     $settings->save();
 
     $this->actingAs($this->user)
-        ->put(route('system-settings.check-storage-settiings', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('check-storage-settiing', ['slug' => $this->workspaceSlug()]), [
             'provider' => StorageProvider::AWS->value,
             'region' => 'us-east-1',
             'endpoint' => 'https://s3.us-east-1.amazonaws.com',
@@ -206,7 +206,7 @@ test('check connection uses saved secret when secret is not provided', function 
         });
 
     $this->actingAs($this->user)
-        ->put(route('system-settings.check-storage-settiings', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('check-storage-settiing', ['slug' => $this->workspaceSlug()]), [
             'provider' => StorageProvider::AWS->value,
             'region' => 'us-east-1',
             'endpoint' => 'https://s3.us-east-1.amazonaws.com',
@@ -232,7 +232,7 @@ test('update fails with field error when connection check throws', function () {
         });
 
     $this->actingAs($this->user)
-        ->put(route('system-settings.update-storage-settings', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
             'enabled' => true,
             'provider' => StorageProvider::AWS->value,
             'region' => 'us-east-1',
