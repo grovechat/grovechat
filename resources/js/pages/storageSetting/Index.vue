@@ -440,20 +440,53 @@ const providerLabel = (value: string) =>
                     {{ p.name }}
                     <span class="text-muted-foreground">（{{ providerLabel(p.provider) }}）</span>
                   </div>
-                  <div class="text-sm text-muted-foreground">
-                    <span class="font-mono">bucket={{ p.bucket || '-' }}</span>
-                    <span class="mx-2">·</span>
-                    <span class="font-mono">region={{ p.region || '-' }}</span>
-                    <span class="mx-2">·</span>
-                    <span class="font-mono">endpoint={{ p.endpoint || '-' }}</span>
-                  </div>
-                  <div class="text-sm text-muted-foreground">
-                    <span class="font-mono">url={{ p.url || '-' }}</span>
-                    <span class="mx-2">·</span>
-                    <span class="font-mono">key={{ p.key_masked || '-' }}</span>
-                    <span class="mx-2">·</span>
-                    <span class="font-mono">secret={{ p.has_secret ? '已配置' : '未配置' }}</span>
-                  </div>
+                  <dl class="mt-2 grid gap-1 text-sm text-muted-foreground">
+                    <div class="grid grid-cols-[84px_1fr] items-baseline gap-2">
+                      <dt class="font-mono opacity-70">bucket</dt>
+                      <dd
+                        class="font-mono min-w-0 truncate whitespace-nowrap"
+                        :title="p.bucket || '-'"
+                      >
+                        {{ p.bucket || '-' }}
+                      </dd>
+                    </div>
+                    <div class="grid grid-cols-[84px_1fr] items-baseline gap-2">
+                      <dt class="font-mono opacity-70">region</dt>
+                      <dd
+                        class="font-mono min-w-0 truncate whitespace-nowrap"
+                        :title="p.region || '-'"
+                      >
+                        {{ p.region || '-' }}
+                      </dd>
+                    </div>
+                    <div class="grid grid-cols-[84px_1fr] items-baseline gap-2">
+                      <dt class="font-mono opacity-70">endpoint</dt>
+                      <dd
+                        class="font-mono min-w-0 break-words whitespace-normal"
+                        :title="p.endpoint || '-'"
+                      >
+                        {{ p.endpoint || '-' }}
+                      </dd>
+                    </div>
+                    <div class="grid grid-cols-[84px_1fr] items-baseline gap-2">
+                      <dt class="font-mono opacity-70">url</dt>
+                      <dd
+                        class="font-mono min-w-0 break-words whitespace-normal"
+                        :title="p.url || '-'"
+                      >
+                        {{ p.url || '-' }}
+                      </dd>
+                    </div>
+                    <div class="grid grid-cols-[84px_1fr] items-baseline gap-2">
+                      <dt class="font-mono opacity-70">key</dt>
+                      <dd
+                        class="font-mono min-w-0 truncate whitespace-nowrap"
+                        :title="p.key_masked || '-'"
+                      >
+                        {{ p.key_masked || '-' }}
+                      </dd>
+                    </div>
+                  </dl>
                 </div>
 
                 <div class="flex items-center gap-2">
