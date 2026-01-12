@@ -16,6 +16,6 @@ class ShowCreateWorkspacePageAction
     
     public function asController()
     {
-        return Inertia::render('workspaceSettings/workspace/CreateWorkspace');
+        return Inertia::render('currentWorkspace/Create');
     }
 }

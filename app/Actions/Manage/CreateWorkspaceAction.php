@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Workspace;
+namespace App\Actions\manage;
 
 use App\Data\CreateWorkspaceDTO;
 use App\Enums\WorkspaceRole;
@@ -30,6 +30,6 @@ class CreateWorkspaceAction
         $data = CreateWorkspaceDTO::from($request);
         $newWorkspace = $this->handle($request->user(), $data);
 
-        return redirect(route('workspace-setting.workspace.general', $newWorkspace->slug));
+        return redirect(route('get-current-workspace', $newWorkspace->slug));
     }
 }
