@@ -23,6 +23,7 @@
   import type { StorageSettingPagePropsData } from '@/types/generated';
   import { getStorageSetting } from '@/routes';
 import UpdateStorageSettingAction from '@/actions/App/Actions/StorageSetting/UpdateStorageSettingAction';
+import CheckStorageSettingAction from '@/actions/App/Actions/StorageSetting/CheckStorageSettingAction';
   
   const page = usePage<AppPageProps<StorageSettingPagePropsData>>();
   const { t } = useI18n();
@@ -122,7 +123,7 @@ import UpdateStorageSettingAction from '@/actions/App/Actions/StorageSetting/Upd
     checkForm.bucket = form.bucket;
     checkForm.url = form.url;
   
-    checkForm.put(StorageSetting.CheckStorageSettingAction.url(page.props.currentWorkspace.slug), {
+    checkForm.put(CheckStorageSettingAction.url(page.props.currentWorkspace.slug), {
       preserveScroll: true,
       onSuccess: () => {
         checkForm.secret = '';
