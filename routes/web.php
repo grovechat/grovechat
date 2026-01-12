@@ -14,7 +14,6 @@ use App\Actions\StorageSetting\GetStorageSettingAction;
 use App\Actions\StorageSetting\UpdateStorageSettingAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
-use App\Actions\Workspace\DestroyWorkspaceAction;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
