@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\StorageProvider;
+use App\Models\StorageProfile;
 use App\Settings\StorageSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -18,17 +18,11 @@ test('unauthenticated user cannot view storage settings page', function () {
         ->assertRedirect('/login');
 });
 
-test('authenticated user can view storage settings page and secret is not returned', function () {
+test('authenticated user can view storage settings page (new schema)', function () {
     /** @var StorageSettings $settings */
     $settings = app(StorageSettings::class);
     $settings->enabled = true;
-    $settings->provider = StorageProvider::AWS->value;
-    $settings->key = 'key';
-    $settings->secret = 'super-secret';
-    $settings->bucket = 'bucket';
-    $settings->region = 'us-east-1';
-    $settings->endpoint = 'https://s3.us-east-1.amazonaws.com';
-    $settings->url = 'https://cdn.example.com';
+    $settings->current_profile_id = null;
     $settings->save();
 
     $this->actingAs($this->user)
@@ -37,24 +31,18 @@ test('authenticated user can view storage settings page and secret is not return
         ->assertInertia(fn (Assert $page) => $page
             ->component('storageSetting/Index')
             ->has('storage_settings')
+            ->has('storage_profiles')
             ->has('storage_config')
             ->where('storage_settings.enabled', true)
-            ->where('storage_settings.provider', StorageProvider::AWS->value)
-            ->where('storage_settings.secret', null)
+            ->where('storage_settings.current_profile_id', null)
         );
 });
 
-test('authenticated user can disable storage without overwriting existing config', function () {
+test('authenticated user can disable storage (does not clear current_profile_id)', function () {
     /** @var StorageSettings $settings */
     $settings = app(StorageSettings::class);
     $settings->enabled = true;
-    $settings->provider = StorageProvider::AWS->value;
-    $settings->key = 'key';
-    $settings->secret = 'super-secret';
-    $settings->bucket = 'bucket';
-    $settings->region = 'us-east-1';
-    $settings->endpoint = 'https://s3.us-east-1.amazonaws.com';
-    $settings->url = 'https://cdn.example.com';
+    $settings->current_profile_id = '01testprofile';
     $settings->save();
 
     $this->actingAs($this->user)
@@ -66,36 +54,60 @@ test('authenticated user can disable storage without overwriting existing config
 
     $settings->refresh();
     expect($settings->enabled)->toBeFalse();
-    // 其它字段不应被覆盖
-    expect($settings->secret)->toBe('super-secret');
-    expect($settings->provider)->toBe(StorageProvider::AWS->value);
+    expect($settings->current_profile_id)->toBe('01testprofile');
 });
 
-test('enabling storage requires secret when no secret has been saved yet', function () {
-    /** @var StorageSettings $settings */
-    $settings = app(StorageSettings::class);
-    $settings->enabled = false;
-    $settings->secret = null;
-    $settings->save();
+test('enabling storage requires current_profile_id', function () {
+    $this->actingAs($this->user)
+        ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
+            'enabled' => true,
+            'current_profile_id' => '',
+        ])
+        ->assertSessionHasErrors('current_profile_id');
+});
+
+test('enabling storage fails when selected profile does not exist', function () {
+    $this->actingAs($this->user)
+        ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
+            'enabled' => true,
+            'current_profile_id' => '01doesnotexist',
+        ])
+        ->assertSessionHasErrors('current_profile_id');
+});
+
+test('enabling storage fails when profile missing credentials', function () {
+    $profile = StorageProfile::query()->create([
+        'name' => 'p1',
+        'provider' => 'tencent',
+        'region' => 'ap-guangzhou',
+        'endpoint' => 'https://cos.ap-guangzhou.myqcloud.com',
+        'bucket' => 'bucket',
+        'key' => null,
+        'secret' => null,
+    ]);
 
     $this->actingAs($this->user)
         ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
             'enabled' => true,
-            'provider' => StorageProvider::AWS->value,
-            'region' => 'us-east-1',
-            'endpoint' => 'https://s3.us-east-1.amazonaws.com',
-            'key' => 'key',
-            'secret' => '',
-            'bucket' => 'bucket',
-            'url' => 'https://cdn.example.com',
+            'current_profile_id' => $profile->id,
         ])
-        ->assertSessionHasErrors('secret');
+        ->assertSessionHasErrors('current_profile_id');
 });
 
-test('authenticated user can enable storage and save settings when connection check passes', function () {
-    Storage::shouldReceive('disk')
+test('authenticated user can enable storage and save settings when profile connection check passes', function () {
+    $profile = StorageProfile::query()->create([
+        'name' => 'p1',
+        'provider' => 'tencent',
+        'region' => 'ap-guangzhou',
+        'endpoint' => 'https://cos.ap-guangzhou.myqcloud.com',
+        'bucket' => 'bucket',
+        'key' => 'key',
+        'secret' => 'secret',
+        'url' => 'https://cdn.example.com',
+    ]);
+
+    Storage::shouldReceive('build')
         ->once()
-        ->with(\Mockery::on(fn ($name) => is_string($name) && str_starts_with($name, 'storage_check_')))
         ->andReturn(new class
         {
             public function files($directory = '/', $recursive = false)
@@ -107,13 +119,7 @@ test('authenticated user can enable storage and save settings when connection ch
     $this->actingAs($this->user)
         ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
             'enabled' => true,
-            'provider' => StorageProvider::AWS->value,
-            'region' => 'us-east-1',
-            'endpoint' => 'https://s3.us-east-1.amazonaws.com',
-            'key' => 'key',
-            'secret' => 'secret',
-            'bucket' => 'bucket',
-            'url' => 'https://cdn.example.com',
+            'current_profile_id' => $profile->id,
         ])
         ->assertRedirect()
         ->assertSessionHasNoErrors();
@@ -121,108 +127,22 @@ test('authenticated user can enable storage and save settings when connection ch
     /** @var StorageSettings $settings */
     $settings = app(StorageSettings::class)->refresh();
     expect($settings->enabled)->toBeTrue();
-    expect($settings->provider)->toBe(StorageProvider::AWS->value);
-    expect($settings->secret)->toBe('secret');
+    expect($settings->current_profile_id)->toBe((string) $profile->id);
 });
 
-test('updating storage without providing secret keeps existing secret', function () {
-    /** @var StorageSettings $settings */
-    $settings = app(StorageSettings::class);
-    $settings->enabled = true;
-    $settings->provider = StorageProvider::AWS->value;
-    $settings->key = 'key';
-    $settings->secret = 'old-secret';
-    $settings->bucket = 'bucket';
-    $settings->region = 'us-east-1';
-    $settings->endpoint = 'https://s3.us-east-1.amazonaws.com';
-    $settings->url = 'https://cdn.example.com';
-    $settings->save();
+test('update fails with field error when profile connection check throws', function () {
+    $profile = StorageProfile::query()->create([
+        'name' => 'p1',
+        'provider' => 'tencent',
+        'region' => 'ap-guangzhou',
+        'endpoint' => 'https://cos.ap-guangzhou.myqcloud.com',
+        'bucket' => 'bucket',
+        'key' => 'key',
+        'secret' => 'secret',
+    ]);
 
-    Storage::shouldReceive('disk')
+    Storage::shouldReceive('build')
         ->once()
-        ->with(\Mockery::on(fn ($name) => is_string($name) && str_starts_with($name, 'storage_check_')))
-        ->andReturn(new class
-        {
-            public function files($directory = '/', $recursive = false)
-            {
-                return [];
-            }
-        });
-
-    $this->actingAs($this->user)
-        ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
-            'enabled' => true,
-            'provider' => StorageProvider::AWS->value,
-            'region' => 'us-east-1',
-            'endpoint' => 'https://s3.us-east-1.amazonaws.com',
-            'key' => 'key',
-            // 提交空字符串：filled('secret') 为 false，表示保持原值
-            'secret' => '',
-            'bucket' => 'bucket',
-            'url' => 'https://cdn2.example.com',
-        ])
-        ->assertRedirect()
-        ->assertSessionHasNoErrors();
-
-    $settings->refresh();
-    expect($settings->secret)->toBe('old-secret');
-    expect($settings->url)->toBe('https://cdn2.example.com');
-});
-
-test('check connection requires secret when neither provided nor saved', function () {
-    /** @var StorageSettings $settings */
-    $settings = app(StorageSettings::class);
-    $settings->secret = null;
-    $settings->save();
-
-    $this->actingAs($this->user)
-        ->put(route('check-storage-settiing', ['slug' => $this->workspaceSlug()]), [
-            'provider' => StorageProvider::AWS->value,
-            'region' => 'us-east-1',
-            'endpoint' => 'https://s3.us-east-1.amazonaws.com',
-            'key' => 'key',
-            'secret' => '',
-            'bucket' => 'bucket',
-            'url' => 'https://cdn.example.com',
-        ])
-        ->assertSessionHasErrors('secret');
-});
-
-test('check connection uses saved secret when secret is not provided', function () {
-    /** @var StorageSettings $settings */
-    $settings = app(StorageSettings::class);
-    $settings->secret = 'saved-secret';
-    $settings->save();
-
-    Storage::shouldReceive('disk')
-        ->once()
-        ->with(\Mockery::on(fn ($name) => is_string($name) && str_starts_with($name, 'storage_check_')))
-        ->andReturn(new class
-        {
-            public function files($directory = '/', $recursive = false)
-            {
-                return [];
-            }
-        });
-
-    $this->actingAs($this->user)
-        ->put(route('check-storage-settiing', ['slug' => $this->workspaceSlug()]), [
-            'provider' => StorageProvider::AWS->value,
-            'region' => 'us-east-1',
-            'endpoint' => 'https://s3.us-east-1.amazonaws.com',
-            'key' => 'key',
-            'secret' => '',
-            'bucket' => 'bucket',
-            'url' => 'https://cdn.example.com',
-        ])
-        ->assertRedirect()
-        ->assertSessionHasNoErrors();
-});
-
-test('update fails with field error when connection check throws', function () {
-    Storage::shouldReceive('disk')
-        ->once()
-        ->with(\Mockery::on(fn ($name) => is_string($name) && str_starts_with($name, 'storage_check_')))
         ->andReturn(new class
         {
             public function files($directory = '/', $recursive = false)
@@ -234,14 +154,8 @@ test('update fails with field error when connection check throws', function () {
     $this->actingAs($this->user)
         ->put(route('update-storage-setting', ['slug' => $this->workspaceSlug()]), [
             'enabled' => true,
-            'provider' => StorageProvider::AWS->value,
-            'region' => 'us-east-1',
-            'endpoint' => 'https://s3.us-east-1.amazonaws.com',
-            'key' => 'key',
-            'secret' => 'secret',
-            'bucket' => 'bucket',
-            'url' => 'https://cdn.example.com',
+            'current_profile_id' => $profile->id,
         ])
-        ->assertSessionHasErrors('secret');
+        ->assertSessionHasErrors('current_profile_id');
 });
 
