@@ -3,7 +3,6 @@
 namespace App\Actions\Attachment;
 
 use App\Models\Attachment;
-use Illuminate\Support\Facades\Storage;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class DeleteAttachmentAction
@@ -12,7 +11,7 @@ class DeleteAttachmentAction
 
     public function handle(Attachment $attachment)
     {
-        Storage::disk($attachment->disk)->delete($attachment->path);
+        $attachment->filesystem()->delete($attachment->path);
         return $attachment->delete();
     }
 }

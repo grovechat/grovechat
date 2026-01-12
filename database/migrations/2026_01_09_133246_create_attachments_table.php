@@ -15,6 +15,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->timestamps();
             $table->string('disk');
+            $table->ulid('storage_profile_id')->nullable();
             $table->string('path');
             $table->string('file_name');
             $table->string('file_type');

@@ -2,8 +2,9 @@
 
 namespace App\Actions\StorageSetting;
 
-use App\Data\StorageSettingCheckData;
 use App\Data\StorageSettingData;
+use App\Models\StorageProfile;
+use App\Services\Storage\StorageProfileDisk;
 use App\Settings\StorageSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -17,12 +18,10 @@ class UpdateStorageSettingAction
 
     public function __construct(
         public StorageSettings $settings,
-        protected CheckStorageSettingAction $checker,
     ) {}
 
-    public function handle(StorageSettingData $data, bool $secretProvided): void
+    public function handle(StorageSettingData $data): void
     {
-        // 禁用时只更新 enabled，避免意外覆盖已配置的连接信息
         if (! $data->enabled) {
             $this->settings->enabled = false;
             $this->settings->save();
@@ -30,58 +29,47 @@ class UpdateStorageSettingAction
             return;
         }
 
-        // Secret 允许留空（表示保持原值）；但首次启用且未配置过 secret 时必须提供
-        if (! $secretProvided && blank($this->settings->secret)) {
+        if (! filled($data->current_profile_id)) {
             throw ValidationException::withMessages([
-                'secret' => __('storage_settings.secret_required'),
+                'current_profile_id' => '启用对象存储必须选择一个存储配置',
             ]);
         }
 
-        // 保存前先进行连接检测：检测通过才落库
-        $secretForCheck = $secretProvided ? $data->secret : $this->settings->secret;
-        $checkData = StorageSettingCheckData::from([
-            'provider' => $data->provider,
-            'key' => $data->key,
-            'secret' => $secretForCheck,
-            'bucket' => $data->bucket,
-            'region' => $data->region,
-            'endpoint' => $data->endpoint,
-            'url' => $data->url,
-        ]);
+        $profile = StorageProfile::query()->find($data->current_profile_id);
+        if (! $profile) {
+            throw ValidationException::withMessages([
+                'current_profile_id' => '所选存储配置不存在',
+            ]);
+        }
+
+        if (! filled($profile->key) || ! filled($profile->secret)) {
+            throw ValidationException::withMessages([
+                'current_profile_id' => '所选存储配置缺少 Key/Secret，请先更新凭证',
+            ]);
+        }
 
         try {
-            $this->checker->handle($checkData);
-        } catch (ValidationException $e) {
-            throw $e;
+            StorageProfileDisk::build($profile)->files('/', false);
         } catch (Throwable $e) {
-            Log::warning('Storage connection check failed during save', [
-                'provider' => $data->provider,
-                'region' => $data->region,
-                'endpoint' => $data->endpoint,
-                'bucket' => $data->bucket,
+            Log::warning('Storage profile connection check failed during save', [
+                'storage_profile_id' => $profile->id,
                 'exception' => $e,
             ]);
 
-            $message = __('storage_settings.validation_failed');
             throw ValidationException::withMessages([
-                'secret' => $message,
+                'current_profile_id' => '连接检测失败，请检查配置与网络连通性',
             ]);
         }
 
-        $payload = $data->toArray();
-
-        // Secret 仅在明确提交时覆盖，否则保持原值
-        if (! $secretProvided) {
-            unset($payload['secret']);
-        }
-
-        $this->settings->fill($payload)->save();
+        $this->settings->enabled = true;
+        $this->settings->current_profile_id = $profile->id;
+        $this->settings->save();
     }
 
     public function asController(Request $request)
     {
         $data = StorageSettingData::from($request);
-        $this->handle($data, $request->filled('secret'));
+        $this->handle($data);
 
         return back();
     }

@@ -12,6 +12,10 @@ use App\Actions\Manage\UpdateWorkspaceAction;
 use App\Actions\StorageSetting\CheckStorageSettingAction;
 use App\Actions\StorageSetting\GetStorageSettingAction;
 use App\Actions\StorageSetting\UpdateStorageSettingAction;
+use App\Actions\StorageSetting\StorageProfile\CheckStorageProfileAction;
+use App\Actions\StorageSetting\StorageProfile\CreateStorageProfileAction;
+use App\Actions\StorageSetting\StorageProfile\DeleteStorageProfileAction;
+use App\Actions\StorageSetting\StorageProfile\UpdateStorageProfileAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
 use App\Http\Controllers\Settings\AppearanceController;
@@ -63,6 +67,10 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
         Route::put('storage', UpdateStorageSettingAction::class)->name('update-storage-setting');
         Route::put('check', CheckStorageSettingAction::class)->name('check-storage-settiing');
+        Route::post('storage/profiles', CreateStorageProfileAction::class)->name('storage-profile.create');
+        Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('storage-profile.update');
+        Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
+        Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
 
         // 邮箱服务器
         Route::get('mail', function () {

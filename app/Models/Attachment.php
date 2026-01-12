@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\Enums\StorageProvider;
-use App\Settings\StorageSettings;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use App\Services\Storage\StorageProfileDisk;
 
 class Attachment extends Model
 {
@@ -27,34 +26,26 @@ class Attachment extends Model
     // 获取完整 URL 的访问器
     public function getFullUrlAttribute()
     {
-        self::setFilesystem();
-        
-        /** @var Storage */
-        $disk = Storage::disk($this->disk);
-
-        return $disk->url($this->path);
+        return $this->filesystem()->url($this->path);
     }
-    
-    public static function setFilesystem()
+
+    public function storageProfile()
     {
-        $settings = app(StorageSettings::class);
-        if (! $settings->enabled) {
-            config(['filesystems.default' => 'public']);
-            return;
+        return $this->belongsTo(StorageProfile::class, 'storage_profile_id');
+    }
+
+    public function filesystem()
+    {
+        if ($this->storage_profile_id) {
+            $profile = $this->relationLoaded('storageProfile')
+                ? $this->storageProfile
+                : $this->storageProfile()->first();
+
+            if ($profile) {
+                return StorageProfileDisk::build($profile);
+            }
         }
 
-        config([
-            'filesystems.default' => 's3',
-            'filesystems.disks.s3' => [
-                'driver' => 's3',
-                'key' => $settings->key,
-                'secret' => $settings->secret,
-                'region' => $settings->region ?? 'us-east-1',
-                'bucket' => $settings->bucket,
-                'endpoint' => $settings->endpoint,
-                'url' => $settings->url,
-                'use_path_style_endpoint' => $settings->provider == StorageProvider::MINIO,
-            ],
-        ]);
+        return Storage::disk($this->disk);
     }
 }

@@ -4,7 +4,6 @@ namespace App\Actions\StorageSetting;
 
 use App\Data\StorageSettingCheckData;
 use App\Enums\StorageProvider;
-use App\Settings\StorageSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -16,10 +15,6 @@ use Throwable;
 class CheckStorageSettingAction
 {
     use AsAction;
-
-    public function __construct(
-        public StorageSettings $settings,
-    ) {}
 
     public function handle(StorageSettingCheckData $data)
     {
@@ -42,21 +37,14 @@ class CheckStorageSettingAction
             'use_path_style_endpoint' => ($payload['provider'] ?? null) === StorageProvider::MINIO->value,
             'throw' => true,
         ];
+        $config = collect($config)->reject(fn ($v) => $v === null)->all();
 
-        $diskName = 'storage_check_'.md5(uniqid('', true));
-        config(["filesystems.disks.{$diskName}" => $config]);
-
-        Storage::disk($diskName)->files('/', false);
+        Storage::build($config)->files('/', false);
     }
 
     public function asController(Request $request)
     {
         $data = StorageSettingCheckData::from($request);
-
-        // 如果用户未填写 secret，则尝试使用系统已保存的 secret
-        if (! filled($data->secret)) {
-            $data->secret = $this->settings->secret;
-        }
 
         try {
             $this->handle($data);
