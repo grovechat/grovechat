@@ -245,6 +245,14 @@ export default {
   启用对象存储: 'Enable Object Storage',
   '启用后，文件将上传到配置的对象存储服务':
     'When enabled, files will be uploaded to the configured object storage service',
+  当前使用的存储配置: 'Current storage profile',
+  请选择存储配置: 'Select a storage profile',
+  存储配置管理: 'Storage Profile Management',
+  '支持创建多个存储配置，并选择其中一个作为当前上传目标':
+    'Create multiple storage profiles and choose one as the current upload target',
+  新增配置: 'New profile',
+  收起: 'Collapse',
+  配置名称: 'Profile name',
   存储提供商: 'Storage Provider',
   请选择存储提供商: 'Select a storage provider',
   查看文档: 'View docs',
@@ -254,6 +262,7 @@ export default {
   '请输入 Secret Key': 'Please enter Secret Key',
   '留空表示不修改（首次启用必须填写）':
     'Leave blank to keep unchanged (required on first enable)',
+  留空表示不修改: 'Leave blank to keep unchanged',
   'Bucket 名称': 'Bucket Name',
   '请输入 Bucket 名称': 'Please enter bucket name',
   '区域 (Region)': 'Region',
@@ -268,6 +277,9 @@ export default {
   '如果配置了 CDN 或自定义域名，请在此填写，用于生成文件访问 URL':
     'If you have configured CDN or custom domain, enter it here for generating file access URLs',
   检测连接: 'Test connection',
+  创建: 'Create',
+  编辑: 'Edit',
+  删除: 'Delete',
 
   // 工作区设置 - 常规设置
   配置工作区的基本信息和设置:
