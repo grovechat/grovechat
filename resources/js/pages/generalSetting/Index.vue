@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import UploadImageAction from '@/actions/App/Actions/Attachment/UploadImageAction';
 import SystemSetting from '@/actions/App/Actions/SystemSetting';
-import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -51,7 +51,7 @@ const handleLogoChange = async (event: Event) => {
   try {
     uploading.value = true;
     const response = await axios.post(
-      CommonController.uploadImage.url(),
+      UploadImageAction.url(),
       formData,
       {
         headers: {

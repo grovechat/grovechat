@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Services\AttachmentService;
+use App\Actions\Attachment\BindAttachmentModelAction;
+use App\Actions\Attachment\DeleteAttachmentAction;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -48,13 +49,22 @@ class Workspace extends Model
     {
         static::updated(function (Model $workspace) {
             if ($workspace->wasChanged('logo_id') && $workspace->logo_id) {
-                AttachmentService::replace($workspace->getOriginal('logo_id') ?: '', $workspace->logo_id, $workspace);
+                if ($attachment = Attachment::query()->find($workspace->logo_id)) {
+                    if (!empty($workspace->getOriginal('logo_id'))) {
+                        if ($oldAttachment = Attachment::query()->find($workspace->getOriginal('logo_id'))) {
+                            DeleteAttachmentAction::run($oldAttachment);
+                        }
+                    }
+                    BindAttachmentModelAction::run($attachment, $workspace);
+                }
             }
         });
 
         static::created(function ($workspace) {
             if ($workspace->logo_id) {
-                AttachmentService::bind($workspace->logo_id, $workspace);
+                if ($attachment = Attachment::query()->find($workspace->logo_id)) {
+                    BindAttachmentModelAction::run($attachment, $workspace);
+                }
             }
         });
     }
