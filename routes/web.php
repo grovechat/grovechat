@@ -4,6 +4,8 @@ use App\Actions\Dashboard\RedirectCurrentWorkspaceDashboard;
 use App\Actions\Dashboard\RedirectLastDashboardAction;
 use App\Actions\Dashboard\ShowDashboardAction;
 use App\Actions\Home\ShowHomePageAction;
+use App\Actions\Manage\GetCurrentWorkspaceAction;
+use App\Actions\Manage\ShowCreateWorkspacePageAction;
 use App\Actions\StorageSetting\CheckStorageSettingAction;
 use App\Actions\StorageSetting\GetStorageSettingAction;
 use App\Actions\StorageSetting\UpdateStorageSettingAction;
@@ -11,8 +13,6 @@ use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
 use App\Actions\Workspace\CreateWorkspaceAction;
 use App\Actions\Workspace\DestroyWorkspaceAction;
-use App\Actions\Workspace\GetWorkspaceGeneralSettingAction;
-use App\Actions\Workspace\ShowCreateWorkspacePageAction;
 use App\Actions\Workspace\UpdateWorkspaceAction;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
@@ -88,9 +88,10 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
     // 管理中心
     Route::prefix('manage')->group(function () {
         // 工作区
+        Route::get('workspaces/current', GetCurrentWorkspaceAction::class)->name('get-current-workspace');  
+        Route::get('workspaces/create', ShowCreateWorkspacePageAction::class)->name('show-create-workspace-page');      
+
         Route::prefix('workspace')->group(function () { // 常规设置
-            Route::get('general', GetWorkspaceGeneralSettingAction::class)->name('workspace-setting.workspace.general');
-            Route::get('general/create', ShowCreateWorkspacePageAction::class)->name('workspace-settings.workspace.create');
             Route::put('general', UpdateWorkspaceAction::class)->name('workspace-settings.workspace.update');
             Route::post('general', CreateWorkspaceAction::class)->name('workspace-settings.workspace.addWorkspace');
             Route::delete('general', DestroyWorkspaceAction::class)->name('workspace-settings.workspace.delete');

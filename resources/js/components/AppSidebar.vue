@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useI18n } from '@/composables/useI18n';
 import { cn } from '@/lib/utils';
-import { getGeneralSetting } from '@/routes';
+import { getCurrentWorkspace, getGeneralSetting } from '@/routes';
 import contact from '@/routes/contact';
 import stats from '@/routes/stats';
 import workspace from '@/routes/workspace';
@@ -59,7 +59,7 @@ const mainNavItems = computed<NavItem[]>(() => [
   },
   {
     title: t('管理中心'),
-    href: workspaceSetting.workspace.general.url(currentWorkspace.value.slug),
+    href: getCurrentWorkspace.url(currentWorkspace.value.slug),
     icon: Building2,
   },
 ]);

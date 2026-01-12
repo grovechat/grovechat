@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ShowCreateWorkspacePageAction from '@/actions/App/Actions/Workspace/ShowCreateWorkspacePageAction';
+import ShowCreateWorkspacePageAction from '@/actions/App/Actions/Manage/ShowCreateWorkspacePageAction';
 import {
   DropdownMenu,
   DropdownMenuContent,

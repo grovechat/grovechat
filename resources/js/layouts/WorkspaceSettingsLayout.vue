@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { toUrl, urlIsActive } from '@/lib/utils';
+import { getCurrentWorkspace } from '@/routes';
 import workspaceSetting from '@/routes/workspace-setting';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -29,7 +30,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('常规设置'),
-          href: workspaceSetting.workspace.general.url(currentWorkspace.value.slug),
+          href: getCurrentWorkspace.url(currentWorkspace.value.slug),
         },
       ],
     },
