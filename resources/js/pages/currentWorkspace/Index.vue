@@ -1,6 +1,6 @@
 <script setup lang="ts">
+  import UpdateWorkspaceAction from '@/actions/App/Actions/Manage/UpdateWorkspaceAction';
   import DestroyWorkspaceAction from '@/actions/App/Actions/Workspace/DestroyWorkspaceAction';
-  import UpdateWorkspaceAction from '@/actions/App/Actions/Workspace/UpdateWorkspaceAction';
   import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
   import HeadingSmall from '@/components/HeadingSmall.vue';
   import InputError from '@/components/InputError.vue';

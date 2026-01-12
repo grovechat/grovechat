@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Workspace;
+namespace App\Actions\Manage;
 
 use App\Data\UpdateWorkspaceDTO;
 use App\Models\Workspace;
@@ -21,6 +21,6 @@ class UpdateWorkspaceAction
         $data = UpdateWorkspaceDTO::from($request);
         $this->handle($currentWorkspace, $data);
 
-        return redirect(route('workspace-setting.workspace.general', $currentWorkspace->slug));
+        return back();
     }
 }

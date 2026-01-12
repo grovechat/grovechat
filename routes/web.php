@@ -7,13 +7,13 @@ use App\Actions\Home\ShowHomePageAction;
 use App\Actions\manage\CreateWorkspaceAction;
 use App\Actions\Manage\GetCurrentWorkspaceAction;
 use App\Actions\Manage\ShowCreateWorkspacePageAction;
+use App\Actions\Manage\UpdateWorkspaceAction;
 use App\Actions\StorageSetting\CheckStorageSettingAction;
 use App\Actions\StorageSetting\GetStorageSettingAction;
 use App\Actions\StorageSetting\UpdateStorageSettingAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
 use App\Actions\Workspace\DestroyWorkspaceAction;
-use App\Actions\Workspace\UpdateWorkspaceAction;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
@@ -90,10 +90,10 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         // 工作区
         Route::get('workspaces/current', GetCurrentWorkspaceAction::class)->name('get-current-workspace');  
         Route::get('workspaces/create', ShowCreateWorkspacePageAction::class)->name('show-create-workspace-page');
+        Route::put('workspaces', UpdateWorkspaceAction::class)->name('update-current-workspace');
         Route::post('workspaces', CreateWorkspaceAction::class)->name('create-workspace');
 
         Route::prefix('workspace')->group(function () { // 常规设置
-            Route::put('general', UpdateWorkspaceAction::class)->name('workspace-settings.workspace.update');
             Route::delete('general', DestroyWorkspaceAction::class)->name('workspace-settings.workspace.delete');
         });
 
