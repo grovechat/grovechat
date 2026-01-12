@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import UploadImageAction from '@/actions/App/Actions/Attachment/UploadImageAction';
 import SystemSetting from '@/actions/App/Actions/SystemSetting';
-import CommonController from '@/actions/App/Http/Controllers/Api/CommonController';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
-import systemSetting from '@/routes/system-setting';
+import { getGeneralSetting, uploadImage } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -22,7 +22,7 @@ const currentWorkspace = computed(() => page.props.currentWorkspace);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: systemSetting.getGeneralSettings.url(currentWorkspace.value.slug),
+    href: getGeneralSetting.url(currentWorkspace.value.slug),
   },
 ]);
 const logoPreview = ref<string>(generalSettings.value.logo_url || '');
@@ -51,7 +51,7 @@ const handleLogoChange = async (event: Event) => {
   try {
     uploading.value = true;
     const response = await axios.post(
-      CommonController.uploadImage.url(),
+      uploadImage.url(),
       formData,
       {
         headers: {
