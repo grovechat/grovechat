@@ -16,9 +16,9 @@ import {
 } from '@/components/ui/sidebar';
 import { useI18n } from '@/composables/useI18n';
 import { cn } from '@/lib/utils';
+import { getGeneralSetting } from '@/routes';
 import contact from '@/routes/contact';
 import stats from '@/routes/stats';
-import systemSetting from '@/routes/system-setting';
 import workspace from '@/routes/workspace';
 import workspaceSetting from '@/routes/workspace-setting';
 import { type NavItem } from '@/types';
@@ -77,7 +77,7 @@ const footerNavItems = computed<NavItem[]>(() => [
   },
   {
     title: t('系统设置'),
-    href: systemSetting.getGeneralSettings.url(currentWorkspace.value.slug),
+    href: getGeneralSetting.url(currentWorkspace.value.slug),
     icon: Settings,
   },
 ]);

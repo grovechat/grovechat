@@ -6,6 +6,7 @@ import { toUrl, urlIsActive } from '@/lib/utils';
 import systemSetting from '@/routes/system-setting';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
+import { getGeneralSetting, getStorageSetting } from '@/routes';
 import { computed } from 'vue';
 
 const { t } = useI18n();
@@ -16,11 +17,11 @@ const sidebarNavItems = computed<NavItem[]>(() => {
   return [
     {
       title: t('基础设置'),
-      href: systemSetting.getGeneralSettings.url(currentWorkspace.value.slug),
+      href: getGeneralSetting.url(currentWorkspace.value.slug),
     },
     {
       title: t('存储设置'),
-      href: systemSetting.getStorageSettings.url(currentWorkspace.value.slug),
+      href: getStorageSetting.url(currentWorkspace.value.slug),
     },
     {
       title: t('邮箱服务器'),

@@ -56,13 +56,13 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
     // 系统设置
     Route::prefix('system-settings')->group(function () {
         // 基础设置
-        Route::get('general', GetGeneralSettingAction::class)->name('system-setting.get-general-settings');
-        Route::put('general', UpdateGeneralSettingAction::class)->name('system-setting.update-general-settings');
+        Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
+        Route::put('general', UpdateGeneralSettingAction::class)->name('update-general-setting');
 
         // 存储设置
-        Route::get('storage', GetStorageSettingAction::class)->name('system-setting.get-storage-settings');
-        Route::put('storage', UpdateStorageSettingAction::class)->name('system-settings.update-storage-settings');
-        Route::put('check', CheckStorageSettingAction::class)->name('system-settings.check-storage-settiings');
+        Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
+        Route::put('storage', UpdateStorageSettingAction::class)->name('update-storage-setting');
+        Route::put('check', CheckStorageSettingAction::class)->name('check-storage-settiing');
 
         // 邮箱服务器
         Route::get('mail', function () {
