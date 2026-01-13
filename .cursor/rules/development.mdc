@@ -1,0 +1,94 @@
+---
+name: development
+description: 开发流程和测试规范
+---
+
+# 开发流程
+
+## 启动开发环境
+
+```bash
+# 终端1: 启动后端服务（通过 Go 启动 FrankenPHP workers）
+make
+
+# 终端2: 启动前端开发服务器（Vite，支持热重载）
+npm run dev
+```
+
+## 完整的功能开发流程
+
+1. **定义 Data 类**（`app/Data/`）
+   ```bash
+   php artisan make:data CreateWorkspaceDTO
+   ```
+
+2. **创建 Action**（`app/Actions/`）
+   ```bash
+   php artisan make:action Workspace/CreateWorkspaceAction
+   ```
+
+3. **生成 TS 类型**
+   ```bash
+   php artisan typescript:transform
+   ```
+
+4. **注册路由**（`routes/web.php`）
+   ```php
+   Route::post('/workspace', CreateWorkspaceAction::class);
+   ```
+
+5. **前端使用**
+   - 导入生成的类型
+   - 使用 Wayfinder 路由
+   - 使用 i18n 多语言
+
+# 测试
+
+Action 模式天然适合测试。
+
+## 基本测试
+
+```php
+public function test_can_update_workspace()
+{
+    $workspace = Workspace::factory()->create();
+    $data = UpdateWorkspaceDTO::from(['name' => 'New Name']);
+    
+    // 直接测试 handle 方法（通过 run 调用）
+    UpdateWorkspaceAction::run($workspace, $data);
+    
+    $this->assertEquals('New Name', $workspace->fresh()->name);
+}
+```
+
+## 异常测试
+
+```php
+public function test_cannot_delete_owner_workspace()
+{
+    $workspace = Workspace::factory()->create(['owner_id' => 1]);
+    
+    // 测试业务异常
+    $this->expectException(BusinessException::class);
+    DeleteWorkspaceAction::run($workspace);
+}
+```
+
+# 常用命令
+
+```bash
+# 类型生成（修改 Data 后必须执行）
+php artisan typescript:transform
+
+# 创建文件
+php artisan make:data MyData
+php artisan make:action MyAction
+
+# 测试与代码质量
+php artisan test
+./vendor/bin/pint
+
+# 前端相关
+npm run lint          # ESLint 检查
+npm run format        # Prettier 格式化
+```

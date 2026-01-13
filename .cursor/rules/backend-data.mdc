@@ -1,0 +1,90 @@
+---
+name: backend-data
+description: Laravel Data 和类型生成规范
+---
+
+# Laravel Data（数据层）
+
+**所有数据传输必须使用 Laravel Data**。
+
+## 基本用法
+
+```php
+use Spatie\LaravelData\Data;
+
+class WorkspaceData extends Data
+{
+    public function __construct(
+        public string $id,
+        public string $name,
+        public string $slug,
+        public ?string $logoUrl = null,  // 使用 camelCase
+    ) {}
+}
+```
+
+## 数据验证
+
+使用 Laravel 官方 `rules()` 方法定义验证规则：
+
+```php
+use Illuminate\Validation\Rule;
+
+class CreateWorkspaceDTO extends Data
+{
+    public function __construct(
+        public string $name,
+        public string $slug,
+        public ?string $logoId = null,
+    ) {}
+    
+    // ✅ 使用 rules() 方法定义验证规则
+    public static function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:64'],
+            'slug' => ['required', 'string', 'max:50'],
+            'logoId' => ['nullable', 'string'],
+            'provider' => ['required', Rule::in(['s3', 'oss'])],
+        ];
+    }
+}
+```
+
+## 关键特性
+
+- ✅ 输入/输出自动转换为 `snake_case`（已配置 `config/data.php`）
+- ✅ PHP 使用 camelCase 定义属性
+- ✅ 前端接收到的是 snake_case（如 `logo_url`）
+- ✅ 验证规则使用 Laravel 官方 `rules()` 方法，不用注解
+
+## 类型生成工作流
+
+**修改 Data 类后必须执行**:
+```bash
+php artisan typescript:transform
+```
+
+生成的 TS 类型位于 `resources/js/types/generated.d.ts`，**禁止手动编辑此文件**。
+
+示例输出:
+```typescript
+export type WorkspaceData = {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string | null;  // 自动转为 snake_case
+};
+```
+
+## 创建 Data 类
+
+```bash
+php artisan make:data CreateWorkspaceDTO
+```
+
+## 禁止事项
+
+❌ **禁止使用注解定义验证规则** - 使用 Laravel 官方 `rules()` 方法  
+❌ **禁止手动编辑** `generated.d.ts` - 运行生成命令  
+❌ **禁止不使用 Laravel Data 传输数据** - 失去类型安全

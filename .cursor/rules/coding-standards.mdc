@@ -1,0 +1,54 @@
+---
+name: coding-standards
+description: 核心编码规范概览
+alwaysApply: true
+---
+
+# Overview
+
+项目采用 Action 模式组织业务逻辑，使用 Laravel Data 确保类型安全，通过自动化工具实现前后端类型同步。
+
+**详细规范请参考**：
+- `backend-actions.mdc` - Action 模式规范
+- `backend-data.mdc` - Laravel Data 和类型生成
+- `backend-messages.mdc` - Toast 消息和多语言  
+- `frontend-components.mdc` - UI 组件和时间显示
+- `frontend-routing.mdc` - 路由和多语言
+- `development.mdc` - 开发流程和测试
+
+# 禁止事项
+
+❌ **禁止在 Controller 中写业务逻辑** - 使用 Action 模式  
+❌ **禁止使用注解定义验证规则** - 使用 Laravel 官方 `rules()` 方法  
+❌ **禁止手动编辑** `generated.d.ts` - 运行生成命令  
+❌ **禁止手动编辑** Wayfinder 生成的路由文件  
+❌ **禁止硬编码路由字符串** - 使用 Wayfinder  
+❌ **禁止不使用 Laravel Data 传输数据** - 失去类型安全  
+❌ **禁止前端多语言 key 使用英文** - 统一使用中文  
+❌ **禁止直接显示后端时间** - 必须使用 `formatDateTime()`  
+❌ **禁止自己实现 UI 组件** - 优先使用 Reka UI 组件库
+
+# 常用开发命令
+
+```bash
+# 启动开发环境（终端1）
+make
+
+# 启动前端开发服务器（终端2）
+npm run dev
+
+# 类型生成（修改 Data 后必须执行）
+php artisan typescript:transform
+
+# 创建文件
+php artisan make:data MyData
+php artisan make:action MyAction
+
+# 测试与代码质量
+php artisan test
+./vendor/bin/pint
+
+# 前端相关
+npm run lint          # ESLint 检查
+npm run format        # Prettier 格式化
+```

@@ -1,0 +1,92 @@
+---
+name: frontend-components
+description: 前端 UI 组件和时间显示规范
+---
+
+# UI 组件库（Reka UI）
+
+**必须使用 Reka UI 组件库**，不要重复造轮子。
+
+## 基本用法
+
+```vue
+<script setup lang="ts">
+import { Button } from '@/components/ui/button';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle 
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+</script>
+
+<template>
+  <Dialog>
+    <DialogTrigger as-child>
+      <Button variant="outline">打开对话框</Button>
+    </DialogTrigger>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>标题</DialogTitle>
+      </DialogHeader>
+      <!-- 内容 -->
+    </DialogContent>
+  </Dialog>
+</template>
+```
+
+## 可用组件
+
+位于 `resources/js/components/ui/`：
+
+- **基础**: Button, Input, Label, Badge, Avatar
+- **布局**: Card, Separator, Sidebar
+- **反馈**: Dialog, Sheet, Toast, Alert, Skeleton
+- **表单**: Select, Checkbox, InputOTP
+- **导航**: Breadcrumb, NavigationMenu, DropdownMenu
+- **其他**: Collapsible, Tooltip
+
+# 时间显示（多时区支持）
+
+**必须使用 `formatDateTime()` 显示后端传入的时间**。
+
+## 使用方式
+
+```vue
+<script setup lang="ts">
+import { useDateTime } from '@/composables/useDateTime';
+
+const { formatDateTime } = useDateTime();
+
+// Props 包含后端返回的时间字符串
+const props = defineProps<{
+  createdAt: string;  // ISO 8601 格式
+}>();
+</script>
+
+<template>
+  <div>
+    <!-- ✅ 使用 formatDateTime 自动转换为用户时区 -->
+    <p>创建时间: {{ formatDateTime(props.createdAt) }}</p>
+    
+    <!-- ✅ 自定义格式 -->
+    <p>日期: {{ formatDateTime(props.createdAt, 'YYYY-MM-DD') }}</p>
+    
+    <!-- ❌ 禁止直接显示原始时间 -->
+    <p>{{ props.createdAt }}</p>
+  </div>
+</template>
+```
+
+## formatDateTime 特性
+
+- 自动转换为用户选择的时区（通过 `useTimezone()`）
+- 支持自定义格式（基于 dayjs）
+- 自动适配多语言（中文/英文）
+
+## 禁止事项
+
+❌ **禁止直接显示后端时间** - 必须使用 `formatDateTime()`  
+❌ **禁止自己实现 UI 组件** - 优先使用 Reka UI 组件库

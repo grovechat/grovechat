@@ -39,17 +39,21 @@ const forwarded = useForwardPropsEmits(props, emits);
                 )
             "
         >
-            <SelectViewport
-                :class="
-                    cn(
-                        'p-1',
-                        props.position === 'popper' &&
-                            'h-[var(--reka-select-trigger-height)] w-full min-w-[var(--reka-select-trigger-width)]',
-                    )
-                "
-            >
-                <slot />
-            </SelectViewport>
+            <div class="flex max-h-96 flex-col">
+                <slot name="header" />
+
+                <SelectViewport
+                    :class="
+                        cn(
+                            'min-h-0 flex-1 p-1',
+                            props.position === 'popper' &&
+                                'w-full min-w-[var(--reka-select-trigger-width)]',
+                        )
+                    "
+                >
+                    <slot />
+                </SelectViewport>
+            </div>
         </SelectContent>
     </SelectPortal>
 </template>

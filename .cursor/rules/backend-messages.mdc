@@ -1,0 +1,73 @@
+---
+name: backend-messages
+description: Toast 消息和多语言规范
+---
+
+# Toast 消息规范
+
+## 后端错误处理
+
+抛出 `BusinessException`，前端自动拦截显示 error toast：
+
+```php
+use App\Exceptions\BusinessException;
+
+public function handle(Workspace $workspace)
+{
+    if (!$this->canDelete($workspace)) {
+        throw new BusinessException(__('workspace.cannot_delete'));
+    }
+    
+    // 业务逻辑
+}
+```
+
+## 成功/警告/提示消息
+
+使用 `Inertia::flash()` 传递消息：
+
+```php
+use Inertia\Inertia;
+
+public function asController(Request $request)
+{
+    $this->handle($request->user());
+    
+    // ✅ 通过 flash 传递 toast 消息
+    Inertia::flash('toast', [
+        'type' => 'success',  // success | error | warning | info
+        'message' => __('workspace.workspace_deleted'),
+    ]);
+    
+    return redirect()->route('...');
+}
+```
+
+## Toast 机制
+
+- `BusinessException` → 前端自动拦截显示 error toast
+- `Inertia::flash('toast')` → 前端自动显示对应类型 toast
+- 无需在前端手动调用 toast 方法
+
+# 多语言（后端）
+
+遵循 Laravel 官方标准，语言文件位于 `lang/` 目录：
+
+```
+lang/
+  ├─ en/
+  │   ├─ auth.php
+  │   ├─ validation.php
+  │   └─ workspace.php
+  └─ zh_CN/
+      ├─ auth.php
+      ├─ validation.php
+      └─ workspace.php
+```
+
+## 使用方式
+
+```php
+__('workspace.created_successfully')
+trans('auth.failed')
+```

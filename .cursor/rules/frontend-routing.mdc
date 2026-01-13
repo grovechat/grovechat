@@ -1,0 +1,84 @@
+---
+name: frontend-routing
+description: 前端路由和多语言规范
+---
+
+# 路由调用（Wayfinder）
+
+**禁止硬编码路由字符串**，使用 Wayfinder 生成的类型安全路由。
+
+## 使用方式
+
+```typescript
+import { workspace } from '@/actions';
+
+// ✅ 类型安全的路由调用
+router.visit(workspace.dashboard.get({ slug: 'my-workspace' }));
+
+// ❌ 禁止硬编码
+router.visit('/w/my-workspace/dashboard');
+```
+
+## 生成的文件
+
+Wayfinder 自动生成的文件位于:
+- `resources/js/actions/` - 路由动作
+- `resources/js/routes/` - 路由工具
+
+**禁止手动编辑这些生成的文件**。
+
+# 多语言（前端）
+
+语言文件位于 `resources/js/locales/`，**key 使用中文而非英文**。
+
+## 定义语言
+
+```typescript
+// resources/js/locales/zh-CN/common.ts
+export default {
+  '保存': '保存',
+  '取消': '取消',
+  '删除': '删除',
+  '确认删除吗？': '确认删除吗？',
+} as const;
+```
+
+## 使用方式
+
+```vue
+<script setup lang="ts">
+import { useI18n } from '@/composables/useI18n';
+
+const { t } = useI18n();
+</script>
+
+<template>
+  <button>{{ t('保存') }}</button>
+  <p>{{ t('确认删除吗？') }}</p>
+</template>
+```
+
+# 类型使用
+
+导入生成的类型和组件：
+
+```typescript
+import type { WorkspaceData, CreateWorkspaceDTO } from '@/types/generated';
+import { Button } from '@/components/ui/button';
+import { useDateTime } from '@/composables/useDateTime';
+import { useI18n } from '@/composables/useI18n';
+
+const { t } = useI18n();
+const { formatDateTime } = useDateTime();
+
+// 在组件中使用生成的类型
+const props = defineProps<{
+  workspace: WorkspaceData;
+}>();
+```
+
+## 禁止事项
+
+❌ **禁止手动编辑** Wayfinder 生成的路由文件  
+❌ **禁止硬编码路由字符串** - 使用 Wayfinder  
+❌ **禁止前端多语言 key 使用英文** - 统一使用中文

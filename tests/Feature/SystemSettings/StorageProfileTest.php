@@ -45,7 +45,6 @@ test('authenticated user can create storage profile when connection check passes
     expect($profile->region)->toBe('ap-guangzhou');
     expect($profile->endpoint)->toBe('https://cos.ap-guangzhou.myqcloud.com');
     expect($profile->bucket)->toBe('bucket');
-    // encrypted cast：读出来应为明文
     expect($profile->key)->toBe('key');
     expect($profile->secret)->toBe('secret');
     expect($profile->url)->toBe('https://cdn.example.com');

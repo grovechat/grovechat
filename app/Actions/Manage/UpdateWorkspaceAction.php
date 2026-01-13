@@ -21,6 +21,6 @@ class UpdateWorkspaceAction
         $data = UpdateWorkspaceDTO::from($request);
         $this->handle($currentWorkspace, $data);
 
-        return back();
+        return redirect()->route('get-current-workspace', ['slug' => $currentWorkspace->slug]);
     }
 }

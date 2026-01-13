@@ -1,0 +1,61 @@
+---
+name: backend-actions
+description: Laravel Action 模式开发规范
+---
+
+# Action 模式（核心）
+
+**禁止使用传统 Controller 编写业务逻辑**，统一使用 Action 模式。
+
+## 基本结构
+
+```php
+use Lorisleiva\Actions\Concerns\AsAction;
+
+class UpdateWorkspaceAction
+{
+    use AsAction;
+
+    // ✅ 业务逻辑写在 handle() 方法中
+    public function handle(Workspace $workspace, UpdateWorkspaceDTO $data)
+    {
+        $workspace->update($data->toArray());
+        // 所有业务逻辑都在这里
+    }
+
+    // ✅ asController() 仅做路由绑定和数据转换
+    public function asController(Request $request, Workspace $currentWorkspace)
+    {
+        $data = UpdateWorkspaceDTO::from($request);
+        $this->handle($currentWorkspace, $data);
+        
+        return redirect()->route('...');
+    }
+}
+```
+
+## 关键原则
+
+- **handle()**: 编写所有业务逻辑，保持纯粹可测试
+- **asController()**: 仅负责请求/响应转换，不写业务逻辑
+- Action 可在多处复用（Controller、Job、Command等）
+- **Action 互相调用**: 使用 `SomeAction::run()` 方法
+
+## Action 互相调用
+
+```php
+// ✅ Action 之间互相调用
+$defaultWorkspace = GetDefaultWorkspaceAction::run($request->user());
+$workspace = CreateWorkspaceAction::run($user, $dto);
+```
+
+## 创建 Action
+
+```bash
+php artisan make:action Workspace/CreateWorkspaceAction
+```
+
+## 禁止事项
+
+❌ **禁止在 Controller 中写业务逻辑** - 使用 Action 模式  
+❌ **禁止在 asController() 中写业务逻辑** - 业务逻辑必须在 handle() 中
