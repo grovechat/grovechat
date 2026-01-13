@@ -116,20 +116,13 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         Route::post('workspaces', CreateWorkspaceAction::class)->name('create-workspace');
         Route::delete('workspaces/current', DeleteCurrentWorkspaceAction::class)->name('delete-current-workspace');
         
-        // 客服
+        // 多客服
         Route::get('users', ShowUserListAction::class)->name('show-user-list');
         Route::get('users/create', ShowCreateUserPageAction::class)->name('show-create-user-page');
         Route::get('users/{id}/edit', ShowEditUserPageAction::class)->name('show-edit-user-page');
         Route::post('users', CreateUserAction::class)->name('create-user');
         Route::put('users/{id}', UpdateUserAction::class)->name('update-user');
         Route::delete('users/{id}', DeleteUserAction::class)->name('delete-user');
-
-        // 客服
-        Route::prefix('teammates')->group(function () {
-            Route::get('/', function () {
-                return Inertia::render('workspaceSettings/teammate/Index');
-            })->name('workspace-setting.teammate.index');
-        });
 
         // 渠道
         Route::prefix('channels')->group(function () {
