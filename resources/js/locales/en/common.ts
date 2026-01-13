@@ -33,5 +33,7 @@ export default {
   删除: 'Delete',
   '删除中...': 'Deleting...',
   确认删除: 'Confirm Delete',
+  恢复: 'Restore',
+  '恢复中...': 'Restoring...',
 } as const;
 

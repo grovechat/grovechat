@@ -20,9 +20,11 @@ use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
 use App\Actions\User\CreateUserAction;
 use App\Actions\User\DeleteUserAction;
+use App\Actions\User\RestoreUserAction;
 use App\Actions\User\ShowCreateUserPageAction;
 use App\Actions\User\ShowEditUserPageAction;
 use App\Actions\User\ShowUserListAction;
+use App\Actions\User\ShowUserTrashAction;
 use App\Actions\User\UpdateUserAction;
 use App\Actions\User\UpdateUserOnlineStatusAction;
 use App\Actions\Workspace\DeleteWorkspaceAction;
@@ -121,9 +123,11 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         Route::get('users', ShowUserListAction::class)->name('show-user-list');
         Route::get('users/create', ShowCreateUserPageAction::class)->name('show-create-user-page');
         Route::get('users/{id}/edit', ShowEditUserPageAction::class)->name('show-edit-user-page');
+        Route::get('users/trash', ShowUserTrashAction::class)->name('show-user-trash-page');
         Route::post('users', CreateUserAction::class)->name('create-user');
         Route::put('users/{id}', UpdateUserAction::class)->name('update-user');
         Route::put('users/{id}/online-status', UpdateUserOnlineStatusAction::class)->name('update-user-online-status');
+        Route::put('users/{id}/restore', RestoreUserAction::class)->name('restore-user');
         Route::delete('users/{id}', DeleteUserAction::class)->name('delete-user');
 
         // 渠道
