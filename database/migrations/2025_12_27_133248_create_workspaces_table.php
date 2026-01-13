@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('slug')->nullable()->unique()->comment('访问标识');
             $table->ulid('logo_id')->nullable()->comment('工作区logo');
             $table->ulid('owner_id')->nullable()->comment('所有者ID');
+            $table->softDeletes();
         });
     }
 
