@@ -43,7 +43,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   <AppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('工作区管理')" />
 
-    <SystemSettingsLayout content-class="max-w-5xl w-full">
+    <SystemSettingsLayout content-class="max-w-none w-full">
       <div class="space-y-6">
         <HeadingSmall
           :title="t('工作区管理')"

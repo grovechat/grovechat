@@ -149,8 +149,10 @@ const currentPath =
 
     <Separator class="my-6 lg:hidden" />
 
-    <div class="flex-1 px-4 py-6">
-      <section :class="[contentClass ?? 'max-w-2xl', 'w-full space-y-12']">
+    <div class="flex-1 px-4 py-6 sm:px-6">
+      <section
+        :class="['mx-auto w-full space-y-12', contentClass ?? 'max-w-none']"
+      >
         <slot />
       </section>
     </div>

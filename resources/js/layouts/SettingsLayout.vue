@@ -41,7 +41,8 @@ const sidebarNavItems = computed<NavItem[]>(() => {
   ];
 });
 
-const currentPath = typeof window !== undefined ? window.location.pathname : '';
+const currentPath =
+  typeof window !== 'undefined' ? window.location.pathname : '';
 </script>
 
 <template>
@@ -81,8 +82,8 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
 
     <Separator class="my-6 lg:hidden" />
 
-    <div class="flex-1 px-4 py-6">
-      <section class="max-w-2xl space-y-12">
+    <div class="flex-1 px-4 py-6 sm:px-6">
+      <section class="mx-auto w-full max-w-none space-y-12">
         <slot />
       </section>
     </div>

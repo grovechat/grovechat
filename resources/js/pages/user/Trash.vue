@@ -45,7 +45,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   <AppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('客服回收站')" />
 
-    <WorkspaceSettingsLayout content-class="max-w-5xl">
+    <WorkspaceSettingsLayout content-class="max-w-none">
       <div class="space-y-6">
         <HeadingSmall
           :title="t('客服回收站')"
