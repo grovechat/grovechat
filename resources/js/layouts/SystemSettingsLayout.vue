@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { getGeneralSetting, getStorageSetting } from '@/routes';
+import { getGeneralSetting, getStorageSetting, getWorkspaceList } from '@/routes';
 import systemSetting from '@/routes/system-setting';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -18,6 +18,10 @@ const sidebarNavItems = computed<NavItem[]>(() => {
     {
       title: t('基础设置'),
       href: getGeneralSetting.url(currentWorkspace.value.slug),
+    },
+    {
+      title: t('工作区管理'),
+      href: getWorkspaceList.url(currentWorkspace.value.slug),
     },
     {
       title: t('存储设置'),

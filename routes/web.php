@@ -18,6 +18,9 @@ use App\Actions\StorageSetting\StorageProfile\DeleteStorageProfileAction;
 use App\Actions\StorageSetting\StorageProfile\UpdateStorageProfileAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
+use App\Actions\Workspace\DeleteWorkspaceAction;
+use App\Actions\Workspace\GetWorkspaceListAction;
+use App\Actions\Workspace\ShowWorkspaceDetailAction;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
@@ -62,6 +65,11 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         // 基础设置
         Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
         Route::put('general', UpdateGeneralSettingAction::class)->name('update-general-setting');
+        
+        // 工作区管理
+        Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');
+        Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('show-workspace-detail');
+        Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('delete-workspace');
 
         // 存储设置
         Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
@@ -71,7 +79,7 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('storage-profile.update');
         Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
         Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
-
+        
         // 邮箱服务器
         Route::get('mail', function () {
             return Inertia::render('systemSettings/MailSetting');
