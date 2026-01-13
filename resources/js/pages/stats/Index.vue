@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HeadingSmall from '@/components/HeadingSmall.vue';
+import HeadingSmall from '@/components/common/HeadingSmall.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import stats from '@/routes/stats';
 import { type BreadcrumbItem } from '@/types';

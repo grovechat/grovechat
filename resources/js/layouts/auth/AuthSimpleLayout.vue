@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { home } from '@/routes';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 defineProps<{
   title?: string;
   description?: string;
 }>();
+
+const page = usePage();
+const logo = computed(() => page.props.generalSettings.logo_url);
+const systemName = computed(() => page.props.generalSettings.name);
 </script>
 
 <template>
@@ -23,8 +27,10 @@ defineProps<{
             <div
               class="mb-1 flex h-9 w-9 items-center justify-center rounded-md"
             >
-              <AppLogoIcon
-                class="size-9 fill-current text-[var(--foreground)] dark:text-white"
+              <img
+                :src="logo"
+                :alt="systemName + ' Logo'"
+                class="size-9 object-contain"
               />
             </div>
             <span class="sr-only">{{ title }}</span>

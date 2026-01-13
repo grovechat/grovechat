@@ -2,8 +2,8 @@
 import UploadImageAction from '@/actions/App/Actions/Attachment/UploadImageAction';
 import DeleteCurrentWorkspaceAction from '@/actions/App/Actions/Manage/DeleteCurrentWorkspaceAction';
 import UpdateWorkspaceAction from '@/actions/App/Actions/Manage/UpdateWorkspaceAction';
-import HeadingSmall from '@/components/HeadingSmall.vue';
-import InputError from '@/components/InputError.vue';
+import HeadingSmall from '@/components/common/HeadingSmall.vue';
+import InputError from '@/components/common/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
