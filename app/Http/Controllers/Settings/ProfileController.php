@@ -55,7 +55,8 @@ class ProfileController extends Controller
 
         Auth::logout();
 
-        $user->delete();
+        // 账号删除保持“硬删除”语义（测试/产品行为均依赖），不受 User SoftDeletes 影响。
+        $user->forceDelete();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
