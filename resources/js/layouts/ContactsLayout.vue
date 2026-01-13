@@ -128,8 +128,8 @@ const currentPath =
 
     <Separator class="my-6 lg:hidden" />
 
-    <div class="flex-1 px-4 py-6">
-      <section class="max-w-2xl space-y-12">
+    <div class="flex-1 px-4 py-6 sm:px-6">
+      <section class="mx-auto w-full max-w-none space-y-12">
         <slot />
       </section>
     </div>

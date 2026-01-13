@@ -32,6 +32,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
 import Toaster from '@/components/ui/toast/Toaster.vue';
@@ -496,6 +497,7 @@ const handleLogout = () => {
       <header
         class="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border/70 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4"
       >
+        <SidebarTrigger class="md:hidden" />
         <div class="flex items-center gap-2">
           <template v-if="props.breadcrumbs && props.breadcrumbs.length > 0">
             <Breadcrumb>
