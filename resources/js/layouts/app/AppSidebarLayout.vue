@@ -89,7 +89,7 @@ const SidebarContext = defineComponent({
 const generalSettings = computed(() => page.props.generalSettings);
 const systemName = computed(() => generalSettings.value?.name || 'GroveChat');
 const systemLogo = computed(
-  () => generalSettings.value?.logoUrl || fallbackLogoUrl,
+  () => generalSettings.value?.logo_url || fallbackLogoUrl,
 );
 const currentWorkspace = computed(() => page.props.currentWorkspace);
 const user = computed(() => page.props.auth.user);
@@ -97,11 +97,35 @@ const workspaces = computed(() => page.props.workspaces);
 
 const showAvatar = computed(() => user.value?.avatar && user.value.avatar !== '');
 
-const isExternalLink = (href: string) => {
-  return href.startsWith('http://') || href.startsWith('https://');
+const isExternalLink = (href: NavItem['href']) => {
+  const url = toUrl(href);
+  return url.startsWith('http://') || url.startsWith('https://');
 };
 
-const mainNavItems = computed<NavItem[]>(() => [
+type MainNavItem = NavItem & {
+  /**
+   * 这些 URL 命中任意一个（前缀匹配）则视为该一级菜单激活
+   * 用于“二级导航切换后父级仍保持选中”的场景
+   */
+  activeUrls?: string[];
+};
+
+const contactsBaseUrl = computed(() => {
+  const sample = contact.index.url({
+    slug: currentWorkspace.value.slug,
+    type: '__type__',
+  });
+  return sample.replace('/__type__/index', '');
+});
+
+const manageBaseUrl = computed(() => {
+  // /w/{slug}/manage/workspaces/current -> /w/{slug}/manage
+  return getCurrentWorkspace
+    .url(currentWorkspace.value.slug)
+    .replace(/\/workspaces\/current$/, '');
+});
+
+const mainNavItems = computed<MainNavItem[]>(() => [
   {
     title: t('工作台'),
     href: workspace.dashboard.url(currentWorkspace.value.slug),
@@ -111,18 +135,32 @@ const mainNavItems = computed<NavItem[]>(() => [
     title: t('联系人'),
     href: contact.index.url({ slug: currentWorkspace.value.slug, type: 'all' }),
     icon: Users,
+    activeUrls: [
+      contactsBaseUrl.value,
+      contact.conversations.url(currentWorkspace.value.slug),
+    ],
   },
   {
     title: t('统计'),
     href: stats.index.url(currentWorkspace.value.slug),
     icon: BarChart,
+    activeUrls: [stats.index.url(currentWorkspace.value.slug)],
   },
   {
     title: t('管理中心'),
     href: getCurrentWorkspace.url(currentWorkspace.value.slug),
     icon: Building2,
+    activeUrls: [manageBaseUrl.value],
   },
 ]);
+
+const isMainNavItemActive = (item: MainNavItem) => {
+  if (item.activeUrls && item.activeUrls.length > 0) {
+    return item.activeUrls.some((u) => urlIsActive(u, page.url, { mode: 'prefix' }));
+  }
+
+  return urlIsActive(item.href, page.url);
+};
 
 const footerNavItems = computed<NavItem[]>(() => [
   {
@@ -309,7 +347,7 @@ const handleLogout = () => {
               <SidebarMenuItem v-for="item in mainNavItems" :key="item.title">
                 <SidebarMenuButton
                   as-child
-                  :is-active="urlIsActive(item.href, page.url)"
+                  :is-active="isMainNavItemActive(item)"
                   :tooltip="item.title"
                 >
                   <Link :href="item.href">
