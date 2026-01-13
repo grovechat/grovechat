@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -14,6 +15,8 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasUlids, Notifiable, TwoFactorAuthenticatable;
+
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +31,8 @@ class User extends Authenticatable
         'avatar',
         'nickname',
         'external_nickname',
+        'online_status',
+        'last_active_at',
     ];
 
     /**
@@ -53,6 +58,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'last_active_at' => 'datetime',
+            'online_status' => 'integer',
         ];
     }
 

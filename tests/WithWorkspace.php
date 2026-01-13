@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;
 
@@ -16,7 +17,7 @@ trait WithWorkspace
     {
         $user = User::factory()->create($userAttributes);
         $this->workspace = Workspace::factory()->create($workspaceAttributes);
-        $user->workspaces()->attach($this->workspace, ['role' => 'owner']);
+        $user->workspaces()->attach($this->workspace, ['role' => WorkspaceRole::OWNER->value]);
 
         return $user;
     }

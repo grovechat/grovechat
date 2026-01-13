@@ -2,28 +2,29 @@
 
 namespace App\Actions\User;
 
+use App\Data\UserOnlineStatusUpdateData;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class DeleteUserAction
+class UpdateUserOnlineStatusAction
 {
     use AsAction;
 
-    public function handle(Workspace $workspace, string $id, string $currentUserId): void
+    public function handle(Workspace $workspace, string $id, UserOnlineStatusUpdateData $data): void
     {
-        if ($id === $currentUserId) {
-            abort(403, __('common.不允许删除当前登录用户'));
-        }
-
         $user = $workspace->users()->whereKey($id)->firstOrFail();
-        $user->delete();
+
+        $user->forceFill([
+            'online_status' => $data->online_status->value,
+        ])->save();
     }
 
     public function asController(Request $request, Workspace $currentWorkspace, string $slug, string $id)
     {
-        $this->handle($currentWorkspace, $id, (string) $request->user()->id);
+        $data = UserOnlineStatusUpdateData::from($request);
+        $this->handle($currentWorkspace, $id, $data);
 
         Inertia::flash('toast', [
             'type' => 'success',

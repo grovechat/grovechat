@@ -11,11 +11,11 @@ use App\Actions\Manage\ShowCreateWorkspacePageAction;
 use App\Actions\Manage\UpdateWorkspaceAction;
 use App\Actions\StorageSetting\CheckStorageSettingAction;
 use App\Actions\StorageSetting\GetStorageSettingAction;
-use App\Actions\StorageSetting\UpdateStorageSettingAction;
 use App\Actions\StorageSetting\StorageProfile\CheckStorageProfileAction;
 use App\Actions\StorageSetting\StorageProfile\CreateStorageProfileAction;
 use App\Actions\StorageSetting\StorageProfile\DeleteStorageProfileAction;
 use App\Actions\StorageSetting\StorageProfile\UpdateStorageProfileAction;
+use App\Actions\StorageSetting\UpdateStorageSettingAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
 use App\Actions\User\CreateUserAction;
@@ -24,6 +24,7 @@ use App\Actions\User\ShowCreateUserPageAction;
 use App\Actions\User\ShowEditUserPageAction;
 use App\Actions\User\ShowUserListAction;
 use App\Actions\User\UpdateUserAction;
+use App\Actions\User\UpdateUserOnlineStatusAction;
 use App\Actions\Workspace\DeleteWorkspaceAction;
 use App\Actions\Workspace\GetWorkspaceListAction;
 use App\Actions\Workspace\ShowWorkspaceDetailAction;
@@ -71,7 +72,7 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         // 基础设置
         Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
         Route::put('general', UpdateGeneralSettingAction::class)->name('update-general-setting');
-        
+
         // 工作区管理
         Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');
         Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('show-workspace-detail');
@@ -85,7 +86,7 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
         Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('storage-profile.update');
         Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
         Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
-        
+
         // 邮箱服务器
         Route::get('mail', function () {
             return Inertia::render('systemSettings/MailSetting');
@@ -110,18 +111,19 @@ Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorksp
     // 管理中心
     Route::prefix('manage')->group(function () {
         // 工作区
-        Route::get('workspaces/current', GetCurrentWorkspaceAction::class)->name('get-current-workspace');  
+        Route::get('workspaces/current', GetCurrentWorkspaceAction::class)->name('get-current-workspace');
         Route::get('workspaces/create', ShowCreateWorkspacePageAction::class)->name('show-create-workspace-page');
         Route::put('workspaces/current', UpdateWorkspaceAction::class)->name('update-current-workspace');
         Route::post('workspaces', CreateWorkspaceAction::class)->name('create-workspace');
         Route::delete('workspaces/current', DeleteCurrentWorkspaceAction::class)->name('delete-current-workspace');
-        
+
         // 多客服
         Route::get('users', ShowUserListAction::class)->name('show-user-list');
         Route::get('users/create', ShowCreateUserPageAction::class)->name('show-create-user-page');
         Route::get('users/{id}/edit', ShowEditUserPageAction::class)->name('show-edit-user-page');
         Route::post('users', CreateUserAction::class)->name('create-user');
         Route::put('users/{id}', UpdateUserAction::class)->name('update-user');
+        Route::put('users/{id}/online-status', UpdateUserOnlineStatusAction::class)->name('update-user-online-status');
         Route::delete('users/{id}', DeleteUserAction::class)->name('delete-user');
 
         // 渠道
