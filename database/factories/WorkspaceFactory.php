@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Workspace;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Workspace>
@@ -21,11 +20,10 @@ class WorkspaceFactory extends Factory
     public function definition(): array
     {
         $name = fake()->company();
-        $slug = Str::slug($name);
 
         return [
             'name' => $name,
-            'slug' => $slug,
+            'slug' => null,
             'logo_id' => null,
             'owner_id' => null,
         ];

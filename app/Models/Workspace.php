@@ -55,6 +55,12 @@ class Workspace extends Model
 
     protected static function booted()
     {
+        static::creating(function (Workspace $workspace) {
+            if (empty($workspace->slug)) {
+                $workspace->slug = $workspace->id;
+            }
+        });
+
         static::updated(function (Model $workspace) {
             if ($workspace->wasChanged('logo_id') && $workspace->logo_id) {
                 if ($attachment = Attachment::query()->find($workspace->logo_id)) {
