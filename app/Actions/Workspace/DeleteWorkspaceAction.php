@@ -14,7 +14,7 @@ class DeleteWorkspaceAction
     {
         $workspace = Workspace::query()->findOrFail($id);
         if ($workspace->owner_id && (string) $workspace->owner_id === (string) $currentUserId) {
-            abort(403, '不允许删除自己作为所有者的工作区');
+            abort(403, __('workspace.cannot_delete_own_workspace'));
         }
         $workspace->delete();
     }
