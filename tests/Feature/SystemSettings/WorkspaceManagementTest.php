@@ -9,10 +9,8 @@ use Tests\WithWorkspace;
 uses(RefreshDatabase::class, WithWorkspace::class);
 
 beforeEach(function () {
-    // 固定 slug，避免随机 slug 带来的偶发 404（IdentifyWorkspace 依赖 slug）
     $this->user = $this->createUserWithWorkspace([], [
         'name' => 'Test Workspace',
-        'slug' => 'test-workspace',
     ]);
 });
 
