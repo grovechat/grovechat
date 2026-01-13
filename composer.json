@@ -10,8 +10,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "godruoyi/php-snowflake": "^3.2",
-        "hashids/hashids": "^5.0",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel-lang/common": "^6.7",
         "laravel/fortify": "^1.30",
