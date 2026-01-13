@@ -5,4 +5,60 @@ description: 项目基础架构说明
 
 # Overview
 
-Insert overview text here. The agent will only see this should they choose to apply the rule.
+GroveChat 是基于 Go + FrankenPHP + Laravel + Vue 3 的混合架构项目。Go 程序直接控制 FrankenPHP，通过自定义 worker 机制实现 Go/PHP 双向通信。使用 Gin 处理 HTTP 路由，Go Cron 管理定时任务。单一二进制部署，支持自动 HTTPS。后期将集成 NATS 作为消息中心处理高性能任务。
+
+# 技术栈
+
+**控制层**: Go 1.25 (Gin + FrankenPHP SDK + Go Cron)  
+**PHP运行时**: FrankenPHP (嵌入式PHP，非Octane模式)  
+**后端框架**: Laravel 12 + Fortify + Sanctum  
+**前端**: Vue 3 + Inertia.js + TypeScript + TailwindCSS 4  
+**数据库**: SQLite (main/session/cache/jobs)  
+**未来集成**: NATS (消息中心) + NATS Micro (增强通信)
+
+# 目录结构
+
+```
+cmd/grovechat/          # Go应用入口，支持artisan子命令
+internal/app/           # Go业务逻辑
+  ├─ phpbridge/         # PHP-Go通信桥接
+  ├─ business/          # 业务模块 (native等)
+  └─ routes/            # Go路由
+
+app/                    # Laravel应用层
+  ├─ Actions/           # Laravel Actions (用lorisleiva/laravel-actions)
+  ├─ Models/            # Eloquent模型
+  ├─ Services/          # 业务服务
+  └─ Settings/          # Spatie Settings
+
+resources/js/           # Vue 3前端
+  ├─ pages/             # Inertia页面组件
+  ├─ layouts/           # 布局组件
+  ├─ components/ui/     # UI组件库
+  ├─ composables/       # Vue组合式函数
+  ├─ locales/           # 国际化 (en/zh-CN)
+  └─ actions/           # 生成的TS类型定义
+
+routes/                 # Laravel路由 (web/api)
+public/                 # 静态资源 + worker入口
+build/                  # Go编译产物 (grovechat二进制)
+```
+
+# 核心机制
+
+**自定义Worker系统** (public/*.php):
+- `web-worker.php`: 处理HTTP请求，由Gin转发
+- `native-worker.php`: Go调PHP桥接层（通过`frankenphp_handle_request`处理消息）
+- `queue-worker.php`: 队列任务处理，Go定时轮询
+- `artisan-worker.php`: 执行Laravel命令和定时任务
+
+**通信方式**:
+- Go → PHP: 通过`workers.SendMessage()`发送请求到对应worker
+- PHP → Go: native-worker返回结构化数据（data/error）
+- phpbridge封装了通信协议和类型转换
+
+**运行流程**:
+1. Go程序通过`frankenphp.Init()`启动多个worker进程
+2. Gin处理HTTP路由，转发动态请求到web-worker
+3. Go Cron管理定时任务，调用artisan-worker
+4. Go轮询queue-worker处理队列任务（智能降频）
