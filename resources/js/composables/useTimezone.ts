@@ -1,32 +1,16 @@
 import { onMounted, ref } from 'vue';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezonePlugin from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezonePlugin);
 
 // 获取时区的 UTC 偏移量
 function getTimezoneOffset(timezone: string): string {
   try {
-    const date = new Date();
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      timeZone: timezone,
-      timeZoneName: 'shortOffset',
-    });
-
-    const parts = formatter.formatToParts(date);
-    const offsetPart = parts.find((part) => part.type === 'timeZoneName');
-
-    if (offsetPart?.value && offsetPart.value.startsWith('GMT')) {
-      return offsetPart.value.replace('GMT', 'UTC');
-    }
-
-    // 备用方法：计算偏移量
-    const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
-    const tzDate = new Date(
-      date.toLocaleString('en-US', { timeZone: timezone }),
-    );
-    const offset = (tzDate.getTime() - utcDate.getTime()) / (1000 * 60 * 60);
-    const sign = offset >= 0 ? '+' : '-';
-    const absOffset = Math.abs(offset);
-    const hours = Math.floor(absOffset).toString().padStart(2, '0');
-    const minutes = ((absOffset % 1) * 60).toString().padStart(2, '0');
-    return `UTC${sign}${hours}:${minutes}`;
+    const offset = dayjs().tz(timezone).format('Z'); // e.g. "+08:00"
+    return `UTC${offset}`;
   } catch {
     return 'UTC+00:00';
   }
@@ -234,24 +218,10 @@ export function useTimezone() {
   // 格式化时间到当前时区
   function formatToTimezone(
     date: Date | string,
-    format?: Intl.DateTimeFormatOptions,
+    format = 'YYYY-MM-DD HH:mm:ss',
   ): string {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-
-    const defaultFormat: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      timeZone: timezone.value,
-      hour12: false,
-    };
-
-    return new Intl.DateTimeFormat('zh-CN', format || defaultFormat).format(
-      dateObj,
-    );
+    const d = typeof date === 'string' ? dayjs(date) : dayjs(date);
+    return d.tz(timezone.value).format(format);
   }
 
   return {

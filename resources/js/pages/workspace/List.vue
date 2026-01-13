@@ -1,21 +1,36 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useI18n } from '@/composables/useI18n';
-import { useTimezone } from '@/composables/useTimezone';
+import { useDateTime } from '@/composables/useDateTime';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
-import { getWorkspaceList, showWorkspaceDetail } from '@/routes';
+import { deleteWorkspace, getWorkspaceList, showWorkspaceDetail } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { WorkspaceListPagePropsData } from '@/types/generated';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { formatToTimezone } = useTimezone();
+const { formatDateTime } = useDateTime();
 const page = usePage<AppPageProps<WorkspaceListPagePropsData>>();
 const currentWorkspace = computed(() => page.props.currentWorkspace);
 const workspaceList = computed(() => page.props.workspace_list);
+const deleteForm = useForm({});
+const currentUserId = computed(() => String((page.props as any)?.auth?.user?.id ?? ''));
+
+const cannotDelete = (ws: (typeof workspaceList.value)[number]) =>
+  !!ws.owner?.id && String(ws.owner.id) === currentUserId.value;
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('工作区管理'),
@@ -78,24 +93,83 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </div>
                   </td>
                   <td class="px-4 py-3 text-muted-foreground">
-                    {{ formatToTimezone(ws.created_at) }}
+                    {{ formatDateTime(ws.created_at) }}
                   </td>
                   <td class="px-4 py-3">
                     {{ ws.members_count }}
                   </td>
                   <td class="px-4 py-3 text-right">
-                    <Button variant="outline" size="sm" as-child>
-                      <Link
-                        :href="
-                          showWorkspaceDetail.url({
-                            slug: currentWorkspace.slug,
-                            id: ws.id,
-                          })
-                        "
-                      >
-                        {{ t('查看详情') }}
-                      </Link>
-                    </Button>
+                    <div class="inline-flex items-center gap-2">
+                      <Button variant="outline" size="sm" as-child>
+                        <Link
+                          :href="
+                            showWorkspaceDetail.url({
+                              slug: currentWorkspace.slug,
+                              id: ws.id,
+                            })
+                          "
+                        >
+                          {{ t('查看详情') }}
+                        </Link>
+                      </Button>
+
+                      <Dialog>
+                        <DialogTrigger as-child>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            :disabled="cannotDelete(ws)"
+                            :title="
+                              cannotDelete(ws)
+                                ? t('不能删除自己作为所有者的工作区')
+                                : undefined
+                            "
+                          >
+                            {{ t('删除') }}
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader class="space-y-3">
+                            <DialogTitle>
+                              {{ t('确认删除工作区？') }}
+                            </DialogTitle>
+                            <DialogDescription>
+                              {{ t('将工作区放入回收站（软删除），可以后续恢复。') }}
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          <div class="rounded-md bg-muted/30 p-3 text-sm">
+                            <div class="font-medium">{{ ws.name }}</div>
+                            <div class="text-muted-foreground">
+                              {{ ws.owner?.name || '-' }}
+                            </div>
+                          </div>
+
+                          <DialogFooter class="gap-2">
+                            <DialogClose as-child>
+                              <Button variant="secondary" :disabled="deleteForm.processing">
+                                {{ t('取消') }}
+                              </Button>
+                            </DialogClose>
+                            <Button
+                              variant="destructive"
+                              :disabled="deleteForm.processing"
+                              @click="
+                                deleteForm.delete(
+                                  deleteWorkspace.url({
+                                    slug: currentWorkspace.slug,
+                                    id: ws.id,
+                                  }),
+                                  { preserveScroll: true },
+                                )
+                              "
+                            >
+                              {{ deleteForm.processing ? t('删除中...') : t('确认删除') }}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </td>
                 </tr>
 

@@ -27,7 +27,6 @@ class ShowWorkspaceDetailAction
             ->findOrFail($id);
 
         $paginator = $workspace->users()
-            ->select(['users.id', 'users.name', 'users.email'])
             ->orderByPivot('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
 
@@ -40,22 +39,19 @@ class ShowWorkspaceDetailAction
             workspace_detail: WorkspaceDetailData::fromModel($workspace),
             workspace_members: $members,
             workspace_members_pagination: new SimplePaginationData(
-                current_page: (int) $paginator->currentPage(),
-                last_page: (int) $paginator->lastPage(),
-                per_page: (int) $paginator->perPage(),
-                total: (int) $paginator->total(),
+                current_page: $paginator->currentPage(),
+                last_page: $paginator->lastPage(),
+                per_page: $paginator->perPage(),
+                total: $paginator->total(),
             ),
         );
     }
     
-    public function asController(Request $request, string $id)
+    public function asController(Request $request, string $slug, string $id)
     {
         $page = (int) $request->query('page', 1);
         $perPage = (int) $request->query('per_page', 10);
 
-        return Inertia::render(
-            'workspace/Show',
-            $this->handle($id, $page, $perPage)->toArray(),
-        );
+        return Inertia::render('workspace/Show', $this->handle($id, $page, $perPage)->toArray());
     }
 }

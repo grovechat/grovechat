@@ -2,7 +2,7 @@
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/composables/useI18n';
-import { useTimezone } from '@/composables/useTimezone';
+import { useDateTime } from '@/composables/useDateTime';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import { getWorkspaceList, showWorkspaceDetail } from '@/routes';
@@ -12,7 +12,7 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const { formatToTimezone } = useTimezone();
+const { formatDateTime } = useDateTime();
 const page = usePage<AppPageProps<WorkspaceDetailPagePropsData>>();
 const currentWorkspace = computed(() => page.props.currentWorkspace);
 const workspaceDetail = computed(() => page.props.workspace_detail);
@@ -64,7 +64,7 @@ const nextPage = computed(() =>
             <div class="flex items-baseline justify-between gap-3">
               <div class="text-muted-foreground">{{ t('创建时间') }}</div>
               <div class="font-medium">
-                {{ formatToTimezone(workspaceDetail.created_at) }}
+                {{ formatDateTime(workspaceDetail.created_at) }}
               </div>
             </div>
             <div class="flex items-baseline justify-between gap-3">
@@ -103,7 +103,7 @@ const nextPage = computed(() =>
                   <td class="px-4 py-3 text-muted-foreground">{{ m.email }}</td>
                   <td class="px-4 py-3">{{ m.role || '-' }}</td>
                   <td class="px-4 py-3 text-muted-foreground">
-                    {{ m.joined_at ? formatToTimezone(m.joined_at) : '-' }}
+                    {{ m.joined_at ? formatDateTime(m.joined_at) : '-' }}
                   </td>
                 </tr>
 

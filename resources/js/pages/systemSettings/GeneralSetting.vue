@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import UploadImageAction from '@/actions/App/Actions/Attachment/UploadImageAction';
 import SystemSetting from '@/actions/App/Actions/SystemSetting';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
