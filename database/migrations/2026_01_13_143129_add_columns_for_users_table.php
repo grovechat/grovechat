@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserOnlineStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +16,8 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('nickname')->nullable();
             $table->string('external_nickname')->nullable()->comment('对外昵称');
+            $table->integer('online_status')->default(UserOnlineStatus::ONLINE->value)->comment('在线状态');
+            $table->timestamp('last_active_at')->nullable()->comment('最后活跃时间');
         });
     }
 
@@ -27,6 +30,8 @@ return new class extends Migration
             $table->dropColumn('avatar');
             $table->dropColumn('nickname');
             $table->dropColumn('external_nickname');
+            $table->dropColumn('online_status');
+            $table->dropColumn('last_active_at');
         });
     }
 };

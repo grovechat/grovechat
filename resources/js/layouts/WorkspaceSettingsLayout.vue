@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { getCurrentWorkspace } from '@/routes';
+import { getCurrentWorkspace, showUserList } from '@/routes';
 import workspaceSetting from '@/routes/workspace-setting';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -39,9 +39,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('多客服'),
-          href: workspaceSetting.teammate.index.url(
-            currentWorkspace.value.slug,
-          ),
+          href: showUserList.url(currentWorkspace.value.slug),
         },
       ],
     },
