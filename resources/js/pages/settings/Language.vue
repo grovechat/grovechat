@@ -47,11 +47,13 @@ const currentTimezoneLabel = computed(
   () => getCurrentTimezoneInfo(locale.value).label,
 );
 
-function handleLanguageChange(value: string) {
+function handleLanguageChange(value: any) {
+  if (typeof value !== 'string') return;
   updateLocale(value as Locale);
 }
 
-function handleTimezoneChange(value: string) {
+function handleTimezoneChange(value: any) {
+  if (typeof value !== 'string') return;
   updateTimezone(value as Timezone);
 }
 </script>
