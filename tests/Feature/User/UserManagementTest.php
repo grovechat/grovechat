@@ -142,3 +142,35 @@ test('cannot delete current logged in user', function () {
         ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]))
         ->assertForbidden();
 });
+
+test('trash page shows deleted users and can restore', function () {
+    $member = User::factory()->create([
+        'name' => '回收站客服',
+        'email' => 'trash@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+
+    $this->actingAs($this->user)
+        ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+        ->assertRedirect();
+
+    $this->actingAs($this->user)
+        ->get(route('show-user-trash-page', ['slug' => $this->workspaceSlug()]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('user/Trash')
+            ->has('user_list', 1)
+            ->has('user_list.0', fn (Assert $item) => $item
+                ->hasAll(['id', 'avatar', 'name', 'email', 'role', 'deleted_at'])
+                ->where('email', 'trash@example.com')
+                ->etc()
+            )
+        );
+
+    $this->actingAs($this->user)
+        ->put(route('restore-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+        ->assertRedirect();
+
+    expect($member->fresh())->not->toBeNull();
+    expect($member->fresh()->deleted_at)->toBeNull();
+});
