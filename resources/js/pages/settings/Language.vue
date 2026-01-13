@@ -126,13 +126,15 @@ function handleTimezoneChange(value: any) {
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <div class="sticky top-0 z-10 bg-background p-2 border-b">
-                  <Input
-                    v-model="timezoneSearch"
-                    :placeholder="t('搜索时区（名称 / IANA / UTC 偏移）')"
-                    @keydown.stop
-                  />
-                </div>
+                <template #header>
+                  <div class="border-b bg-popover p-2">
+                    <Input
+                      v-model="timezoneSearch"
+                      :placeholder="t('搜索时区（名称 / IANA / UTC 偏移）')"
+                      @keydown.stop
+                    />
+                  </div>
+                </template>
                 <SelectItem
                   v-for="tz in timezones"
                   :key="tz.value"
