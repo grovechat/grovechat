@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Head, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -40,7 +41,16 @@ const currentLanguageLabel = computed(() => {
 });
 
 // 根据当前语言获取时区列表
-const timezones = computed(() => getTimezones(locale.value));
+const timezoneSearch = ref('');
+const timezones = computed(() => {
+  const list = getTimezones(locale.value);
+  const q = timezoneSearch.value.trim().toLowerCase();
+  if (!q) return list;
+  return list.filter((tz) => {
+    const hay = `${tz.label} ${tz.value} ${tz.offset}`.toLowerCase();
+    return hay.includes(q);
+  });
+});
 
 // 根据当前语言获取当前时区标签
 const currentTimezoneLabel = computed(
@@ -116,6 +126,13 @@ function handleTimezoneChange(value: any) {
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
+                <div class="sticky top-0 z-10 bg-background p-2 border-b">
+                  <Input
+                    v-model="timezoneSearch"
+                    :placeholder="t('搜索时区（名称 / IANA / UTC 偏移）')"
+                    @keydown.stop
+                  />
+                </div>
                 <SelectItem
                   v-for="tz in timezones"
                   :key="tz.value"
@@ -123,6 +140,12 @@ function handleTimezoneChange(value: any) {
                 >
                   {{ tz.label }}
                 </SelectItem>
+                <div
+                  v-if="timezones.length === 0"
+                  class="px-3 py-2 text-sm text-muted-foreground"
+                >
+                  {{ t('未找到匹配的时区') }}
+                </div>
               </SelectContent>
             </Select>
           </div>
