@@ -33,6 +33,11 @@ class Workspace extends Model
         return $this->belongsToMany(User::class)->withPivot('role')->withTimestamps();
     }
 
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
     public function logo()
     {
         return $this->morphOne(Attachment::class, 'attachable');

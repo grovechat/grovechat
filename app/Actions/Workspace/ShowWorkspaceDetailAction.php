@@ -2,6 +2,13 @@
 
 namespace App\Actions\Workspace;
 
+use App\Data\SimplePaginationData;
+use App\Data\WorkspaceDetailData;
+use App\Data\WorkspaceDetailPagePropsData;
+use App\Data\WorkspaceMemberData;
+use App\Models\User;
+use App\Models\Workspace;
+use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Inertia\Inertia;
 
@@ -9,15 +16,46 @@ class ShowWorkspaceDetailAction
 {
     use AsAction;
 
-    public function handle()
+    public function handle(string $id, int $page = 1, int $perPage = 10)
     {
-        // ...
+        $perPage = max(1, min($perPage, 50));
+        $page = max(1, $page);
+
+        $workspace = Workspace::query()
+            ->with(['owner:id,name,email'])
+            ->withCount('users')
+            ->findOrFail($id);
+
+        $paginator = $workspace->users()
+            ->select(['users.id', 'users.name', 'users.email'])
+            ->orderByPivot('created_at', 'desc')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        $members = $paginator
+            ->getCollection()
+            ->map(fn (User $u) => WorkspaceMemberData::fromModel($u))
+            ->all();
+
+        return new WorkspaceDetailPagePropsData(
+            workspace_detail: WorkspaceDetailData::fromModel($workspace),
+            workspace_members: $members,
+            workspace_members_pagination: new SimplePaginationData(
+                current_page: (int) $paginator->currentPage(),
+                last_page: (int) $paginator->lastPage(),
+                per_page: (int) $paginator->perPage(),
+                total: (int) $paginator->total(),
+            ),
+        );
     }
     
-    public function asController()
+    public function asController(Request $request, string $id)
     {
-        $this->handle();
-        
-        Inertia::render('workspace/Show');
+        $page = (int) $request->query('page', 1);
+        $perPage = (int) $request->query('per_page', 10);
+
+        return Inertia::render(
+            'workspace/Show',
+            $this->handle($id, $page, $perPage)->toArray(),
+        );
     }
 }

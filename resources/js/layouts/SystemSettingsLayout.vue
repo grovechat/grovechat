@@ -9,6 +9,12 @@ import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
+interface Props {
+  contentClass?: string;
+}
+
+const props = defineProps<Props>();
+
 const { t } = useI18n();
 const page = usePage();
 const currentWorkspace = computed(() => page.props.currentWorkspace);
@@ -91,7 +97,7 @@ const currentPath =
     <Separator class="my-6 lg:hidden" />
 
     <div class="flex-1 px-4 py-6">
-      <section class="max-w-2xl space-y-12">
+      <section :class="['space-y-12', props.contentClass || 'max-w-2xl']">
         <slot />
       </section>
     </div>
