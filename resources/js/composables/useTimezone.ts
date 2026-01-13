@@ -107,14 +107,14 @@ export function useTimezone() {
     }
     timezone.value = newTimezone;
 
-    // Store in localStorage for persistence
+    // 存储到localstorage
     localStorage.setItem('timezone', newTimezone);
   }
 
   const getOffsetMinutes = (tz: string) =>
     timezoneData.find((x) => x.value === tz)?.offsetMinutes ?? 0;
 
-  // “常用优先”不写死列表：当前/浏览器/同大洲/offset 接近
+  // “常用优先”：当前/浏览器/同大洲/offset 接近
   function getTimezones(lang: TimezoneLocale = 'zh-CN'): TimezoneOption[] {
     const browser = getBrowserTimezone();
     const current = timezone.value;
