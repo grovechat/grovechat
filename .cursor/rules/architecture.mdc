@@ -5,60 +5,76 @@ description: 项目基础架构说明
 
 # Overview
 
-GroveChat 是基于 Go + FrankenPHP + Laravel + Vue 3 的混合架构项目。Go 程序直接控制 FrankenPHP，通过自定义 worker 机制实现 Go/PHP 双向通信。使用 Gin 处理 HTTP 路由，Go Cron 管理定时任务。单一二进制部署，支持自动 HTTPS。后期将集成 NATS 作为消息中心处理高性能任务。
+GroveChat 是基于 Laravel 12 + Vue 3 + Inertia.js 的全栈应用。底层使用 Go + FrankenPHP 作为运行时（日常开发无需关注）。采用 Action 模式组织业务逻辑，使用 Laravel Data 做类型安全的数据流转，通过 Wayfinder 和 TypeScript Transformer 实现前后端类型同步。
 
 # 技术栈
 
-**控制层**: Go 1.25 (Gin + FrankenPHP SDK + Go Cron)  
-**PHP运行时**: FrankenPHP (嵌入式PHP，非Octane模式)  
-**后端框架**: Laravel 12 + Fortify + Sanctum  
-**前端**: Vue 3 + Inertia.js + TypeScript + TailwindCSS 4  
-**数据库**: SQLite (main/session/cache/jobs)  
-**未来集成**: NATS (消息中心) + NATS Micro (增强通信)
+**开发重点**:
+- 后端框架: Laravel 12 + Fortify + Sanctum
+- 架构模式: Laravel Actions (lorisleiva/laravel-actions)
+- 数据层: Spatie Laravel Data + TypeScript Transformer
+- 前端: Vue 3 + Inertia.js + TypeScript + TailwindCSS 4
+- 路由生成: Laravel Wayfinder
 
-# 目录结构
+**底层运行时** (日常开发无需关注):
+- Go 1.25 + FrankenPHP (替代传统 PHP-FPM)
+- SQLite (main/session/cache/jobs)
+- 未来: NATS 消息中心
+
+# 目录结构（开发视角）
 
 ```
-cmd/grovechat/          # Go应用入口，支持artisan子命令
-internal/app/           # Go业务逻辑
-  ├─ phpbridge/         # PHP-Go通信桥接
-  ├─ business/          # 业务模块 (native等)
-  └─ routes/            # Go路由
-
-app/                    # Laravel应用层
-  ├─ Actions/           # Laravel Actions (用lorisleiva/laravel-actions)
+app/                    # Laravel应用层（主要开发区域）
+  ├─ Actions/           # 业务逻辑（Action模式）
+  │   ├─ Dashboard/
+  │   ├─ Workspace/
+  │   └─ SystemSetting/
+  ├─ Data/              # 数据传输对象（DTO）
   ├─ Models/            # Eloquent模型
+  ├─ Http/              # HTTP层（中间件、少量传统Controller）
   ├─ Services/          # 业务服务
-  └─ Settings/          # Spatie Settings
+  └─ Settings/          # 系统设置（Spatie Settings）
 
 resources/js/           # Vue 3前端
   ├─ pages/             # Inertia页面组件
   ├─ layouts/           # 布局组件
-  ├─ components/ui/     # UI组件库
-  ├─ composables/       # Vue组合式函数
-  ├─ locales/           # 国际化 (en/zh-CN)
-  └─ actions/           # 生成的TS类型定义
+  ├─ components/        # 组件库
+  ├─ composables/       # 组合式函数
+  ├─ locales/           # 前端国际化（key为中文）
+  ├─ types/             # TS类型定义
+  │   └─ generated.d.ts # 自动生成（勿手动编辑）
+  ├─ actions/           # Wayfinder生成的前端路由
+  └─ routes/            # Wayfinder生成的路由工具
 
-routes/                 # Laravel路由 (web/api)
-public/                 # 静态资源 + worker入口
-build/                  # Go编译产物 (grovechat二进制)
+routes/                 # Laravel路由定义
+lang/                   # 后端国际化（Laravel标准）
 ```
 
-# 核心机制
+# 关键特性
 
-**自定义Worker系统** (public/*.php):
-- `web-worker.php`: 处理HTTP请求，由Gin转发
-- `native-worker.php`: Go调PHP桥接层（通过`frankenphp_handle_request`处理消息）
-- `queue-worker.php`: 队列任务处理，Go定时轮询
-- `artisan-worker.php`: 执行Laravel命令和定时任务
+**类型安全的数据流**:
+1. 后端定义 Laravel Data（`app/Data/*.php`）
+2. 运行 `php artisan typescript:transform` 生成TS类型
+3. 前端使用生成的类型（`resources/js/types/generated.d.ts`）
+4. 数据自动转换为snake_case（配置于`config/data.php`）
 
-**通信方式**:
-- Go → PHP: 通过`workers.SendMessage()`发送请求到对应worker
-- PHP → Go: native-worker返回结构化数据（data/error）
-- phpbridge封装了通信协议和类型转换
+**路由自动生成**:
+- Wayfinder自动生成前端路由辅助函数
+- 位于 `resources/js/actions` 和 `resources/js/routes`
+- 前端通过类型安全的方式调用后端路由
 
-**运行流程**:
-1. Go程序通过`frankenphp.Init()`启动多个worker进程
-2. Gin处理HTTP路由，转发动态请求到web-worker
-3. Go Cron管理定时任务，调用artisan-worker
-4. Go轮询queue-worker处理队列任务（智能降频）
+**开发流程**:
+```bash
+# 终端1: 启动后端服务（通过 Go 启动 FrankenPHP workers）
+make
+
+# 终端2: 启动前端开发服务器（Vite，支持热重载）
+npm run dev
+
+# 类型生成（修改 Data 类后执行）
+php artisan typescript:transform
+
+# 其他常用命令
+php artisan test                  # 运行测试
+./vendor/bin/pint                 # 代码格式化
+```
