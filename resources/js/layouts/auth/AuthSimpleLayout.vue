@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import fallbackLogoUrl from '@/assets/images/logo.png';
 import { home } from '@/routes';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -10,8 +9,8 @@ defineProps<{
 }>();
 
 const page = usePage();
-const logo = computed(() => page.props.generalSettings?.logoUrl || fallbackLogoUrl);
-const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
+const logo = computed(() => page.props.generalSettings.logo_url);
+const systemName = computed(() => page.props.generalSettings.name);
 </script>
 
 <template>

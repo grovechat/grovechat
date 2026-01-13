@@ -14,7 +14,7 @@ class GeneralSettingsData extends Data
         public ?string $copyright = null,
         public ?string $icpRecord = null,
         public ?string $version = null,
-        public ?string $logoUrl = null,
+        public string $logoUrl = "",
     ) {}
 
     public static function rules(): array
@@ -36,7 +36,7 @@ class GeneralSettingsData extends Data
     public function toArray(): array
     {
         $data = parent::toArray();
-        $data['logoUrl'] = $this->logoUrl();
+        $data['logo_url'] = $this->logoUrl();
 
         return $data;
     }

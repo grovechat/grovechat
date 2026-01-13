@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import fallbackLogoUrl from '@/assets/images/logo.png';
 import { home } from '@/routes';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -7,7 +6,7 @@ import { computed } from 'vue';
 const page = usePage();
 const name = page.props.name;
 const quote = page.props.quote;
-const logo = computed(() => page.props.generalSettings?.logoUrl || fallbackLogoUrl);
+const logo = computed(() => page.props.generalSettings.logo_url);
 
 defineProps<{
   title?: string;
