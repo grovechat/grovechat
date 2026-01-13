@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import fallbackLogoUrl from '@/assets/images/logo.png';
 import {
   Card,
   CardContent,
@@ -8,12 +8,17 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { home } from '@/routes';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 defineProps<{
   title?: string;
   description?: string;
 }>();
+
+const page = usePage();
+const logo = computed(() => page.props.generalSettings?.logoUrl || fallbackLogoUrl);
+const systemName = computed(() => page.props.generalSettings?.name || 'GroveChat');
 </script>
 
 <template>
@@ -26,7 +31,11 @@ defineProps<{
         class="flex items-center gap-2 self-center font-medium"
       >
         <div class="flex h-9 w-9 items-center justify-center">
-          <AppLogoIcon class="size-9 fill-current text-black dark:text-white" />
+          <img
+            :src="logo"
+            :alt="systemName + ' Logo'"
+            class="size-9 object-contain"
+          />
         </div>
       </Link>
 

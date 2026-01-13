@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HeadingSmall from '@/components/HeadingSmall.vue';
+import HeadingSmall from '@/components/common/HeadingSmall.vue';
 import { useI18n } from '@/composables/useI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import ContactsLayout from '@/layouts/ContactsLayout.vue';

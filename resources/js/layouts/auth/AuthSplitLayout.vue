@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import fallbackLogoUrl from '@/assets/images/logo.png';
 import { home } from '@/routes';
 import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 const page = usePage();
 const name = page.props.name;
 const quote = page.props.quote;
+const logo = computed(() => page.props.generalSettings?.logoUrl || fallbackLogoUrl);
 
 defineProps<{
   title?: string;
@@ -25,7 +27,7 @@ defineProps<{
         :href="home()"
         class="relative z-20 flex items-center text-lg font-medium"
       >
-        <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
+        <img :src="logo" :alt="name + ' Logo'" class="mr-2 size-8 object-contain" />
         {{ name }}
       </Link>
       <div v-if="quote" class="relative z-20 mt-auto">

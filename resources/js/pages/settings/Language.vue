@@ -2,7 +2,7 @@
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
-import HeadingSmall from '@/components/HeadingSmall.vue';
+import HeadingSmall from '@/components/common/HeadingSmall.vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
