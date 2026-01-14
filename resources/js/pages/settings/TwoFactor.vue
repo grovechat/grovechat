@@ -23,6 +23,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { confirm, disable, enable, regenerateRecoveryCodes, show } from '@/routes/two-factor';
 import { BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
@@ -53,12 +54,19 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 const page = usePage();
+const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
 const currentWorkspace = computed(() => page.props.currentWorkspace);
+const RootLayout = computed(() => (currentWorkspace.value ? AppLayout : SystemAppLayout));
+const linkOptions = computed(() => ({
+  mergeQuery: {
+    from_workspace: fromWorkspaceSlug.value,
+  },
+}));
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('两步验证'),
-    href: show(currentWorkspace.value.slug).url,
+    href: show.url(linkOptions.value),
   },
 ]);
 
@@ -186,7 +194,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbs">
+  <component :is="RootLayout" :breadcrumbs="breadcrumbs">
     <Head :title="t('两步验证')" />
     <SettingsLayout>
       <div class="space-y-6">
@@ -215,7 +223,7 @@ onUnmounted(() => {
             </Button>
             <Form
               v-else
-              v-bind="enable.form(currentWorkspace.slug)"
+              v-bind="enable.form()"
               @success="showSetupModal = true"
               #default="{ processing }"
             >
@@ -323,7 +331,7 @@ onUnmounted(() => {
 
           <div class="relative inline">
             <Form
-              v-bind="disable.form(currentWorkspace.slug)"
+              v-bind="disable.form()"
               #default="{ processing }"
             >
               <Button
@@ -510,5 +518,5 @@ onUnmounted(() => {
         </Dialog>
       </div>
     </SettingsLayout>
-  </AppLayout>
+  </component>
 </template>

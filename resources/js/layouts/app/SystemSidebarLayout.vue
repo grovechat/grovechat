@@ -38,6 +38,7 @@ import { getInitials } from '@/composables/useInitials';
 import { useErrorHandling } from '@/composables/useToast';
 import { cn, toUrl, urlIsActive } from '@/lib/utils';
 import { getGeneralSetting, getStorageSetting, getWorkspaceList, logout } from '@/routes';
+import { edit as editProfile } from '@/routes/profile';
 import systemSetting from '@/routes/system-setting';
 import type { BreadcrumbItemType, NavItem } from '@/types';
 import { Link, router, usePage } from '@inertiajs/vue3';
@@ -84,6 +85,7 @@ const systemLogo = computed(
   () => generalSettings.value?.logo_url || fallbackLogoUrl,
 );
 const user = computed(() => page.props.auth.user);
+const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
 const showAvatar = computed(() => user.value?.avatar && user.value.avatar !== '');
 
 type MainNavItem = NavItem & {
@@ -159,6 +161,8 @@ const isExternalLink = (href: NavItem['href']) => {
 const handleLogout = () => {
   router.flushAll();
 };
+
+const profileHref = computed(() => editProfile.url({ query: { context: 'system' } }));
 </script>
 
 <template>
@@ -333,6 +337,13 @@ const handleLogout = () => {
                       </div>
                     </div>
                   </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem :as-child="true">
+                    <Link class="block w-full" :href="profileHref" as="button">
+                      <Settings class="mr-2 h-4 w-4" />
+                      {{ t('个人设置') }}
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem :as-child="true">
                     <Link

@@ -12,7 +12,7 @@ beforeEach(function () {
 test('password update page is displayed', function () {
     $response = $this
         ->actingAs($this->user)
-        ->get(route('user-password.edit', ['slug' => $this->workspaceSlug()]));
+        ->get(route('user-password.edit', ['from_workspace' => $this->workspaceSlug()]));
 
     $response->assertStatus(200);
 });
@@ -20,8 +20,8 @@ test('password update page is displayed', function () {
 test('password can be updated', function () {
     $response = $this
         ->actingAs($this->user)
-        ->from(route('user-password.edit', ['slug' => $this->workspaceSlug()]))
-        ->put(route('user-password.update', ['slug' => $this->workspaceSlug()]), [
+        ->from(route('user-password.edit', ['from_workspace' => $this->workspaceSlug()]))
+        ->put(route('user-password.update', ['from_workspace' => $this->workspaceSlug()]), [
             'current_password' => 'password',
             'password' => 'new-password',
             'password_confirmation' => 'new-password',
@@ -29,7 +29,7 @@ test('password can be updated', function () {
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('user-password.edit', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('user-password.edit', ['from_workspace' => $this->workspaceSlug()]));
 
     expect(Hash::check('new-password', $this->user->refresh()->password))->toBeTrue();
 });
@@ -37,8 +37,8 @@ test('password can be updated', function () {
 test('correct password must be provided to update password', function () {
     $response = $this
         ->actingAs($this->user)
-        ->from(route('user-password.edit', ['slug' => $this->workspaceSlug()]))
-        ->put(route('user-password.update', ['slug' => $this->workspaceSlug()]), [
+        ->from(route('user-password.edit', ['from_workspace' => $this->workspaceSlug()]))
+        ->put(route('user-password.update', ['from_workspace' => $this->workspaceSlug()]), [
             'current_password' => 'wrong-password',
             'password' => 'new-password',
             'password_confirmation' => 'new-password',
@@ -46,5 +46,5 @@ test('correct password must be provided to update password', function () {
 
     $response
         ->assertSessionHasErrors('current_password')
-        ->assertRedirect(route('user-password.edit', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('user-password.edit', ['from_workspace' => $this->workspaceSlug()]));
 });

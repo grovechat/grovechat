@@ -47,11 +47,37 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
         $workspaces = collect();
         $currentWorkspace = null;
+        $fromWorkspace = null;
 
         if ($user) {
             $workspaces = $user->workspaces()->get();
-            if ($request->route('slug')) {
-                $currentWorkspace = $user->workspaces()->where('slug', $request->route('slug'))->first();
+
+            $routeSlug = $request->route('slug');
+            if (is_string($routeSlug) && $routeSlug !== '') {
+                $currentWorkspace = $workspaces->firstWhere('slug', $routeSlug);
+            }
+
+            $isSystemContext = $request->query('context') === 'system';
+
+            $fromSlug = $request->query('from_workspace');
+            $fromSlug = is_string($fromSlug) && $fromSlug !== '' ? $fromSlug : null;
+
+            if (! $fromSlug && ! $isSystemContext) {
+                $fromSlug = $request->session()->get('last_workspace_slug');
+                $fromSlug = is_string($fromSlug) && $fromSlug !== '' ? $fromSlug : null;
+            }
+
+            if ($fromSlug && ! $isSystemContext) {
+                $fromWorkspace = $workspaces->firstWhere('slug', $fromSlug);
+            }
+
+            if (! $fromWorkspace && ! $isSystemContext) {
+                $fromWorkspace = $workspaces->first();
+            }
+
+            // /settings/* 等无 {slug} 的页面：如果存在 fromWorkspace，则也注入 currentWorkspace
+            if (! $currentWorkspace && $fromWorkspace) {
+                $currentWorkspace = $fromWorkspace;
             }
         }
 
@@ -66,6 +92,8 @@ class HandleInertiaRequests extends Middleware
             'generalSettings' => $this->getGeneralSettingAction->run(),
             'workspaces' => WorkspaceData::collect($workspaces),
             'currentWorkspace' => $currentWorkspace ? WorkspaceData::from($currentWorkspace) : null,
+            'fromWorkspace' => $fromWorkspace ? WorkspaceData::from($fromWorkspace) : null,
+            'fromWorkspaceSlug' => $fromWorkspace?->slug,
         ];
     }
 }

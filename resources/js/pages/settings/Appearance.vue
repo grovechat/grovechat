@@ -9,18 +9,26 @@ import { type BreadcrumbItem } from '@/types';
 
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { edit } from '@/routes/appearance';
 import { Monitor, Moon, Sun } from 'lucide-vue-next';
 
 const { t } = useI18n();
 const { appearance, updateAppearance } = useAppearance();
 const page = usePage();
+const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
 const currentWorkspace = computed(() => page.props.currentWorkspace);
+const RootLayout = computed(() => (currentWorkspace.value ? AppLayout : SystemAppLayout));
+const linkOptions = computed(() => ({
+  mergeQuery: {
+    from_workspace: fromWorkspaceSlug.value,
+  },
+}));
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('外观设置'),
-    href: edit(currentWorkspace.value.slug).url,
+    href: edit.url(linkOptions.value),
   },
 ]);
 
@@ -35,7 +43,7 @@ const tabs = computed(
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbItems">
+  <component :is="RootLayout" :breadcrumbs="breadcrumbItems">
     <Head :title="t('外观设置')" />
 
     <SettingsLayout>
@@ -64,5 +72,5 @@ const tabs = computed(
         </div>
       </div>
     </SettingsLayout>
-  </AppLayout>
+  </component>
 </template>

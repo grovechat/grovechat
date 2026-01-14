@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import { type BreadcrumbItem } from '@/types';
@@ -23,19 +24,26 @@ defineProps<Props>();
 
 const { t } = useI18n();
 const page = usePage();
+const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
 const currentWorkspace = computed(() => page.props.currentWorkspace);
+const RootLayout = computed(() => (currentWorkspace.value ? AppLayout : SystemAppLayout));
+const linkOptions = computed(() => ({
+  mergeQuery: {
+    from_workspace: fromWorkspaceSlug.value,
+  },
+}));
 const user = page.props.auth.user;
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('个人资料设置'),
-    href: edit(currentWorkspace.value.slug).url,
+    href: edit.url(linkOptions.value),
   },
 ]);
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbItems">
+  <component :is="RootLayout" :breadcrumbs="breadcrumbItems">
     <Head :title="t('个人资料设置')" />
 
     <SettingsLayout>
@@ -46,7 +54,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="ProfileController.update.form(currentWorkspace.slug)"
+          v-bind="ProfileController.update.form(linkOptions)"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
@@ -83,7 +91,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             <p class="-mt-4 text-sm text-muted-foreground">
               {{ t('你的电子邮件地址未验证。') }}
               <Link
-                :href="send(currentWorkspace.slug)"
+                :href="send.url(linkOptions)"
                 as="button"
                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
               >
@@ -118,5 +126,5 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         </Form>
       </div>
     </SettingsLayout>
-  </AppLayout>
+  </component>
 </template>

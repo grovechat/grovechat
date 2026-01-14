@@ -43,6 +43,29 @@ use Inertia\Inertia;
 Route::get('/', ShowHomePageAction::class)->name('home');
 Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth', 'verified'])->name('dashboard');
 
+// 个人设置（全局，不绑定工作区）
+Route::middleware(['auth', 'verified'])->prefix('settings')->group(function () {
+    Route::redirect('/', '/settings/profile');
+
+    // 个人资料
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // 密码
+    Route::get('password', [PasswordController::class, 'edit'])->name('user-password.edit');
+    Route::put('password', [PasswordController::class, 'update'])->middleware('throttle:6,1')->name('user-password.update');
+
+    // 两步认证
+    Route::get('two-factor', [TwoFactorAuthenticationController::class, 'show'])->name('two-factor.show');
+
+    // 语言和时区
+    Route::get('language', [LanguageController::class, 'edit'])->name('language.edit');
+
+    // 外观
+    Route::get('appearance', [AppearanceController::class, 'edit'])->name('appearance.edit');
+});
+
 // 系统设置（仅超级管理员）
 Route::prefix('system-settings')->middleware(['auth', 'verified', 'is_super_admin'])->group(function () {
     Route::redirect('/', '/system-settings/general');
@@ -89,28 +112,6 @@ Route::prefix('system-settings')->middleware(['auth', 'verified', 'is_super_admi
 Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
     Route::get('/', RedirectCurrentWorkspaceDashboard::class)->name('workspace.home');
     Route::get('/dashboard', ShowDashboardAction::class)->name('workspace.dashboard');
-
-    // 个人设置
-    Route::prefix('settings')->group(function () {
-        // 个人资料
-        Route::redirect('/', 'settings/profile');
-        Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-        // 密码
-        Route::get('password', [PasswordController::class, 'edit'])->name('user-password.edit');
-        Route::put('password', [PasswordController::class, 'update'])->middleware('throttle:6,1')->name('user-password.update');
-
-        // 两步认证
-        Route::get('two-factor', [TwoFactorAuthenticationController::class, 'show'])->name('two-factor.show');
-
-        // 语言和时区
-        Route::get('language', [LanguageController::class, 'edit'])->name('language.edit');
-
-        // 外观
-        Route::get('appearance', [AppearanceController::class, 'edit'])->name('appearance.edit');
-    });
 
     // 系统设置（旧路径兼容：/w/{slug}/system-settings/* -> /system-settings/*）
     Route::prefix('system-settings')->middleware(['is_super_admin'])->group(function () {

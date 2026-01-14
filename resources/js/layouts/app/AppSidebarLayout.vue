@@ -467,7 +467,7 @@ const handleLogout = () => {
                     <DropdownMenuItem :as-child="true">
                       <Link
                         class="block w-full"
-                        :href="edit(currentWorkspace.slug)"
+                        :href="edit({ query: { from_workspace: currentWorkspace.slug } }).url"
                         prefetch
                         as="button"
                       >
