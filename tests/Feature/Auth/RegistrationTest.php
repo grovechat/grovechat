@@ -26,7 +26,7 @@ test('first registered user is super admin and will be redirected to system sett
     expect($user->is_super_admin)->toBeTrue();
     expect($user->workspaces()->count())->toBe(0);
 
-    $response->assertRedirect('/system-settings');
+    $response->assertRedirect('/admin');
 });
 
 test('new users can register', function () {

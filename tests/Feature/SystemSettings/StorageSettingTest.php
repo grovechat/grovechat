@@ -31,7 +31,7 @@ test('authenticated user can view storage settings page (new schema)', function 
         ->get(route('get-storage-setting'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('storageSetting/Index')
+            ->component('admin/storageSetting/Index')
             ->has('storage_settings')
             ->has('storage_profiles')
             ->has('storage_config')

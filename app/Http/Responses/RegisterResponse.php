@@ -14,7 +14,7 @@ class RegisterResponse implements RegisterResponseContract
         $user = $request->user();
 
         if ($user && $user->is_super_admin) {
-            return redirect()->intended('/system-settings');
+            return redirect()->intended(route('admin.home', absolute: false));
         }
 
         return redirect()->intended(route('dashboard', absolute: false));

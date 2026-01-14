@@ -22,7 +22,7 @@ test('super admin can view general settings page', function () {
     actingAs($this->user)
         ->get(route('get-general-setting'))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page->component('generalSetting/Index'));
+        ->assertInertia(fn ($page) => $page->component('admin/generalSetting/Index'));
 });
 
 test('non-super-admin cannot view general settings page', function () {

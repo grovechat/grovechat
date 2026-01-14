@@ -32,7 +32,7 @@ test('super admin can view workspace management list page', function () {
         ->get(route('get-workspace-list'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('workspace/List')
+            ->component('admin/workspace/List')
             ->has('workspace_list')
             ->has('workspace_list.0', fn (Assert $item) => $item
                 ->hasAll(['id', 'name', 'slug', 'created_at', 'members_count', 'owner'])
@@ -56,7 +56,7 @@ test('workspace detail shows members with pagination', function () {
         ->get(route('show-workspace-detail', ['id' => $workspace->id, 'page' => 1, 'per_page' => 10]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('workspace/Show')
+            ->component('admin/workspace/Show')
             ->where('workspace_detail.id', (string) $workspace->id)
             ->has('workspace_members', 10)
             ->where('workspace_members_pagination.current_page', 1)

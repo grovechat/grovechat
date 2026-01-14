@@ -67,8 +67,8 @@ Route::middleware(['auth', 'verified', 'ensure_settings_workspace'])->prefix('se
 });
 
 // 系统设置（仅超级管理员）
-Route::prefix('system-settings')->middleware(['auth', 'verified', 'is_super_admin'])->group(function () {
-    Route::redirect('/', '/system-settings/general');
+Route::prefix('admin')->middleware(['auth', 'verified', 'is_super_admin'])->group(function () {
+    Route::redirect('/', '/admin/general')->name('admin.home');
 
     // 基础设置
     Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
@@ -90,22 +90,22 @@ Route::prefix('system-settings')->middleware(['auth', 'verified', 'is_super_admi
 
     // 邮箱服务器
     Route::get('mail', function () {
-        return Inertia::render('systemSettings/MailSetting');
+        return Inertia::render('admin/systemSettings/MailSetting');
     })->name('system-setting.get-mail-settings');
 
     // 外部集成
     Route::get('integration', function () {
-        return Inertia::render('systemSettings/IntegrationSetting');
+        return Inertia::render('admin/systemSettings/IntegrationSetting');
     })->name('system-setting.get-integration-settings');
 
     // 安全
     Route::get('security', function () {
-        return Inertia::render('systemSettings/SecuritySetting');
+        return Inertia::render('admin/systemSettings/SecuritySetting');
     })->name('system-setting.get-security-settings');
 
     // 维护
     Route::get('maintenance', function () {
-        return Inertia::render('systemSettings/MaintenanceSetting');
+        return Inertia::render('admin/systemSettings/MaintenanceSetting');
     })->name('system-setting.get-maintenance-settings');
 });
 

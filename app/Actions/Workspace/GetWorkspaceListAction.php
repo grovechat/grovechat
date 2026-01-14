@@ -26,9 +26,9 @@ class GetWorkspaceListAction
             workspace_list: $workspaces,
         );
     }
-    
+
     public function asController()
     {
-        return Inertia::render('workspace/List', $this->handle()->toArray());
+        return Inertia::render('admin/workspace/List', $this->handle()->toArray());
     }
 }

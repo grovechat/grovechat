@@ -35,7 +35,7 @@ test('super admin will be redirected to system settings after login', function (
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect('/system-settings');
+    $response->assertRedirect('/admin');
 });
 
 test('users with two factor enabled are redirected to two factor challenge', function () {

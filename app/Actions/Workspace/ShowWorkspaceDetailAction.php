@@ -52,6 +52,6 @@ class ShowWorkspaceDetailAction
         $page = (int) $request->query('page', 1);
         $perPage = (int) $request->query('per_page', 10);
 
-        return Inertia::render('workspace/Show', $this->handle($id, $page, $perPage)->toArray());
+        return Inertia::render('admin/workspace/Show', $this->handle($id, $page, $perPage)->toArray());
     }
 }

@@ -22,6 +22,6 @@ class GetGeneralSettingAction
 
     public function asController()
     {
-        return Inertia::render('generalSetting/Index');
+        return Inertia::render('admin/generalSetting/Index');
     }
 }
