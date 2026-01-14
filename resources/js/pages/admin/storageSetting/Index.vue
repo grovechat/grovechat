@@ -294,7 +294,11 @@ const providerLabel = (value: string) =>
             </Button>
           </div>
 
-          <div v-show="showCreate" class="rounded-lg border p-4 space-y-4">
+          <form
+            v-show="showCreate"
+            class="rounded-lg border p-4 space-y-4"
+            @submit.prevent="createProfile"
+          >
             <div class="grid gap-2">
               <Label for="name">{{ t('配置名称') }}</Label>
               <Input id="name" v-model="createForm.name" :placeholder="t('例如：腾讯云 COS（生产）')" />
@@ -417,11 +421,11 @@ const providerLabel = (value: string) =>
               <Button type="button" variant="outline" :disabled="createForm.processing || checkCreateForm.processing" @click="checkConnectionForCreate">
                 {{ t('检测连接') }}
               </Button>
-              <Button type="button" :disabled="createForm.processing || checkCreateForm.processing" @click="createProfile">
+              <Button type="submit" :disabled="createForm.processing || checkCreateForm.processing">
                 {{ t('创建') }}
               </Button>
             </div>
-          </div>
+          </form>
 
           <div class="space-y-3">
             <div
@@ -497,7 +501,11 @@ const providerLabel = (value: string) =>
                 </div>
               </div>
 
-              <div v-if="editingProfileId === p.id" class="rounded-md bg-muted/30 p-3 space-y-3">
+              <form
+                v-if="editingProfileId === p.id"
+                class="rounded-md bg-muted/30 p-3 space-y-3"
+                @submit.prevent="saveEdit(p.id)"
+              >
                 <div class="grid gap-2">
                   <Label>{{ t('配置名称') }}</Label>
                   <Input v-model="editForm.name" />
@@ -519,14 +527,14 @@ const providerLabel = (value: string) =>
                   <InputError class="mt-1" :message="editForm.errors.secret" />
                 </div>
                 <div class="flex items-center gap-2">
-                  <Button type="button" :disabled="editForm.processing" @click="saveEdit(p.id)">
+                  <Button type="submit" :disabled="editForm.processing">
                     {{ t('保存') }}
                   </Button>
                   <Button type="button" variant="outline" :disabled="editForm.processing" @click="cancelEdit">
                     {{ t('取消') }}
                   </Button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
