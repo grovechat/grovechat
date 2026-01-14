@@ -15,8 +15,12 @@ class GetWorkspaceListAction
     public function handle()
     {
         $workspaces = Workspace::query()
-            ->with(['owner:id,name,email'])
-            ->withCount('users')
+            ->with([
+                'owner' => fn ($query) => $query->withTrashed()->select(['id', 'name', 'email']),
+            ])
+            ->withCount([
+                'users' => fn ($query) => $query->withTrashed(),
+            ])
             ->orderByDesc('created_at')
             ->get()
             ->map(fn (Workspace $w) => WorkspaceListItemData::fromModel($w))

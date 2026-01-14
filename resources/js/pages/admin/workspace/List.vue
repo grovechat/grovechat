@@ -14,7 +14,7 @@ import {
 import { useI18n } from '@/composables/useI18n';
 import { useDateTime } from '@/composables/useDateTime';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
-import { deleteWorkspace, getWorkspaceList, showWorkspaceDetail } from '@/routes';
+import { deleteWorkspace, getWorkspaceList, getWorkspaceTrash, showWorkspaceDetail } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { WorkspaceListPagePropsData } from '@/types/generated';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
@@ -43,10 +43,15 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     <div class="px-4 py-6 sm:px-6">
       <div class="mx-auto w-full max-w-none space-y-12">
         <div class="space-y-6">
-          <HeadingSmall
-            :title="t('工作区管理')"
-            :description="t('查看系统中所有工作区及其成员信息')"
-          />
+          <div class="flex items-start justify-between gap-4">
+            <HeadingSmall
+              :title="t('工作区管理')"
+              :description="t('查看系统中所有工作区及其成员信息')"
+            />
+            <Button variant="outline" as-child>
+              <Link :href="getWorkspaceTrash.url()">{{ t('回收站') }}</Link>
+            </Button>
+          </div>
 
           <div class="rounded-lg border">
             <div class="overflow-x-auto">
@@ -125,7 +130,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                                 {{ t('确认删除工作区？') }}
                               </DialogTitle>
                               <DialogDescription>
-                                {{ t('将工作区放入回收站（软删除），可以后续恢复。') }}
+                                {{ t('将工作区放入回收站，可以后续恢复。') }}
                               </DialogDescription>
                             </DialogHeader>
 

@@ -13,6 +13,7 @@ class WorkspaceMemberData extends Data
         public string $email,
         public ?string $role,
         public ?string $joined_at,
+        public ?string $deleted_at,
     ) {}
 
     public static function fromModel(User $user): self
@@ -23,7 +24,7 @@ class WorkspaceMemberData extends Data
             email: $user->email,
             role: $user->pivot?->role,
             joined_at: $user->pivot?->created_at?->toIso8601String(),
+            deleted_at: $user->deleted_at?->toIso8601String(),
         );
     }
 }
-

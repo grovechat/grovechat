@@ -56,8 +56,8 @@ export default {
     'Update teammate profile. Leave password blank to keep it unchanged',
   当前登录用户不允许删除: 'You cannot delete the currently logged in user',
   '确认删除客服？': 'Confirm delete teammate?',
-  '将该客服账号放入回收站（软删除），可以后续恢复。':
-    'Move this teammate account to the recycle bin (soft delete). You can restore it later.',
+  '将该客服账号放入回收站，可以后续恢复。':
+    'Move this teammate account to the recycle bin. You can restore it later.',
   暂无客服: 'No teammates',
 } as const;
 

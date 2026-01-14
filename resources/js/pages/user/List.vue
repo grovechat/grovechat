@@ -195,7 +195,7 @@ const handleOnlineStatusChange = (userId: string, status: string) => {
                               {{ t('确认删除客服？') }}
                             </DialogTitle>
                             <DialogDescription>
-                              {{ t('将该客服账号放入回收站（软删除），可以后续恢复。') }}
+                              {{ t('将该客服账号放入回收站，可以后续恢复。') }}
                             </DialogDescription>
                           </DialogHeader>
 

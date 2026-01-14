@@ -22,11 +22,16 @@ class ShowWorkspaceDetailAction
         $page = max(1, $page);
 
         $workspace = Workspace::query()
-            ->with(['owner:id,name,email'])
-            ->withCount('users')
+            ->with([
+                'owner' => fn ($query) => $query->withTrashed()->select(['id', 'name', 'email']),
+            ])
+            ->withCount([
+                'users' => fn ($query) => $query->withTrashed(),
+            ])
             ->findOrFail($id);
 
         $paginator = $workspace->users()
+            ->withTrashed()
             ->orderByPivot('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
 

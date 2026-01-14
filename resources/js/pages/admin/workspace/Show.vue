@@ -42,7 +42,7 @@ const nextPage = computed(() =>
         <div class="space-y-6">
           <HeadingSmall
             :title="workspaceDetail.name"
-            :description="t('查看该工作区的成员列表（支持分页）')"
+            :description="t('查看该工作区的成员列表')"
           />
 
         <div class="rounded-lg border p-4 space-y-2">
@@ -94,7 +94,12 @@ const nextPage = computed(() =>
                   :key="m.id"
                   class="border-b last:border-b-0"
                 >
-                  <td class="px-4 py-3 font-medium">{{ m.name }}</td>
+                  <td class="px-4 py-3 font-medium">
+                    {{ m.name }}
+                    <span v-if="m.deleted_at" class="ml-2 text-xs text-muted-foreground">
+                      {{ t('已删除') }}
+                    </span>
+                  </td>
                   <td class="px-4 py-3 text-muted-foreground">{{ m.email }}</td>
                   <td class="px-4 py-3">{{ m.role || '-' }}</td>
                   <td class="px-4 py-3 text-muted-foreground">

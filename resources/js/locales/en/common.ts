@@ -13,6 +13,8 @@ export default {
   所有者: 'Owner',
   在线: 'Online',
   离线: 'Offline',
+  个人设置: 'Personal settings',
+  系统管理: 'System management',
 
   // Toast 通知
   成功: 'Success',

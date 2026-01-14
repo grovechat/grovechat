@@ -29,6 +29,8 @@ use App\Actions\User\UpdateUserAction;
 use App\Actions\User\UpdateUserOnlineStatusAction;
 use App\Actions\Workspace\DeleteWorkspaceAction;
 use App\Actions\Workspace\GetWorkspaceListAction;
+use App\Actions\Workspace\GetWorkspaceTrashListAction;
+use App\Actions\Workspace\RestoreWorkspaceAction;
 use App\Actions\Workspace\ShowWorkspaceDetailAction;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
@@ -76,8 +78,10 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'is_super_admin'])->grou
 
     // 工作区管理
     Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');
+    Route::get('workspaces/trash', GetWorkspaceTrashListAction::class)->name('get-workspace-trash');
     Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('show-workspace-detail');
     Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('delete-workspace');
+    Route::put('workspaces/{id}/restore', RestoreWorkspaceAction::class)->name('restore-workspace');
 
     // 存储设置
     Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
