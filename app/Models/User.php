@@ -33,6 +33,7 @@ class User extends Authenticatable
         'external_nickname',
         'online_status',
         'last_active_at',
+        'is_super_admin',
     ];
 
     /**
@@ -60,6 +61,7 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
             'last_active_at' => 'datetime',
             'online_status' => 'integer',
+            'is_super_admin' => 'boolean',
         ];
     }
 
