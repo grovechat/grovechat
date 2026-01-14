@@ -4,17 +4,16 @@ use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
-use Tests\WithWorkspace;
 
-uses(RefreshDatabase::class, WithWorkspace::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->user = $this->createUserWithWorkspace([], [
-        'name' => 'Test Workspace',
+    $this->user = User::factory()->create([
+        'is_super_admin' => true,
     ]);
 });
 
-test('authenticated user can view workspace management list page', function () {
+test('super admin can view workspace management list page', function () {
     // Create a few workspaces with owners
     $ownerA = User::factory()->create();
     $ownerB = User::factory()->create();
@@ -30,7 +29,7 @@ test('authenticated user can view workspace management list page', function () {
     ]);
 
     $this->actingAs($this->user)
-        ->get(route('get-workspace-list', ['slug' => $this->workspaceSlug()]))
+        ->get(route('get-workspace-list'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('workspace/List')
@@ -48,17 +47,13 @@ test('workspace detail shows members with pagination', function () {
         'owner_id' => User::factory()->create()->id,
     ]);
 
-    // Attach the current user to the workspace so IdentifyWorkspace middleware can resolve currentWorkspace.
-    $this->user->workspaces()->attach($workspace->id, ['role' => 'admin']);
-    $this->workspace = $workspace;
-
     $users = User::factory()->count(12)->create();
     foreach ($users as $u) {
         $workspace->users()->attach($u->id, ['role' => 'customer_service']);
     }
 
     $this->actingAs($this->user)
-        ->get(route('show-workspace-detail', ['slug' => $this->workspaceSlug(), 'id' => $workspace->id, 'page' => 1, 'per_page' => 10]))
+        ->get(route('show-workspace-detail', ['id' => $workspace->id, 'page' => 1, 'per_page' => 10]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('workspace/Show')
@@ -66,8 +61,7 @@ test('workspace detail shows members with pagination', function () {
             ->has('workspace_members', 10)
             ->where('workspace_members_pagination.current_page', 1)
             ->where('workspace_members_pagination.per_page', 10)
-            // 当前登录用户也已 attach 到该工作区，因此 total = 12 + 1
-            ->where('workspace_members_pagination.total', 13)
+            ->where('workspace_members_pagination.total', 12)
         );
 });
 
@@ -78,7 +72,7 @@ test('authenticated user can soft delete a workspace they do not own', function 
     ]);
 
     $this->actingAs($this->user)
-        ->delete(route('delete-workspace', ['slug' => $this->workspaceSlug(), 'id' => $workspace->id]))
+        ->delete(route('delete-workspace', ['id' => $workspace->id]))
         ->assertRedirect();
 
     $this->assertSoftDeleted('workspaces', ['id' => $workspace->id]);
@@ -90,10 +84,9 @@ test('user cannot delete a workspace they own', function () {
     ]);
 
     $this->actingAs($this->user)
-        ->delete(route('delete-workspace', ['slug' => $this->workspaceSlug(), 'id' => $workspace->id]))
+        ->delete(route('delete-workspace', ['id' => $workspace->id]))
         ->assertForbidden();
 
     expect(Workspace::withTrashed()->whereKey($workspace->id)->exists())->toBeTrue();
     expect(Workspace::withTrashed()->find($workspace->id)?->trashed())->toBeFalse();
 });
-

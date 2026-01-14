@@ -15,9 +15,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useI18n } from '@/composables/useI18n';
-import AppLayout from '@/layouts/AppLayout.vue';
-import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { getStorageSetting } from '@/routes';
+import storageProfile from '@/routes/storage-profile';
 import type { AppPageProps } from '@/types';
 import { type BreadcrumbItem } from '@/types';
 import type { StorageProfileData, StorageSettingPagePropsData } from '@/types/generated';
@@ -26,12 +26,11 @@ import { computed, ref, watch } from 'vue';
 
 const page = usePage<AppPageProps<StorageSettingPagePropsData>>();
 const { t } = useI18n();
-const slug = computed(() => page.props.currentWorkspace.slug);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('存储设置'),
-    href: getStorageSetting.url(page.props.currentWorkspace.slug),
+    href: getStorageSetting.url(),
   },
 ]);
 
@@ -42,7 +41,7 @@ const settingsForm = useForm({
 const actionForm = useForm({});
 
 const saveSettings = () => {
-  settingsForm.put(UpdateStorageSettingAction.url(slug.value), {
+  settingsForm.put(UpdateStorageSettingAction.url(), {
     preserveScroll: true,
   });
 };
@@ -127,12 +126,8 @@ const toggleInternalEndpoint = () => {
   }
 };
 
-const profilesBaseUrl = computed(
-  () => `/w/${slug.value}/system-settings/storage/profiles`,
-);
-
 const createProfile = () => {
-  createForm.post(profilesBaseUrl.value, {
+  createForm.post(storageProfile.create.url(), {
     preserveScroll: true,
     onSuccess: () => {
       showCreate.value = false;
@@ -152,7 +147,7 @@ const checkConnectionForCreate = () => {
   checkCreateForm.bucket = createForm.bucket;
   checkCreateForm.url = createForm.url;
 
-  checkCreateForm.put(CheckStorageSettingAction.url(slug.value), {
+  checkCreateForm.put(CheckStorageSettingAction.url(), {
     preserveScroll: true,
     onSuccess: () => {
       // 不自动清空，方便用户接着创建
@@ -184,7 +179,7 @@ const cancelEdit = () => {
 };
 
 const saveEdit = (profileId: string) => {
-  editForm.put(`${profilesBaseUrl.value}/${profileId}`, {
+  editForm.put(storageProfile.update.url(profileId), {
     preserveScroll: true,
     onSuccess: () => {
       cancelEdit();
@@ -193,14 +188,14 @@ const saveEdit = (profileId: string) => {
 };
 
 const checkProfile = (profileId: string) => {
-  actionForm.put(`${profilesBaseUrl.value}/${profileId}/check`, {
+  actionForm.put(storageProfile.check.url(profileId), {
     preserveScroll: true,
   });
 };
 
 const deleteProfile = (profileId: string) => {
   // inertia useForm 支持 delete
-  actionForm.delete(`${profilesBaseUrl.value}/${profileId}`, {
+  actionForm.delete(storageProfile.delete.url(profileId), {
     preserveScroll: true,
   });
 };
@@ -210,17 +205,17 @@ const providerLabel = (value: string) =>
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbItems">
+  <SystemAppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('存储设置')" />
-
-    <SystemSettingsLayout>
-      <div class="space-y-6">
-        <HeadingSmall
-          :title="t('存储设置')"
-          :description="
-            t('配置对象存储服务，支持 Amazon S3 和阿里云 OSS 等兼容服务')
-          "
-        />
+    <div class="px-4 py-6 sm:px-6">
+      <div class="mx-auto w-full max-w-none space-y-12">
+        <div class="space-y-6">
+          <HeadingSmall
+            :title="t('存储设置')"
+            :description="
+              t('配置对象存储服务，支持 Amazon S3 和阿里云 OSS 等兼容服务')
+            "
+          />
 
         <form class="space-y-6" @submit.prevent="saveSettings">
           <div class="grid gap-2">
@@ -462,7 +457,7 @@ const providerLabel = (value: string) =>
                     <div class="grid grid-cols-[84px_1fr] items-baseline gap-2">
                       <dt class="font-mono opacity-70">endpoint</dt>
                       <dd
-                        class="font-mono min-w-0 break-words whitespace-normal"
+                        class="font-mono min-w-0 wrap-break-word whitespace-normal"
                         :title="p.endpoint || '-'"
                       >
                         {{ p.endpoint || '-' }}
@@ -471,7 +466,7 @@ const providerLabel = (value: string) =>
                     <div class="grid grid-cols-[84px_1fr] items-baseline gap-2">
                       <dt class="font-mono opacity-70">url</dt>
                       <dd
-                        class="font-mono min-w-0 break-words whitespace-normal"
+                        class="font-mono min-w-0 wrap-break-word whitespace-normal"
                         :title="p.url || '-'"
                       >
                         {{ p.url || '-' }}
@@ -535,7 +530,8 @@ const providerLabel = (value: string) =>
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </SystemSettingsLayout>
-  </AppLayout>
+    </div>
+  </SystemAppLayout>
 </template>

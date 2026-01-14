@@ -43,11 +43,47 @@ use Inertia\Inertia;
 Route::get('/', ShowHomePageAction::class)->name('home');
 Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth', 'verified'])->name('dashboard');
 
-// 超级管理员路由
-Route::prefix('admin')->middleware(['auth', 'verified', 'is_super_admin'])->group(function () {
-    Route::get('/', function () {
-        return response('test');
-    })->name('admin');
+// 系统设置（仅超级管理员）
+Route::prefix('system-settings')->middleware(['auth', 'verified', 'is_super_admin'])->group(function () {
+    Route::redirect('/', '/system-settings/general');
+
+    // 基础设置
+    Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
+    Route::put('general', UpdateGeneralSettingAction::class)->name('update-general-setting');
+
+    // 工作区管理
+    Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');
+    Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('show-workspace-detail');
+    Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('delete-workspace');
+
+    // 存储设置
+    Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
+    Route::put('storage', UpdateStorageSettingAction::class)->name('update-storage-setting');
+    Route::put('check', CheckStorageSettingAction::class)->name('check-storage-settiing');
+    Route::post('storage/profiles', CreateStorageProfileAction::class)->name('storage-profile.create');
+    Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('storage-profile.update');
+    Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
+    Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
+
+    // 邮箱服务器
+    Route::get('mail', function () {
+        return Inertia::render('systemSettings/MailSetting');
+    })->name('system-setting.get-mail-settings');
+
+    // 外部集成
+    Route::get('integration', function () {
+        return Inertia::render('systemSettings/IntegrationSetting');
+    })->name('system-setting.get-integration-settings');
+
+    // 安全
+    Route::get('security', function () {
+        return Inertia::render('systemSettings/SecuritySetting');
+    })->name('system-setting.get-security-settings');
+
+    // 维护
+    Route::get('maintenance', function () {
+        return Inertia::render('systemSettings/MaintenanceSetting');
+    })->name('system-setting.get-maintenance-settings');
 });
 
 Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
@@ -76,45 +112,46 @@ Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWo
         Route::get('appearance', [AppearanceController::class, 'edit'])->name('appearance.edit');
     });
 
-    // 系统设置
-    Route::prefix('system-settings')->group(function () {
-        // 基础设置
-        Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
-        Route::put('general', UpdateGeneralSettingAction::class)->name('update-general-setting');
+    // 系统设置（旧路径兼容：/w/{slug}/system-settings/* -> /system-settings/*）
+    Route::prefix('system-settings')->middleware(['is_super_admin'])->group(function () {
+        Route::redirect('/', '/system-settings/general');
 
-        // 工作区管理
-        Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');
-        Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('show-workspace-detail');
-        Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('delete-workspace');
+        Route::get('general', fn () => redirect()->to('/system-settings/general'));
+        Route::put('general', function (\Illuminate\Http\Request $request, UpdateGeneralSettingAction $action) {
+            return $action->asController($request);
+        });
 
-        // 存储设置
-        Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
-        Route::put('storage', UpdateStorageSettingAction::class)->name('update-storage-setting');
-        Route::put('check', CheckStorageSettingAction::class)->name('check-storage-settiing');
-        Route::post('storage/profiles', CreateStorageProfileAction::class)->name('storage-profile.create');
-        Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('storage-profile.update');
-        Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
-        Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
+        Route::get('workspaces', fn () => redirect()->to('/system-settings/workspaces'));
+        Route::get('workspaces/{id}', fn (string $id) => redirect()->to("/system-settings/workspaces/{$id}"));
+        Route::delete('workspaces/{id}', function (\Illuminate\Http\Request $request, string $id, DeleteWorkspaceAction $action) {
+            return $action->asController($request, $id);
+        });
 
-        // 邮箱服务器
-        Route::get('mail', function () {
-            return Inertia::render('systemSettings/MailSetting');
-        })->name('system-setting.get-mail-settings');
+        Route::get('storage', fn () => redirect()->to('/system-settings/storage'));
+        Route::put('storage', function (\Illuminate\Http\Request $request, UpdateStorageSettingAction $action) {
+            return $action->asController($request);
+        });
+        Route::put('check', function (\Illuminate\Http\Request $request, CheckStorageSettingAction $action) {
+            return $action->asController($request);
+        });
 
-        // 外部集成
-        Route::get('integration', function () {
-            return Inertia::render('systemSettings/IntegrationSetting');
-        })->name('system-setting.get-integration-settings');
+        Route::post('storage/profiles', function (\Illuminate\Http\Request $request, CreateStorageProfileAction $action) {
+            return $action->asController($request);
+        });
+        Route::put('storage/profiles/{profile}', function (\Illuminate\Http\Request $request, \App\Models\StorageProfile $profile, UpdateStorageProfileAction $action) {
+            return $action->asController($request, $profile);
+        });
+        Route::put('storage/profiles/{profile}/check', function (\Illuminate\Http\Request $request, \App\Models\StorageProfile $profile, CheckStorageProfileAction $action) {
+            return $action->asController($request, $profile);
+        });
+        Route::delete('storage/profiles/{profile}', function (\Illuminate\Http\Request $request, \App\Models\StorageProfile $profile, DeleteStorageProfileAction $action) {
+            return $action->asController($request, $profile);
+        });
 
-        // 安全
-        Route::get('security', function () {
-            return Inertia::render('systemSettings/SecuritySetting');
-        })->name('system-setting.get-security-settings');
-
-        // 维护
-        Route::get('/maintenance', function () {
-            return Inertia::render('systemSettings/MaintenanceSetting');
-        })->name('system-setting.get-maintenance-settings');
+        Route::get('mail', fn () => redirect()->to('/system-settings/mail'));
+        Route::get('integration', fn () => redirect()->to('/system-settings/integration'));
+        Route::get('security', fn () => redirect()->to('/system-settings/security'));
+        Route::get('maintenance', fn () => redirect()->to('/system-settings/maintenance'));
     });
 
     // 管理中心

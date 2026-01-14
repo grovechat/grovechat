@@ -2,16 +2,18 @@
 
 use App\Models\Attachment;
 use App\Models\StorageProfile;
+use App\Models\User;
 use App\Settings\StorageSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Tests\WithWorkspace;
 
-uses(RefreshDatabase::class, WithWorkspace::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->user = $this->createUserWithWorkspace();
+    $this->user = User::factory()->create([
+        'is_super_admin' => true,
+    ]);
 });
 
 test('authenticated user can create storage profile when connection check passes', function () {
@@ -26,7 +28,7 @@ test('authenticated user can create storage profile when connection check passes
         });
 
     $this->actingAs($this->user)
-        ->post(route('storage-profile.create', ['slug' => $this->workspaceSlug()]), [
+        ->post(route('storage-profile.create'), [
             'name' => 'tencent-prod',
             'provider' => 'tencent',
             'region' => 'ap-guangzhou',
@@ -62,7 +64,7 @@ test('create storage profile fails with field error when connection check fails'
         });
 
     $this->actingAs($this->user)
-        ->post(route('storage-profile.create', ['slug' => $this->workspaceSlug()]), [
+        ->post(route('storage-profile.create'), [
             'name' => 'tencent-prod',
             'provider' => 'tencent',
             'region' => 'ap-guangzhou',
@@ -90,7 +92,7 @@ test('authenticated user can update profile name/url without changing credential
     Storage::shouldReceive('build')->never();
 
     $this->actingAs($this->user)
-        ->put(route('storage-profile.update', ['slug' => $this->workspaceSlug(), 'profile' => $profile->id]), [
+        ->put(route('storage-profile.update', ['profile' => $profile->id]), [
             'name' => 'p1-new',
             'url' => 'https://cdn.example.com',
             'key' => '',
@@ -120,7 +122,7 @@ test('updating credentials requires both key and secret', function () {
     Storage::shouldReceive('build')->never();
 
     $this->actingAs($this->user)
-        ->put(route('storage-profile.update', ['slug' => $this->workspaceSlug(), 'profile' => $profile->id]), [
+        ->put(route('storage-profile.update', ['profile' => $profile->id]), [
             'name' => 'p1',
             'url' => '',
             'key' => 'new-key',
@@ -151,7 +153,7 @@ test('authenticated user can update credentials when connection check passes', f
         });
 
     $this->actingAs($this->user)
-        ->put(route('storage-profile.update', ['slug' => $this->workspaceSlug(), 'profile' => $profile->id]), [
+        ->put(route('storage-profile.update', ['profile' => $profile->id]), [
             'name' => 'p1',
             'url' => '',
             'key' => 'new-key',
@@ -187,7 +189,7 @@ test('authenticated user can check storage profile connection', function () {
         });
 
     $this->actingAs($this->user)
-        ->put(route('storage-profile.check', ['slug' => $this->workspaceSlug(), 'profile' => $profile->id]))
+        ->put(route('storage-profile.check', ['profile' => $profile->id]))
         ->assertRedirect();
 });
 
@@ -209,7 +211,7 @@ test('cannot delete currently selected profile', function () {
     $settings->save();
 
     $this->actingAs($this->user)
-        ->delete(route('storage-profile.delete', ['slug' => $this->workspaceSlug(), 'profile' => $profile->id]))
+        ->delete(route('storage-profile.delete', ['profile' => $profile->id]))
         ->assertSessionHasErrors('profile');
 });
 
@@ -240,7 +242,6 @@ test('cannot delete profile that is referenced by attachments', function () {
     ]);
 
     $this->actingAs($this->user)
-        ->delete(route('storage-profile.delete', ['slug' => $this->workspaceSlug(), 'profile' => $profile->id]))
+        ->delete(route('storage-profile.delete', ['profile' => $profile->id]))
         ->assertSessionHasErrors('profile');
 });
-

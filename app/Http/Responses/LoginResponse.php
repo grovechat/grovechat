@@ -3,10 +3,10 @@
 namespace App\Http\Responses;
 
 use Illuminate\Http\Request;
-use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Symfony\Component\HttpFoundation\Response;
 
-class RegisterResponse implements RegisterResponseContract
+class LoginResponse implements LoginResponseContract
 {
     public function toResponse($request): Response
     {
@@ -17,6 +17,6 @@ class RegisterResponse implements RegisterResponseContract
             return redirect()->intended('/system-settings');
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(config('fortify.home'));
     }
 }

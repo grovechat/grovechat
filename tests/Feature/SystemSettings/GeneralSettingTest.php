@@ -1,38 +1,48 @@
 <?php
 
-use App\Data\GeneralSettingsData;
+use App\Models\User;
 use App\Settings\GeneralSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\WithWorkspace;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\put;
 
-uses(RefreshDatabase::class, WithWorkspace::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    // 每个测试前创建认证用户和租户
-    $this->user = $this->createUserWithWorkspace();
+    $this->user = User::factory()->create([
+        'is_super_admin' => true,
+    ]);
 });
 
-test('authenticated user can view general settings page', function () {
+test('super admin can view general settings page', function () {
     $this->withoutExceptionHandling();
 
     actingAs($this->user)
-        ->get(route('get-general-setting', ['slug' => $this->workspaceSlug()]))
+        ->get(route('get-general-setting'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page->component('generalSetting/Index'));
 });
 
+test('non-super-admin cannot view general settings page', function () {
+    $user = User::factory()->create([
+        'is_super_admin' => false,
+    ]);
+
+    actingAs($user)
+        ->get(route('get-general-setting'))
+        ->assertForbidden();
+});
+
 test('unauthenticated user cannot view general settings page', function () {
-    get(route('get-general-setting', ['slug' => $this->workspaceSlug()]))
+    get(route('get-general-setting'))
         ->assertRedirect('/login');
 });
 
-test('authenticated user can update general settings with all fields', function () {
+test('super admin can update general settings with all fields', function () {
     $response = actingAs($this->user)
-        ->put(route('get-general-setting', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-general-setting'), [
             // 使用 snake_case，依赖 Laravel Data 自动转换为 camelCase 映射到 Data 对象
             'base_url' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
@@ -52,9 +62,9 @@ test('authenticated user can update general settings with all fields', function 
     expect($settings->icp_record)->toBe('京ICP备12345678号');
 });
 
-test('authenticated user can update general settings with required fields only', function () {
+test('super admin can update general settings with required fields only', function () {
     actingAs($this->user)
-        ->put(route('update-general-setting', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-general-setting'), [
             'base_url' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
         ])
@@ -67,7 +77,7 @@ test('authenticated user can update general settings with required fields only',
 
 test('baseUrl is required', function () {
     actingAs($this->user)
-        ->put(route('update-general-setting', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-general-setting'), [
             'name' => '客服系统',
         ])
         ->assertSessionHasErrors('baseUrl');
@@ -75,7 +85,7 @@ test('baseUrl is required', function () {
 
 test('name is required', function () {
     actingAs($this->user)
-        ->put(route('update-general-setting', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-general-setting'), [
             'base_url' => 'https://app.grovechat.com',
         ])
         ->assertSessionHasErrors('name');
@@ -83,7 +93,7 @@ test('name is required', function () {
 
 test('baseUrl must be valid url', function () {
     actingAs($this->user)
-        ->put(route('update-general-setting', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-general-setting'), [
             'base_url' => 'not-a-valid-url',
             'name' => 'GroveChat',
         ])
@@ -92,7 +102,7 @@ test('baseUrl must be valid url', function () {
 
 test('name cannot exceed 255 characters', function () {
     actingAs($this->user)
-        ->put(route('update-general-setting', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-general-setting'), [
             'base_url' => 'https://app.grovechat.com',
             'name' => str_repeat('a', 256),
         ])
@@ -100,7 +110,7 @@ test('name cannot exceed 255 characters', function () {
 });
 
 test('unauthenticated user cannot update general settings', function () {
-    put(route('update-general-setting', ['slug' => $this->workspaceSlug()]), [
+    put(route('update-general-setting'), [
         'base_url' => 'https://app.grovechat.com',
         'name' => 'GroveChat',
     ])
@@ -109,7 +119,7 @@ test('unauthenticated user cannot update general settings', function () {
 
 test('logoId cannot exceed 500 characters', function () {
     actingAs($this->user)
-        ->put(route('update-general-setting', ['slug' => $this->workspaceSlug()]), [
+        ->put(route('update-general-setting'), [
             'base_url' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
             'logo_id' => str_repeat('a', 501),

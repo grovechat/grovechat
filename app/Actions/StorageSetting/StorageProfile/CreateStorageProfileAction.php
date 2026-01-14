@@ -54,7 +54,7 @@ class CreateStorageProfileAction
         ]);
     }
 
-    public function asController(Request $request, string $slug)
+    public function asController(Request $request)
     {
         $data = StorageProfileCreateData::validateAndCreate($request->all());
         $this->handle($data);
@@ -67,4 +67,3 @@ class CreateStorageProfileAction
         return back();
     }
 }
-

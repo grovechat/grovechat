@@ -18,8 +18,8 @@ class DeleteWorkspaceAction
         }
         $workspace->delete();
     }
-    
-    public function asController(Request $request, string $slug, string $id)
+
+    public function asController(Request $request, string $id)
     {
         $userId = (string) $request->user()?->id;
         $this->handle($id, $userId);

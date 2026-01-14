@@ -9,8 +9,8 @@ use App\Data\WorkspaceMemberData;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
-use Lorisleiva\Actions\Concerns\AsAction;
 use Inertia\Inertia;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class ShowWorkspaceDetailAction
 {
@@ -46,8 +46,8 @@ class ShowWorkspaceDetailAction
             ),
         );
     }
-    
-    public function asController(Request $request, string $slug, string $id)
+
+    public function asController(Request $request, string $id)
     {
         $page = (int) $request->query('page', 1);
         $perPage = (int) $request->query('per_page', 10);

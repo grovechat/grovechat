@@ -68,7 +68,7 @@ class UpdateStorageProfileAction
         ]);
     }
 
-    public function asController(Request $request, string $slug, StorageProfile $profile)
+    public function asController(Request $request, StorageProfile $profile)
     {
         $data = StorageProfileUpdateData::validateAndCreate($request->all());
         $this->handle($profile, $data);
@@ -81,4 +81,3 @@ class UpdateStorageProfileAction
         return back();
     }
 }
-

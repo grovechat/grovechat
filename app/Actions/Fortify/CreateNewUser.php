@@ -38,6 +38,10 @@ class CreateNewUser implements CreatesNewUsers
                 'is_super_admin' => $isFirstUser,
             ]);
 
+            if ($isFirstUser) {
+                return $user;
+            }
+
             // 创建工作区
             $workspace = Workspace::query()->create([
                 'name' => 'Default',

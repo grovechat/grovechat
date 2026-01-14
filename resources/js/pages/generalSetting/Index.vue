@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import AppLayout from '@/layouts/AppLayout.vue';
-import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { getGeneralSetting } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
@@ -18,11 +17,10 @@ import { computed, ref } from 'vue';
 const page = usePage();
 const { t } = useI18n();
 const generalSettings = computed(() => page.props.generalSettings);
-const currentWorkspace = computed(() => page.props.currentWorkspace);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: getGeneralSetting.url(currentWorkspace.value.slug),
+    href: getGeneralSetting.url(),
   },
 ]);
 const logoPreview = ref<string>(generalSettings.value.logo_url || '');
@@ -70,23 +68,22 @@ const handleLogoChange = async (event: Event) => {
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbItems">
+  <SystemAppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('基础设置')" />
 
-    <SystemSettingsLayout>
-      <div class="space-y-6">
-        <HeadingSmall
-          :title="t('基础设置')"
-          :description="t('配置系统的基本信息和全局设置')"
-        />
+    <div class="px-4 py-6 sm:px-6">
+      <div class="mx-auto w-full max-w-none space-y-12">
+        <div class="space-y-6">
+          <HeadingSmall
+            :title="t('基础设置')"
+            :description="t('配置系统的基本信息和全局设置')"
+          />
 
-        <Form
-          v-bind="
-            SystemSetting.UpdateGeneralSettingAction.form(currentWorkspace.slug)
-          "
-          class="space-y-6"
-          v-slot="{ errors, processing, recentlySuccessful }"
-        >
+          <Form
+            v-bind="SystemSetting.UpdateGeneralSettingAction.form()"
+            class="space-y-6"
+            v-slot="{ errors, processing, recentlySuccessful }"
+          >
           <div class="grid gap-2">
             <Label for="base_url">{{ t('主机地址') }}</Label>
             <Input
@@ -215,8 +212,9 @@ const handleLogoChange = async (event: Event) => {
               </p>
             </Transition>
           </div>
-        </Form>
+          </Form>
+        </div>
       </div>
-    </SystemSettingsLayout>
-  </AppLayout>
+    </div>
+  </SystemAppLayout>
 </template>

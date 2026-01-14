@@ -3,8 +3,7 @@ import HeadingSmall from '@/components/common/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/composables/useI18n';
 import { useDateTime } from '@/composables/useDateTime';
-import AppLayout from '@/layouts/AppLayout.vue';
-import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { getWorkspaceList, showWorkspaceDetail } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { WorkspaceDetailPagePropsData } from '@/types/generated';
@@ -14,7 +13,6 @@ import { computed } from 'vue';
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
 const page = usePage<AppPageProps<WorkspaceDetailPagePropsData>>();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
 const workspaceDetail = computed(() => page.props.workspace_detail);
 const members = computed(() => page.props.workspace_members);
 const pagination = computed(() => page.props.workspace_members_pagination);
@@ -22,14 +20,11 @@ const pagination = computed(() => page.props.workspace_members_pagination);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('工作区管理'),
-    href: getWorkspaceList.url(currentWorkspace.value.slug),
+    href: getWorkspaceList.url(),
   },
   {
     title: workspaceDetail.value?.name || t('详情'),
-    href: showWorkspaceDetail.url({
-      slug: currentWorkspace.value.slug,
-      id: workspaceDetail.value?.id || '',
-    }),
+    href: showWorkspaceDetail.url(workspaceDetail.value?.id || ''),
   },
 ]);
 
@@ -40,15 +35,15 @@ const nextPage = computed(() =>
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbItems">
+  <SystemAppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('工作区详情')" />
-
-    <SystemSettingsLayout content-class="max-w-5xl w-full">
-      <div class="space-y-6">
-        <HeadingSmall
-          :title="workspaceDetail.name"
-          :description="t('查看该工作区的成员列表（支持分页）')"
-        />
+    <div class="px-4 py-6 sm:px-6">
+      <div class="mx-auto w-full max-w-5xl space-y-12">
+        <div class="space-y-6">
+          <HeadingSmall
+            :title="workspaceDetail.name"
+            :description="t('查看该工作区的成员列表（支持分页）')"
+          />
 
         <div class="rounded-lg border p-4 space-y-2">
           <div class="grid gap-1 text-sm">
@@ -130,10 +125,9 @@ const nextPage = computed(() =>
               >
                 <Link
                   :href="
-                    showWorkspaceDetail.url(
-                      { slug: currentWorkspace.slug, id: workspaceDetail.id },
-                      { query: { page: prevPage } },
-                    )
+                    showWorkspaceDetail.url(workspaceDetail.id, {
+                      query: { page: prevPage },
+                    })
                   "
                 >
                   {{ t('上一页') }}
@@ -147,10 +141,9 @@ const nextPage = computed(() =>
               >
                 <Link
                   :href="
-                    showWorkspaceDetail.url(
-                      { slug: currentWorkspace.slug, id: workspaceDetail.id },
-                      { query: { page: nextPage } },
-                    )
+                    showWorkspaceDetail.url(workspaceDetail.id, {
+                      query: { page: nextPage },
+                    })
                   "
                 >
                   {{ t('下一页') }}
@@ -160,6 +153,6 @@ const nextPage = computed(() =>
           </div>
         </div>
       </div>
-    </SystemSettingsLayout>
-  </AppLayout>
+    </div>
+  </SystemAppLayout>
 </template>
