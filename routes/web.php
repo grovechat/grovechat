@@ -44,10 +44,10 @@ Route::get('/', ShowHomePageAction::class)->name('home');
 Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 // 超级管理员路由
-Route::prefix('admin')->middleware(['auth:admin', 'verified', 'is_super_admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'verified', 'is_super_admin'])->group(function () {
     Route::get('/', function () {
-        return response("test");
-    });
+        return response('test');
+    })->name('admin');
 });
 
 Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {

@@ -29,24 +29,15 @@ class CreateNewUser implements CreatesNewUsers
         ])->validate();
 
         return DB::transaction(function () use ($input) {
-            $count = User::query()->count();
-            if ($count == 0) {
-                $user = User::query()->create([
-                    'name' => $input['name'],
-                    'email' => $input['email'],
-                    'password' => $input['password'],
-                    'is_super_admin' => true,
-                ]);
-                return $user;
-            }
+            $isFirstUser = User::query()->count() === 0;
 
-            // 创建用户
             $user = User::query()->create([
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => $input['password'],
+                'is_super_admin' => $isFirstUser,
             ]);
-            
+
             // 创建工作区
             $workspace = Workspace::query()->create([
                 'name' => 'Default',
