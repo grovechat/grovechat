@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\BusinessException;
+use App\Http\Middleware\AuthenticateSettings;
 use App\Http\Middleware\CheckSuperAdmin;
 use App\Http\Middleware\EnsureSettingsWorkspace;
 use App\Http\Middleware\HandleAppearance;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'is_super_admin' => CheckSuperAdmin::class,
+            'authenticate_settings' => AuthenticateSettings::class,
             'ensure_settings_workspace' => EnsureSettingsWorkspace::class,
         ]);
 

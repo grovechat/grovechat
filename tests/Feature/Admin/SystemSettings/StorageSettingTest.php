@@ -27,7 +27,7 @@ test('authenticated user can view storage settings page (new schema)', function 
     $settings->current_profile_id = null;
     $settings->save();
 
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->get(route('get-storage-setting'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -47,7 +47,7 @@ test('authenticated user can disable storage (does not clear current_profile_id)
     $settings->current_profile_id = '01testprofile';
     $settings->save();
 
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->put(route('update-storage-setting'), [
             'enabled' => false,
         ])
@@ -60,7 +60,7 @@ test('authenticated user can disable storage (does not clear current_profile_id)
 });
 
 test('enabling storage requires current_profile_id', function () {
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->put(route('update-storage-setting'), [
             'enabled' => true,
             'current_profile_id' => '',
@@ -69,7 +69,7 @@ test('enabling storage requires current_profile_id', function () {
 });
 
 test('enabling storage fails when selected profile does not exist', function () {
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->put(route('update-storage-setting'), [
             'enabled' => true,
             'current_profile_id' => '01doesnotexist',
@@ -88,7 +88,7 @@ test('enabling storage fails when profile missing credentials', function () {
         'secret' => null,
     ]);
 
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->put(route('update-storage-setting'), [
             'enabled' => true,
             'current_profile_id' => $profile->id,
@@ -118,7 +118,7 @@ test('authenticated user can enable storage and save settings when profile conne
             }
         });
 
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->put(route('update-storage-setting'), [
             'enabled' => true,
             'current_profile_id' => $profile->id,
@@ -153,7 +153,7 @@ test('update fails with field error when profile connection check throws', funct
             }
         });
 
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->put(route('update-storage-setting'), [
             'enabled' => true,
             'current_profile_id' => $profile->id,

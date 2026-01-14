@@ -12,6 +12,7 @@ import { useErrorHandling } from '@/composables/useToast';
 import SidebarShell, { type SidebarShellNavItem } from '@/layouts/app/SidebarShell.vue';
 import { getCurrentWorkspace, getGeneralSetting } from '@/routes';
 import contact from '@/routes/contact';
+import logout from '@/routes/logout';
 import { edit } from '@/routes/profile';
 import stats from '@/routes/stats';
 import workspace from '@/routes/workspace';
@@ -123,6 +124,8 @@ const footerNavItems = computed<NavItem[]>(() => [
     : []),
 ]);
 
+const logoutHref = computed(() => logout.web.url());
+
 const switchWorkspace = (selectedWorkspace: WorkspaceData) => {
   if (selectedWorkspace.slug !== currentWorkspace.value?.slug) {
     router.visit(workspace.dashboard.url(selectedWorkspace.slug), {
@@ -149,6 +152,7 @@ const goToCreateWorkspace = () => {
     :footer-nav-items="footerNavItems"
     :profile-href="edit({ query: { from_workspace: currentWorkspace.slug } }).url"
     :profile-label="t('个人资料')"
+    :logout-href="logoutHref"
   >
     <template #headerSubtitle>
       <DropdownMenu v-if="currentWorkspace">

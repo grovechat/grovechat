@@ -19,7 +19,7 @@ beforeEach(function () {
 test('super admin can view general settings page', function () {
     $this->withoutExceptionHandling();
 
-    actingAs($this->user)
+    actingAs($this->user, 'admin')
         ->get(route('get-general-setting'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page->component('admin/generalSetting/Index'));
@@ -30,7 +30,7 @@ test('non-super-admin cannot view general settings page', function () {
         'is_super_admin' => false,
     ]);
 
-    actingAs($user)
+    actingAs($user, 'admin')
         ->get(route('get-general-setting'))
         ->assertForbidden();
 });
@@ -41,7 +41,7 @@ test('unauthenticated user cannot view general settings page', function () {
 });
 
 test('super admin can update general settings with all fields', function () {
-    $response = actingAs($this->user)
+    $response = actingAs($this->user, 'admin')
         ->put(route('update-general-setting'), [
             // 使用 snake_case，依赖 Laravel Data 自动转换为 camelCase 映射到 Data 对象
             'base_url' => 'https://app.grovechat.com',
@@ -63,7 +63,7 @@ test('super admin can update general settings with all fields', function () {
 });
 
 test('super admin can update general settings with required fields only', function () {
-    actingAs($this->user)
+    actingAs($this->user, 'admin')
         ->put(route('update-general-setting'), [
             'base_url' => 'https://app.grovechat.com',
             'name' => 'GroveChat',
@@ -76,7 +76,7 @@ test('super admin can update general settings with required fields only', functi
 });
 
 test('baseUrl is required', function () {
-    actingAs($this->user)
+    actingAs($this->user, 'admin')
         ->put(route('update-general-setting'), [
             'name' => '客服系统',
         ])
@@ -84,7 +84,7 @@ test('baseUrl is required', function () {
 });
 
 test('name is required', function () {
-    actingAs($this->user)
+    actingAs($this->user, 'admin')
         ->put(route('update-general-setting'), [
             'base_url' => 'https://app.grovechat.com',
         ])
@@ -92,7 +92,7 @@ test('name is required', function () {
 });
 
 test('baseUrl must be valid url', function () {
-    actingAs($this->user)
+    actingAs($this->user, 'admin')
         ->put(route('update-general-setting'), [
             'base_url' => 'not-a-valid-url',
             'name' => 'GroveChat',
@@ -101,7 +101,7 @@ test('baseUrl must be valid url', function () {
 });
 
 test('name cannot exceed 255 characters', function () {
-    actingAs($this->user)
+    actingAs($this->user, 'admin')
         ->put(route('update-general-setting'), [
             'base_url' => 'https://app.grovechat.com',
             'name' => str_repeat('a', 256),
@@ -118,7 +118,7 @@ test('unauthenticated user cannot update general settings', function () {
 });
 
 test('logoId cannot exceed 500 characters', function () {
-    actingAs($this->user)
+    actingAs($this->user, 'admin')
         ->put(route('update-general-setting'), [
             'base_url' => 'https://app.grovechat.com',
             'name' => 'GroveChat',

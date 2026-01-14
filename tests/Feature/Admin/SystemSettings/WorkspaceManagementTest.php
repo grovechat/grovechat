@@ -28,7 +28,7 @@ test('super admin can view workspace management list page', function () {
         'owner_id' => $ownerB->id,
     ]);
 
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->get(route('get-workspace-list'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -52,7 +52,7 @@ test('workspace detail shows members with pagination', function () {
         $workspace->users()->attach($u->id, ['role' => 'customer_service']);
     }
 
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->get(route('show-workspace-detail', ['id' => $workspace->id, 'page' => 1, 'per_page' => 10]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -71,7 +71,7 @@ test('authenticated user can soft delete a workspace they do not own', function 
         'owner_id' => $owner->id,
     ]);
 
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->delete(route('delete-workspace', ['id' => $workspace->id]))
         ->assertRedirect();
 
@@ -83,7 +83,7 @@ test('user cannot delete a workspace they own', function () {
         'owner_id' => $this->user->id,
     ]);
 
-    $this->actingAs($this->user)
+    $this->actingAs($this->user, 'admin')
         ->delete(route('delete-workspace', ['id' => $workspace->id]))
         ->assertForbidden();
 

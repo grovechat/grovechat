@@ -38,7 +38,6 @@ import { getInitials } from '@/composables/useInitials';
 import { useErrorHandling } from '@/composables/useToast';
 import { cn, toUrl, urlIsActive } from '@/lib/utils';
 import SidebarContextConsumer from '@/layouts/app/SidebarContextConsumer.vue';
-import { logout } from '@/routes';
 import type { BreadcrumbItemType, NavItem } from '@/types';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown, LogOut, Pin, Settings } from 'lucide-vue-next';
@@ -56,6 +55,7 @@ interface Props {
   footerNavItems: NavItem[];
   profileHref: string;
   profileLabel: string;
+  logoutHref: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -159,7 +159,7 @@ const handleLogout = () => {
                     'group-data-[state=collapsed]/sidebar-wrapper:rotate-45',
                   )
                 "
-                :fill="state === 'expanded' ? 'currentColor' : 'none'"
+                :fill="state.value === 'expanded' ? 'currentColor' : 'none'"
               />
               <span class="sr-only">Toggle Sidebar</span>
             </Button>
@@ -245,7 +245,7 @@ const handleLogout = () => {
                   :side="
                     isMobile
                       ? 'bottom'
-                      : state === 'collapsed'
+                      : state.value === 'collapsed'
                         ? 'left'
                         : 'bottom'
                   "
@@ -286,7 +286,8 @@ const handleLogout = () => {
                   <DropdownMenuItem :as-child="true">
                     <Link
                       class="block w-full"
-                      :href="logout()"
+                      :href="props.logoutHref"
+                      method="post"
                       @click="handleLogout"
                       as="button"
                       data-test="logout-button"

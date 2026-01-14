@@ -6,6 +6,7 @@ use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Data\WorkspaceData;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -44,7 +45,27 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
-        $user = $request->user();
+        $path = '/'.ltrim($request->path(), '/');
+
+        $isAdminPath = str_starts_with($path, '/admin');
+        $isWorkspacePath = str_starts_with($path, '/w/');
+        $isSettingsPath = str_starts_with($path, '/settings');
+
+        if ($isWorkspacePath) {
+            $user = Auth::guard('web')->user();
+        } elseif ($isAdminPath) {
+            $user = Auth::guard('admin')->user();
+        } elseif ($isSettingsPath) {
+            $from = $request->query('from_workspace');
+            $hasFromWorkspace = is_string($from) && $from !== '';
+
+            $user = $hasFromWorkspace
+                ? Auth::guard('web')->user()
+                : (Auth::guard('admin')->user() ?? Auth::guard('web')->user());
+        } else {
+            $user = Auth::guard('web')->user() ?? Auth::guard('admin')->user();
+        }
+
         $workspaces = collect();
         $currentWorkspace = null;
         $fromWorkspace = null;

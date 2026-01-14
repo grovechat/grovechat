@@ -26,7 +26,24 @@ test('super admin can access settings without from_workspace', function () {
         'is_super_admin' => true,
     ]);
 
-    $this->actingAs($user)
+    $this->actingAs($user, 'admin')
         ->get(route('profile.edit'))
         ->assertOk();
+});
+
+test('when both guards are authenticated, settings without from_workspace uses admin identity', function () {
+    $admin = User::factory()->create([
+        'is_super_admin' => true,
+    ]);
+
+    $owner = $this->createUserWithWorkspace();
+
+    $this->actingAs($admin, 'admin');
+    $this->actingAs($owner, 'web');
+
+    $this->get(route('profile.edit'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('auth.user.id', (string) $admin->id)
+        );
 });

@@ -20,9 +20,10 @@ test('first registered user is super admin and will be redirected to system sett
         'password_confirmation' => 'password',
     ]);
 
-    expect(Auth::check())->toBeTrue();
+    expect(Auth::guard('admin')->check())->toBeTrue();
+    expect(Auth::guard('web')->check())->toBeFalse();
 
-    $user = \App\Models\User::query()->findOrFail(Auth::id());
+    $user = \App\Models\User::query()->findOrFail(Auth::guard('admin')->id());
     expect($user->is_super_admin)->toBeTrue();
     expect($user->workspaces()->count())->toBe(0);
 
@@ -39,10 +40,11 @@ test('new users can register', function () {
         'password_confirmation' => 'password',
     ]);
 
-    expect(Auth::check())->toBeTrue();
+    expect(Auth::guard('web')->check())->toBeTrue();
+    expect(Auth::guard('admin')->check())->toBeFalse();
 
     // 验证注册时自动创建了租户
-    $user = \App\Models\User::query()->findOrFail(Auth::id());
+    $user = \App\Models\User::query()->findOrFail(Auth::guard('web')->id());
     expect($user->workspaces()->count())->toBe(1);
 
     // 注册后会重定向到全局 dashboard，然后再重定向到租户 dashboard

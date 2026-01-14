@@ -3,6 +3,7 @@ import { useI18n } from '@/composables/useI18n';
 import SidebarShell, { type SidebarShellNavItem } from '@/layouts/app/SidebarShell.vue';
 import { getGeneralSetting, getStorageSetting, getWorkspaceList } from '@/routes';
 import { edit as editProfile } from '@/routes/profile';
+import logout from '@/routes/logout';
 import systemSetting from '@/routes/system-setting';
 import type { BreadcrumbItemType, NavItem } from '@/types';
 import {
@@ -87,6 +88,7 @@ const footerNavItems = computed<NavItem[]>(() => [
 ]);
 
 const profileHref = computed(() => editProfile.url());
+const logoutHref = computed(() => logout.admin.url());
 </script>
 
 <template>
@@ -98,6 +100,7 @@ const profileHref = computed(() => editProfile.url());
     :footer-nav-items="footerNavItems"
     :profile-href="profileHref"
     :profile-label="t('个人设置')"
+    :logout-href="logoutHref"
   >
     <slot />
   </SidebarShell>

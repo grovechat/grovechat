@@ -19,7 +19,7 @@ test('super admin can view workspace trash list', function () {
     ]);
     $workspace->delete();
 
-    actingAs($admin)
+    actingAs($admin, 'admin')
         ->get(route('get-workspace-trash'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -41,7 +41,7 @@ test('super admin can restore a trashed workspace', function () {
     ]);
     $workspace->delete();
 
-    actingAs($admin)
+    actingAs($admin, 'admin')
         ->put(route('restore-workspace', ['id' => $workspace->id]))
         ->assertRedirect();
 
@@ -58,11 +58,11 @@ test('non-super-admin cannot view or restore workspace trash', function () {
     ]);
     $workspace->delete();
 
-    actingAs($user)
+    actingAs($user, 'admin')
         ->get(route('get-workspace-trash'))
         ->assertForbidden();
 
-    actingAs($user)
+    actingAs($user, 'admin')
         ->put(route('restore-workspace', ['id' => $workspace->id]))
         ->assertForbidden();
 });

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/composables/useI18n';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { logout } from '@/routes';
+import logout from '@/routes/logout';
 import { send } from '@/routes/verification';
 import { Form, Head } from '@inertiajs/vue3';
 
@@ -41,7 +41,7 @@ const { t } = useI18n();
         {{ t('重新发送验证邮件') }}
       </Button>
 
-      <TextLink :href="logout()" as="button" class="mx-auto block text-sm">
+      <TextLink :href="logout.web()" as="button" class="mx-auto block text-sm">
         {{ t('退出登录') }}
       </TextLink>
     </Form>

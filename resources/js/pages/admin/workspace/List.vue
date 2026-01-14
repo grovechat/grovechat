@@ -14,7 +14,13 @@ import {
 import { useI18n } from '@/composables/useI18n';
 import { useDateTime } from '@/composables/useDateTime';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
-import { deleteWorkspace, getWorkspaceList, getWorkspaceTrash, showWorkspaceDetail } from '@/routes';
+import {
+  deleteWorkspace,
+  getWorkspaceList,
+  getWorkspaceTrash,
+  loginAsWorkspaceOwner,
+  showWorkspaceDetail,
+} from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { WorkspaceListPagePropsData } from '@/types/generated';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
@@ -107,6 +113,12 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                           <Link :href="showWorkspaceDetail.url(ws.id)">
                             {{ t('查看详情') }}
                           </Link>
+                        </Button>
+
+                        <Button v-if="ws.owner?.id" variant="outline" size="sm" as-child>
+                          <a :href="loginAsWorkspaceOwner.url(ws.id)" target="_blank" rel="noopener noreferrer">
+                            {{ t('以所有者打开') }}
+                          </a>
                         </Button>
 
                         <Dialog>

@@ -20,7 +20,8 @@ test('users can authenticate using the login screen', function () {
         'password' => 'password',
     ]);
 
-    $this->assertAuthenticated();
+    $this->assertAuthenticated('web');
+    $this->assertGuest('admin');
     $response->assertRedirect(route('dashboard', absolute: false));
 });
 
@@ -34,7 +35,8 @@ test('super admin will be redirected to system settings after login', function (
         'password' => 'password',
     ]);
 
-    $this->assertAuthenticated();
+    $this->assertAuthenticated('admin');
+    $this->assertGuest('web');
     $response->assertRedirect('/admin');
 });
 
@@ -82,7 +84,7 @@ test('users can logout', function () {
 
     $response = $this->actingAs($user)->post(route('logout'));
 
-    $this->assertGuest();
+    $this->assertGuest('web');
     $response->assertRedirect(route('home'));
 });
 
