@@ -73,7 +73,7 @@ const currentPath =
             variant="ghost"
             :class="[
               'w-full justify-start',
-              { 'bg-muted': urlIsActive(item.href, currentPath) },
+              { 'bg-muted': urlIsActive(item.href, currentPath, { mode: 'path' }) },
             ]"
             as-child
           >
