@@ -43,7 +43,14 @@ use Inertia\Inertia;
 Route::get('/', ShowHomePageAction::class)->name('home');
 Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
+// 超级管理员路由
+Route::prefix('admin')->middleware(['auth:admin', 'verified', 'is_super_admin'])->group(function () {
+    Route::get('/', function () {
+        return response("test");
+    });
+});
+
+Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
     Route::get('/', RedirectCurrentWorkspaceDashboard::class)->name('workspace.home');
     Route::get('/dashboard', ShowDashboardAction::class)->name('workspace.dashboard');
 
