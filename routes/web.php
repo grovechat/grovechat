@@ -113,48 +113,6 @@ Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWo
     Route::get('/', RedirectCurrentWorkspaceDashboard::class)->name('workspace.home');
     Route::get('/dashboard', ShowDashboardAction::class)->name('workspace.dashboard');
 
-    // 系统设置（旧路径兼容：/w/{slug}/system-settings/* -> /system-settings/*）
-    Route::prefix('system-settings')->middleware(['is_super_admin'])->group(function () {
-        Route::redirect('/', '/system-settings/general');
-
-        Route::get('general', fn () => redirect()->to('/system-settings/general'));
-        Route::put('general', function (\Illuminate\Http\Request $request, UpdateGeneralSettingAction $action) {
-            return $action->asController($request);
-        });
-
-        Route::get('workspaces', fn () => redirect()->to('/system-settings/workspaces'));
-        Route::get('workspaces/{id}', fn (string $id) => redirect()->to("/system-settings/workspaces/{$id}"));
-        Route::delete('workspaces/{id}', function (\Illuminate\Http\Request $request, string $id, DeleteWorkspaceAction $action) {
-            return $action->asController($request, $id);
-        });
-
-        Route::get('storage', fn () => redirect()->to('/system-settings/storage'));
-        Route::put('storage', function (\Illuminate\Http\Request $request, UpdateStorageSettingAction $action) {
-            return $action->asController($request);
-        });
-        Route::put('check', function (\Illuminate\Http\Request $request, CheckStorageSettingAction $action) {
-            return $action->asController($request);
-        });
-
-        Route::post('storage/profiles', function (\Illuminate\Http\Request $request, CreateStorageProfileAction $action) {
-            return $action->asController($request);
-        });
-        Route::put('storage/profiles/{profile}', function (\Illuminate\Http\Request $request, \App\Models\StorageProfile $profile, UpdateStorageProfileAction $action) {
-            return $action->asController($request, $profile);
-        });
-        Route::put('storage/profiles/{profile}/check', function (\Illuminate\Http\Request $request, \App\Models\StorageProfile $profile, CheckStorageProfileAction $action) {
-            return $action->asController($request, $profile);
-        });
-        Route::delete('storage/profiles/{profile}', function (\Illuminate\Http\Request $request, \App\Models\StorageProfile $profile, DeleteStorageProfileAction $action) {
-            return $action->asController($request, $profile);
-        });
-
-        Route::get('mail', fn () => redirect()->to('/system-settings/mail'));
-        Route::get('integration', fn () => redirect()->to('/system-settings/integration'));
-        Route::get('security', fn () => redirect()->to('/system-settings/security'));
-        Route::get('maintenance', fn () => redirect()->to('/system-settings/maintenance'));
-    });
-
     // 管理中心
     Route::prefix('manage')->group(function () {
         // 工作区
