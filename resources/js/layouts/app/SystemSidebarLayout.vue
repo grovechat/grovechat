@@ -162,7 +162,7 @@ const handleLogout = () => {
   router.flushAll();
 };
 
-const profileHref = computed(() => editProfile.url({ query: { context: 'system' } }));
+const profileHref = computed(() => editProfile.url());
 </script>
 
 <template>

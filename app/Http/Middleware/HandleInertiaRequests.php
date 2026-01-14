@@ -57,22 +57,11 @@ class HandleInertiaRequests extends Middleware
                 $currentWorkspace = $workspaces->firstWhere('slug', $routeSlug);
             }
 
-            $isSystemContext = $request->query('context') === 'system';
-
             $fromSlug = $request->query('from_workspace');
             $fromSlug = is_string($fromSlug) && $fromSlug !== '' ? $fromSlug : null;
 
-            if (! $fromSlug && ! $isSystemContext) {
-                $fromSlug = $request->session()->get('last_workspace_slug');
-                $fromSlug = is_string($fromSlug) && $fromSlug !== '' ? $fromSlug : null;
-            }
-
-            if ($fromSlug && ! $isSystemContext) {
+            if ($fromSlug) {
                 $fromWorkspace = $workspaces->firstWhere('slug', $fromSlug);
-            }
-
-            if (! $fromWorkspace && ! $isSystemContext) {
-                $fromWorkspace = $workspaces->first();
             }
 
             // /settings/* 等无 {slug} 的页面：如果存在 fromWorkspace，则也注入 currentWorkspace

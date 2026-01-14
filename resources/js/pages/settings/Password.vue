@@ -18,8 +18,7 @@ import { type BreadcrumbItem } from '@/types';
 const { t } = useI18n();
 const page = usePage();
 const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
-const currentWorkspace = computed(() => page.props.currentWorkspace);
-const RootLayout = computed(() => (currentWorkspace.value ? AppLayout : SystemAppLayout));
+const RootLayout = computed(() => (page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout));
 const linkOptions = computed(() => ({
   mergeQuery: {
     from_workspace: fromWorkspaceSlug.value,

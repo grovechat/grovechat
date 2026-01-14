@@ -44,7 +44,7 @@ Route::get('/', ShowHomePageAction::class)->name('home');
 Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 // 个人设置（全局，不绑定工作区）
-Route::middleware(['auth', 'verified'])->prefix('settings')->group(function () {
+Route::middleware(['auth', 'verified', 'require_settings_workspace'])->prefix('settings')->group(function () {
     Route::redirect('/', '/settings/profile');
 
     // 个人资料
