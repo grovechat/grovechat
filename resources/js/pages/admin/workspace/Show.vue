@@ -38,7 +38,7 @@ const nextPage = computed(() =>
   <SystemAppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('工作区详情')" />
     <div class="px-4 py-6 sm:px-6">
-      <div class="mx-auto w-full max-w-5xl space-y-12">
+      <div class="mx-auto w-full max-w-none space-y-12">
         <div class="space-y-6">
           <HeadingSmall
             :title="workspaceDetail.name"
@@ -153,6 +153,7 @@ const nextPage = computed(() =>
           </div>
         </div>
       </div>
+    </div>
     </div>
   </SystemAppLayout>
 </template>
