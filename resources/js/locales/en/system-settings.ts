@@ -40,6 +40,7 @@ export default {
   新增配置: 'New profile',
   收起: 'Collapse',
   配置名称: 'Profile name',
+  '例如：腾讯云 COS（生产）': 'e.g.: Tencent COS (Production)',
   存储提供商: 'Storage Provider',
   请选择存储提供商: 'Select a storage provider',
   查看文档: 'View docs',

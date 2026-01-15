@@ -461,7 +461,7 @@ const providerLabel = (value: string) =>
                   type="password"
                   autocomplete="off"
                   v-model="createForm.secret"
-                  :placeholder="t('请输入 Secret')"
+                  :placeholder="t('请输入 Secret Key')"
                 />
                 <InputError
                   class="mt-1"
