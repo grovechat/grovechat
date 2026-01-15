@@ -130,15 +130,12 @@ const checkConnection = () => {
   checkForm.bucket = form.bucket;
   checkForm.url = form.url;
 
-  checkForm.put(
-    CheckStorageSettingAction.url(),
-    {
-      preserveScroll: true,
-      onSuccess: () => {
-        checkForm.secret = '';
-      },
+  checkForm.put(CheckStorageSettingAction.url(), {
+    preserveScroll: true,
+    onSuccess: () => {
+      checkForm.secret = '';
     },
-  );
+  });
 };
 </script>
 

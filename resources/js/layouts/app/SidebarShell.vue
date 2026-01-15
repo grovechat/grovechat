@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import fallbackLogoUrl from '@/assets/images/logo.png';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,8 +36,8 @@ import Toaster from '@/components/ui/toast/Toaster.vue';
 import { useI18n } from '@/composables/useI18n';
 import { getInitials } from '@/composables/useInitials';
 import { useErrorHandling } from '@/composables/useToast';
-import { cn, toUrl, urlIsActive } from '@/lib/utils';
 import SidebarContextConsumer from '@/layouts/app/SidebarContextConsumer.vue';
+import { cn, toUrl, urlIsActive } from '@/lib/utils';
 import type { BreadcrumbItemType, NavItem } from '@/types';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown, LogOut, Pin, Settings } from 'lucide-vue-next';
@@ -73,7 +73,9 @@ const systemLogo = computed(
   () => generalSettings.value?.logo_url || fallbackLogoUrl,
 );
 const user = computed(() => page.props.auth.user);
-const showAvatar = computed(() => user.value?.avatar && user.value.avatar !== '');
+const showAvatar = computed(
+  () => user.value?.avatar && user.value.avatar !== '',
+);
 
 const isExternalLink = (href: NavItem['href']) => {
   const url = toUrl(href);
@@ -82,7 +84,9 @@ const isExternalLink = (href: NavItem['href']) => {
 
 const isMainNavItemActive = (item: SidebarShellNavItem) => {
   if (item.activeUrls && item.activeUrls.length > 0) {
-    return item.activeUrls.some((u) => urlIsActive(u, page.url, { mode: 'prefix' }));
+    return item.activeUrls.some((u) =>
+      urlIsActive(u, page.url, { mode: 'prefix' }),
+    );
   }
 
   return urlIsActive(item.href, page.url);
@@ -169,7 +173,10 @@ const handleLogout = () => {
         <SidebarContent>
           <SidebarGroup class="px-2 py-0">
             <SidebarMenu>
-              <SidebarMenuItem v-for="item in props.mainNavItems" :key="item.title">
+              <SidebarMenuItem
+                v-for="item in props.mainNavItems"
+                :key="item.title"
+              >
                 <SidebarMenuButton
                   as-child
                   :is-active="isMainNavItemActive(item)"
@@ -189,7 +196,10 @@ const handleLogout = () => {
           <SidebarGroup class="group-data-[collapsible=icon]:p-0">
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem v-for="item in props.footerNavItems" :key="item.title">
+                <SidebarMenuItem
+                  v-for="item in props.footerNavItems"
+                  :key="item.title"
+                >
                   <SidebarMenuButton
                     class="text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100"
                     as-child
@@ -228,7 +238,9 @@ const handleLogout = () => {
                         :src="user.avatar!"
                         :alt="user.name"
                       />
-                      <AvatarFallback class="rounded-lg text-black dark:text-white">
+                      <AvatarFallback
+                        class="rounded-lg text-black dark:text-white"
+                      >
                         {{ getInitials(user.name) }}
                       </AvatarFallback>
                     </Avatar>
@@ -262,13 +274,17 @@ const handleLogout = () => {
                           :src="user.avatar!"
                           :alt="user.name"
                         />
-                        <AvatarFallback class="rounded-lg text-black dark:text-white">
+                        <AvatarFallback
+                          class="rounded-lg text-black dark:text-white"
+                        >
                           {{ getInitials(user.name) }}
                         </AvatarFallback>
                       </Avatar>
 
                       <div class="grid flex-1 text-left text-sm leading-tight">
-                        <span class="truncate font-medium">{{ user.name }}</span>
+                        <span class="truncate font-medium">{{
+                          user.name
+                        }}</span>
                         <span class="truncate text-xs text-muted-foreground">
                           {{ user.email }}
                         </span>
@@ -277,7 +293,11 @@ const handleLogout = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem :as-child="true">
-                    <Link class="block w-full" :href="props.profileHref" as="button">
+                    <Link
+                      class="block w-full"
+                      :href="props.profileHref"
+                      as="button"
+                    >
                       <Settings class="mr-2 h-4 w-4" />
                       {{ props.profileLabel }}
                     </Link>
@@ -313,7 +333,10 @@ const handleLogout = () => {
           <template v-if="props.breadcrumbs && props.breadcrumbs.length > 0">
             <Breadcrumb>
               <BreadcrumbList>
-                <template v-for="(item, index) in props.breadcrumbs" :key="index">
+                <template
+                  v-for="(item, index) in props.breadcrumbs"
+                  :key="index"
+                >
                   <BreadcrumbItem>
                     <template v-if="index === props.breadcrumbs.length - 1">
                       <BreadcrumbPage>{{ item.title }}</BreadcrumbPage>
@@ -324,7 +347,9 @@ const handleLogout = () => {
                       </BreadcrumbLink>
                     </template>
                   </BreadcrumbItem>
-                  <BreadcrumbSeparator v-if="index !== props.breadcrumbs.length - 1" />
+                  <BreadcrumbSeparator
+                    v-if="index !== props.breadcrumbs.length - 1"
+                  />
                 </template>
               </BreadcrumbList>
             </Breadcrumb>
@@ -338,4 +363,3 @@ const handleLogout = () => {
     <Toaster />
   </SidebarProvider>
 </template>
-

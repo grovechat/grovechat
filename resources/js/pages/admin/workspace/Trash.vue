@@ -11,10 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useI18n } from '@/composables/useI18n';
 import { useDateTime } from '@/composables/useDateTime';
+import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
-import { getWorkspaceList, getWorkspaceTrash, restoreWorkspace } from '@/routes';
+import {
+  getWorkspaceList,
+  getWorkspaceTrash,
+  restoreWorkspace,
+} from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { WorkspaceTrashPagePropsData } from '@/types/generated';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
@@ -178,4 +182,3 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     </div>
   </SystemAppLayout>
 </template>
-

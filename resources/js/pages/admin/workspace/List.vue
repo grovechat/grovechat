@@ -11,8 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useI18n } from '@/composables/useI18n';
 import { useDateTime } from '@/composables/useDateTime';
+import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import {
   deleteWorkspace,
@@ -31,7 +31,9 @@ const { formatDateTime } = useDateTime();
 const page = usePage<AppPageProps<WorkspaceListPagePropsData>>();
 const workspaceList = computed(() => page.props.workspace_list);
 const deleteForm = useForm({});
-const currentUserId = computed(() => String((page.props as any)?.auth?.user?.id ?? ''));
+const currentUserId = computed(() =>
+  String((page.props as any)?.auth?.user?.id ?? ''),
+);
 
 const cannotDelete = (ws: (typeof workspaceList.value)[number]) =>
   !!ws.owner?.id && String(ws.owner.id) === currentUserId.value;
@@ -41,8 +43,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     href: getWorkspaceList.url(),
   },
 ]);
- 
-</script> 
+</script>
 <template>
   <SystemAppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('工作区管理')" />
@@ -115,8 +116,17 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                           </Link>
                         </Button>
 
-                        <Button v-if="ws.owner?.id" variant="outline" size="sm" as-child>
-                          <a :href="loginAsWorkspaceOwner.url(ws.id)" target="_blank" rel="noopener noreferrer">
+                        <Button
+                          v-if="ws.owner?.id"
+                          variant="outline"
+                          size="sm"
+                          as-child
+                        >
+                          <a
+                            :href="loginAsWorkspaceOwner.url(ws.id)"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             {{ t('以所有者打开') }}
                           </a>
                         </Button>
@@ -155,7 +165,10 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
                             <DialogFooter class="gap-2">
                               <DialogClose as-child>
-                                <Button variant="secondary" :disabled="deleteForm.processing">
+                                <Button
+                                  variant="secondary"
+                                  :disabled="deleteForm.processing"
+                                >
                                   {{ t('取消') }}
                                 </Button>
                               </DialogClose>
@@ -163,12 +176,19 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                                 variant="destructive"
                                 :disabled="deleteForm.processing"
                                 @click="
-                                  deleteForm.delete(deleteWorkspace.url(ws.id), {
-                                    preserveScroll: true,
-                                  })
+                                  deleteForm.delete(
+                                    deleteWorkspace.url(ws.id),
+                                    {
+                                      preserveScroll: true,
+                                    },
+                                  )
                                 "
                               >
-                                {{ deleteForm.processing ? t('删除中...') : t('确认删除') }}
+                                {{
+                                  deleteForm.processing
+                                    ? t('删除中...')
+                                    : t('确认删除')
+                                }}
                               </Button>
                             </DialogFooter>
                           </DialogContent>
@@ -178,7 +198,10 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   </tr>
 
                   <tr v-if="workspaceList.length === 0">
-                    <td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
+                    <td
+                      colspan="5"
+                      class="px-4 py-8 text-center text-muted-foreground"
+                    >
                       {{ t('暂无工作区') }}
                     </td>
                   </tr>
@@ -191,4 +214,3 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     </div>
   </SystemAppLayout>
 </template>
-  

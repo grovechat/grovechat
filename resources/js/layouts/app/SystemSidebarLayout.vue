@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import { useI18n } from '@/composables/useI18n';
-import SidebarShell, { type SidebarShellNavItem } from '@/layouts/app/SidebarShell.vue';
-import { getGeneralSetting, getStorageSetting, getWorkspaceList } from '@/routes';
-import { edit as editProfile } from '@/routes/profile';
+import SidebarShell, {
+  type SidebarShellNavItem,
+} from '@/layouts/app/SidebarShell.vue';
+import {
+  getGeneralSetting,
+  getStorageSetting,
+  getWorkspaceList,
+} from '@/routes';
 import logout from '@/routes/logout';
+import { edit as editProfile } from '@/routes/profile';
 import systemSetting from '@/routes/system-setting';
 import type { BreadcrumbItemType, NavItem } from '@/types';
 import {
+  BookOpen,
   Building2,
   Database,
-  BookOpen,
   GitBranch,
   Mail,
   Plug,
@@ -105,4 +111,3 @@ const logoutHref = computed(() => logout.admin.url());
     <slot />
   </SidebarShell>
 </template>
-

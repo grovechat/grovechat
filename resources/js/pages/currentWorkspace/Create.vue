@@ -59,15 +59,11 @@ const handleLogoChange = async (event: Event) => {
 
   try {
     uploading.value = true;
-    const response = await axios.post(
-      UploadImageAction.url(),
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+    const response = await axios.post(UploadImageAction.url(), formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
       },
-    );
+    });
     logoId.value = response.data.id;
   } catch {
     logoPreview.value = '';

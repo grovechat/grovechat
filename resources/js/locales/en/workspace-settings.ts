@@ -27,12 +27,13 @@ export default {
   管理客服账号: 'Manage teammates',
   新增客服: 'Add teammate',
   客服回收站: 'Teammate recycle bin',
-  '查看已删除的客服并可恢复': 'View deleted teammates and restore',
+  查看已删除的客服并可恢复: 'View deleted teammates and restore',
   删除时间: 'Deleted at',
   恢复: 'Restore',
   '恢复中...': 'Restoring...',
   '确认恢复客服？': 'Confirm restore teammate?',
-  '恢复后将重新出现在客服列表中。': 'After restoring, it will appear in the teammate list again.',
+  '恢复后将重新出现在客服列表中。':
+    'After restoring, it will appear in the teammate list again.',
   确认恢复: 'Confirm restore',
   暂无已删除的客服: 'No deleted teammates',
   客服名称: 'Teammate name',
@@ -51,7 +52,8 @@ export default {
   请再次输入登录密码: 'Please re-enter password',
   不填表示不修改密码: 'Leave blank to keep current password',
   '如填写密码，请再次输入确认': 'If you set a password, please confirm it',
-  创建一个新的客服账号并分配角色: 'Create a new teammate account and assign a role',
+  创建一个新的客服账号并分配角色:
+    'Create a new teammate account and assign a role',
   '更新客服资料，密码可选不填表示不修改':
     'Update teammate profile. Leave password blank to keep it unchanged',
   当前登录用户不允许删除: 'You cannot delete the currently logged in user',
@@ -60,4 +62,3 @@ export default {
     'Move this teammate account to the recycle bin. You can restore it later.',
   暂无客服: 'No teammates',
 } as const;
-

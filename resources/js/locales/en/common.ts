@@ -38,4 +38,3 @@ export default {
   恢复: 'Restore',
   '恢复中...': 'Restoring...',
 } as const;
-

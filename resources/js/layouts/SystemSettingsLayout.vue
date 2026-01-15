@@ -3,7 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { getGeneralSetting, getStorageSetting, getWorkspaceList } from '@/routes';
+import {
+  getGeneralSetting,
+  getStorageSetting,
+  getWorkspaceList,
+} from '@/routes';
 import systemSetting from '@/routes/system-setting';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';

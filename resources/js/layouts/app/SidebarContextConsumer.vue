@@ -7,4 +7,3 @@ const sidebar = useSidebar();
 <template>
   <slot v-bind="sidebar" />
 </template>
-

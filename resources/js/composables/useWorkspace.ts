@@ -33,4 +33,3 @@ export function useRequiredWorkspace(): ComputedRef<WorkspaceData> {
     return ws;
   });
 }
-

@@ -16,4 +16,3 @@ withDefaults(defineProps<Props>(), {
     <slot />
   </AppLayout>
 </template>
-

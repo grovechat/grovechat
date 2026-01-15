@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -12,8 +12,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useI18n } from '@/composables/useI18n';
 import { useDateTime } from '@/composables/useDateTime';
+import { useI18n } from '@/composables/useI18n';
 import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
@@ -58,12 +58,24 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             <table class="w-full text-sm">
               <thead class="border-b bg-muted/30 text-muted-foreground">
                 <tr>
-                  <th class="px-4 py-3 text-left font-medium">{{ t('头像') }}</th>
-                  <th class="px-4 py-3 text-left font-medium">{{ t('名称') }}</th>
-                  <th class="px-4 py-3 text-left font-medium">{{ t('邮箱') }}</th>
-                  <th class="px-4 py-3 text-left font-medium">{{ t('身份') }}</th>
-                  <th class="px-4 py-3 text-left font-medium">{{ t('删除时间') }}</th>
-                  <th class="px-4 py-3 text-right font-medium">{{ t('操作') }}</th>
+                  <th class="px-4 py-3 text-left font-medium">
+                    {{ t('头像') }}
+                  </th>
+                  <th class="px-4 py-3 text-left font-medium">
+                    {{ t('名称') }}
+                  </th>
+                  <th class="px-4 py-3 text-left font-medium">
+                    {{ t('邮箱') }}
+                  </th>
+                  <th class="px-4 py-3 text-left font-medium">
+                    {{ t('身份') }}
+                  </th>
+                  <th class="px-4 py-3 text-left font-medium">
+                    {{ t('删除时间') }}
+                  </th>
+                  <th class="px-4 py-3 text-right font-medium">
+                    {{ t('操作') }}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -85,7 +97,15 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   </td>
                   <td class="px-4 py-3 text-muted-foreground">{{ u.email }}</td>
                   <td class="px-4 py-3">
-                    {{ t(u.role === 'admin' ? '管理员' : u.role === 'owner' ? '所有者' : '客服') }}
+                    {{
+                      t(
+                        u.role === 'admin'
+                          ? '管理员'
+                          : u.role === 'owner'
+                            ? '所有者'
+                            : '客服',
+                      )
+                    }}
                   </td>
                   <td class="px-4 py-3 text-muted-foreground">
                     {{ u.deleted_at ? formatDateTime(u.deleted_at) : '-' }}
@@ -93,7 +113,11 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   <td class="px-4 py-3 text-right">
                     <Dialog>
                       <DialogTrigger as-child>
-                        <Button variant="outline" size="sm" :disabled="restoreForm.processing">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          :disabled="restoreForm.processing"
+                        >
                           {{ t('恢复') }}
                         </Button>
                       </DialogTrigger>
@@ -114,7 +138,10 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
                         <DialogFooter class="gap-2">
                           <DialogClose as-child>
-                            <Button variant="secondary" :disabled="restoreForm.processing">
+                            <Button
+                              variant="secondary"
+                              :disabled="restoreForm.processing"
+                            >
                               {{ t('取消') }}
                             </Button>
                           </DialogClose>
@@ -131,7 +158,11 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                               )
                             "
                           >
-                            {{ restoreForm.processing ? t('恢复中...') : t('确认恢复') }}
+                            {{
+                              restoreForm.processing
+                                ? t('恢复中...')
+                                : t('确认恢复')
+                            }}
                           </Button>
                         </DialogFooter>
                       </DialogContent>
@@ -140,7 +171,10 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 </tr>
 
                 <tr v-if="userList.length === 0">
-                  <td colspan="6" class="px-4 py-8 text-center text-muted-foreground">
+                  <td
+                    colspan="6"
+                    class="px-4 py-8 text-center text-muted-foreground"
+                  >
                     {{ t('暂无已删除的客服') }}
                   </td>
                 </tr>
@@ -148,9 +182,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             </table>
           </div>
         </div>
-
       </div>
     </WorkspaceSettingsLayout>
   </AppLayout>
 </template>
-

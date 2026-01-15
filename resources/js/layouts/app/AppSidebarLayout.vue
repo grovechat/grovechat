@@ -9,7 +9,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
 import { useErrorHandling } from '@/composables/useToast';
-import SidebarShell, { type SidebarShellNavItem } from '@/layouts/app/SidebarShell.vue';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
+import SidebarShell, {
+  type SidebarShellNavItem,
+} from '@/layouts/app/SidebarShell.vue';
 import { getCurrentWorkspace, getGeneralSetting } from '@/routes';
 import contact from '@/routes/contact';
 import logout from '@/routes/logout';
@@ -19,7 +22,6 @@ import workspace from '@/routes/workspace';
 import type { AppPageProps, BreadcrumbItemType, NavItem } from '@/types';
 import type { WorkspaceData } from '@/types/generated';
 import { router, usePage } from '@inertiajs/vue3';
-import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import {
   BarChart,
   BookOpen,
@@ -131,10 +133,11 @@ const switchWorkspace = (selectedWorkspace: WorkspaceData) => {
 
 const goToCreateWorkspace = () => {
   if (currentWorkspace.value) {
-    router.visit(ShowCreateWorkspacePageAction.url(currentWorkspace.value.slug));
+    router.visit(
+      ShowCreateWorkspacePageAction.url(currentWorkspace.value.slug),
+    );
   }
 };
-
 </script>
 
 <template>
@@ -144,7 +147,9 @@ const goToCreateWorkspace = () => {
     :header-subtitle="t('工作区')"
     :main-nav-items="mainNavItems"
     :footer-nav-items="footerNavItems"
-    :profile-href="edit({ query: { from_workspace: currentWorkspace.slug } }).url"
+    :profile-href="
+      edit({ query: { from_workspace: currentWorkspace.slug } }).url
+    "
     :profile-label="t('个人资料')"
     :logout-href="logoutHref"
   >
@@ -182,14 +187,26 @@ const goToCreateWorkspace = () => {
             <div
               class="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-md text-sidebar-primary-foreground"
             >
-              <img :src="w.logo_url" :alt="w.name" class="h-full w-full object-cover" />
+              <img
+                :src="w.logo_url"
+                :alt="w.name"
+                class="h-full w-full object-cover"
+              />
             </div>
             <span class="flex-1 truncate">{{ w.name }}</span>
-            <Check v-if="w.slug === currentWorkspace?.slug" class="h-4 w-4 shrink-0" />
+            <Check
+              v-if="w.slug === currentWorkspace?.slug"
+              class="h-4 w-4 shrink-0"
+            />
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem class="flex cursor-pointer items-center gap-2" @click="goToCreateWorkspace">
-            <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-dashed">
+          <DropdownMenuItem
+            class="flex cursor-pointer items-center gap-2"
+            @click="goToCreateWorkspace"
+          >
+            <div
+              class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-dashed"
+            >
               <Plus class="h-4 w-4" />
             </div>
             <span>{{ t('添加工作区') }}</span>

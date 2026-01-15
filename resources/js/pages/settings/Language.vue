@@ -28,7 +28,9 @@ const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =
 
 const page = usePage();
 const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
-const RootLayout = computed(() => (page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout));
+const RootLayout = computed(() =>
+  page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
+);
 const linkOptions = computed(() => ({
   mergeQuery: {
     from_workspace: fromWorkspaceSlug.value,
