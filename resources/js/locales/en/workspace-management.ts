@@ -12,8 +12,7 @@ export default {
   暂无工作区: 'No workspaces',
   工作区详情: 'Workspace details',
   详情: 'Details',
-  '查看该工作区的成员列表（支持分页）':
-    'View the member list of this workspace (pagination supported)',
+  查看该工作区的成员列表: 'View the member list of this workspace',
   成员: 'Member',
   邮箱: 'Email',
   角色: 'Role',
@@ -25,9 +24,7 @@ export default {
   上一页: 'Previous',
   下一页: 'Next',
   '确认删除工作区？': 'Confirm delete workspace?',
-  '将工作区放入回收站（软删除），可以后续恢复。':
-    'Move this workspace to the recycle bin (soft delete). It can be restored later.',
-  '不能删除自己作为所有者的工作区':
-    'You cannot delete a workspace that you own.',
+  '将工作区放入回收站，可以后续恢复。':
+    'Move this workspace to the recycle bin. It can be restored later.',
+  不能删除自己作为所有者的工作区: 'You cannot delete a workspace that you own.',
 } as const;
-

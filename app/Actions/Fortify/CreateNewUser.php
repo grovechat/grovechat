@@ -29,12 +29,18 @@ class CreateNewUser implements CreatesNewUsers
         ])->validate();
 
         return DB::transaction(function () use ($input) {
-            // 创建用户
+            $isFirstUser = User::query()->count() === 0;
+
             $user = User::query()->create([
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => $input['password'],
+                'is_super_admin' => $isFirstUser,
             ]);
+
+            if ($isFirstUser) {
+                return $user;
+            }
 
             // 创建工作区
             $workspace = Workspace::query()->create([
@@ -42,7 +48,7 @@ class CreateNewUser implements CreatesNewUsers
                 'owner_id' => $user->id,
             ]);
 
-            $user->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::ADMIN]);
+            $user->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::OWNER]);
 
             return $user;
         });

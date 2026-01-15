@@ -37,9 +37,12 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        $slug = $request->route('slug');
+        $fromWorkspace = $request->query('from_workspace');
+        if (is_string($fromWorkspace) && $fromWorkspace !== '') {
+            return to_route('profile.edit', ['from_workspace' => $fromWorkspace]);
+        }
 
-        return to_route('profile.edit', ['slug' => $slug]);
+        return to_route('profile.edit');
     }
 
     /**

@@ -65,4 +65,3 @@ export default {
     'If you have configured CDN or custom domain, enter it here for generating file access URLs',
   检测连接: 'Test connection',
 } as const;
-

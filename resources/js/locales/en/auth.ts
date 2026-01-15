@@ -56,4 +56,3 @@ export default {
   重新发送验证邮件: 'Resend verification email',
   退出登录: 'Log out',
 } as const;
-

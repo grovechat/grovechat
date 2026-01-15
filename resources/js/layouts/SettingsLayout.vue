@@ -14,29 +14,35 @@ import { computed } from 'vue';
 
 const { t } = useI18n();
 const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
+
+const linkOptions = computed(() => ({
+  mergeQuery: {
+    from_workspace: fromWorkspaceSlug.value,
+  },
+}));
 
 const sidebarNavItems = computed<NavItem[]>(() => {
   return [
     {
       title: t('个人资料'),
-      href: editProfile(currentWorkspace.value.slug),
+      href: editProfile(linkOptions.value),
     },
     {
       title: t('密码'),
-      href: editPassword(currentWorkspace.value.slug),
+      href: editPassword(linkOptions.value),
     },
     {
       title: t('两步验证'),
-      href: show(currentWorkspace.value.slug),
+      href: show(linkOptions.value),
     },
     {
       title: t('语言和时区'),
-      href: editLanguage(currentWorkspace.value.slug),
+      href: editLanguage(linkOptions.value),
     },
     {
       title: t('外观'),
-      href: editAppearance(currentWorkspace.value.slug),
+      href: editAppearance(linkOptions.value),
     },
   ];
 });
@@ -67,7 +73,11 @@ const currentPath =
             variant="ghost"
             :class="[
               'w-full justify-start',
-              { 'bg-muted': urlIsActive(item.href, currentPath) },
+              {
+                'bg-muted': urlIsActive(item.href, currentPath, {
+                  mode: 'path',
+                }),
+              },
             ]"
             as-child
           >

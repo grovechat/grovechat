@@ -9,6 +9,8 @@ use App\Actions\Manage\DeleteCurrentWorkspaceAction;
 use App\Actions\Manage\GetCurrentWorkspaceAction;
 use App\Actions\Manage\ShowCreateWorkspacePageAction;
 use App\Actions\Manage\UpdateWorkspaceAction;
+use App\Actions\Security\LogoutAdminAction;
+use App\Actions\Security\LogoutWebAction;
 use App\Actions\StorageSetting\CheckStorageSettingAction;
 use App\Actions\StorageSetting\GetStorageSettingAction;
 use App\Actions\StorageSetting\StorageProfile\CheckStorageProfileAction;
@@ -29,6 +31,9 @@ use App\Actions\User\UpdateUserAction;
 use App\Actions\User\UpdateUserOnlineStatusAction;
 use App\Actions\Workspace\DeleteWorkspaceAction;
 use App\Actions\Workspace\GetWorkspaceListAction;
+use App\Actions\Workspace\GetWorkspaceTrashListAction;
+use App\Actions\Workspace\LoginAsWorkspaceOwnerAction;
+use App\Actions\Workspace\RestoreWorkspaceAction;
 use App\Actions\Workspace\ShowWorkspaceDetailAction;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
@@ -41,74 +46,84 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', ShowHomePageAction::class)->name('home');
-Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth:web', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
+// 个人设置（全局，不绑定工作区）
+Route::middleware(['authenticate_settings', 'verified', 'ensure_settings_workspace'])->prefix('settings')->group(function () {
+    Route::redirect('/', '/settings/profile');
+
+    // 个人资料
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // 密码
+    Route::get('password', [PasswordController::class, 'edit'])->name('user-password.edit');
+    Route::put('password', [PasswordController::class, 'update'])->middleware('throttle:6,1')->name('user-password.update');
+
+    // 两步认证
+    Route::get('two-factor', [TwoFactorAuthenticationController::class, 'show'])->name('two-factor.show');
+
+    // 语言和时区
+    Route::get('language', [LanguageController::class, 'edit'])->name('language.edit');
+
+    // 外观
+    Route::get('appearance', [AppearanceController::class, 'edit'])->name('appearance.edit');
+});
+
+// 系统设置（仅超级管理员）
+Route::prefix('admin')->middleware(['auth:admin', 'verified', 'is_super_admin'])->group(function () {
+    Route::redirect('/', '/admin/general')->name('admin.home');
+
+    // 基础设置
+    Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
+    Route::put('general', UpdateGeneralSettingAction::class)->name('update-general-setting');
+
+    // 工作区管理
+    Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');
+    Route::get('workspaces/trash', GetWorkspaceTrashListAction::class)->name('get-workspace-trash');
+    Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('show-workspace-detail');
+    Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('delete-workspace');
+    Route::put('workspaces/{id}/restore', RestoreWorkspaceAction::class)->name('restore-workspace');
+    Route::get('workspaces/{id}/login-as-owner', LoginAsWorkspaceOwnerAction::class)->name('login-as-workspace-owner');
+
+    // 存储设置
+    Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
+    Route::put('storage', UpdateStorageSettingAction::class)->name('update-storage-setting');
+    Route::put('check', CheckStorageSettingAction::class)->name('check-storage-settiing');
+    Route::post('storage/profiles', CreateStorageProfileAction::class)->name('storage-profile.create');
+    Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('storage-profile.update');
+    Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
+    Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
+
+    // 邮箱服务器
+    Route::get('mail', function () {
+        return Inertia::render('admin/systemSettings/MailSetting');
+    })->name('system-setting.get-mail-settings');
+
+    // 外部集成
+    Route::get('integration', function () {
+        return Inertia::render('admin/systemSettings/IntegrationSetting');
+    })->name('system-setting.get-integration-settings');
+
+    // 安全
+    Route::get('security', function () {
+        return Inertia::render('admin/systemSettings/SecuritySetting');
+    })->name('system-setting.get-security-settings');
+
+    // 维护
+    Route::get('maintenance', function () {
+        return Inertia::render('admin/systemSettings/MaintenanceSetting');
+    })->name('system-setting.get-maintenance-settings');
+});
+
+// 分 guard 登出（保证同一浏览器同时操作 admin + workspace 时互不影响）
+Route::post('/logout/admin', LogoutAdminAction::class)->middleware(['auth:admin'])->name('logout.admin');
+Route::post('/logout/web', LogoutWebAction::class)->middleware(['auth:web'])->name('logout.web');
+
+Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
     Route::get('/', RedirectCurrentWorkspaceDashboard::class)->name('workspace.home');
     Route::get('/dashboard', ShowDashboardAction::class)->name('workspace.dashboard');
-
-    // 个人设置
-    Route::prefix('settings')->group(function () {
-        // 个人资料
-        Route::redirect('/', 'settings/profile');
-        Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-        // 密码
-        Route::get('password', [PasswordController::class, 'edit'])->name('user-password.edit');
-        Route::put('password', [PasswordController::class, 'update'])->middleware('throttle:6,1')->name('user-password.update');
-
-        // 两步认证
-        Route::get('two-factor', [TwoFactorAuthenticationController::class, 'show'])->name('two-factor.show');
-
-        // 语言和时区
-        Route::get('language', [LanguageController::class, 'edit'])->name('language.edit');
-
-        // 外观
-        Route::get('appearance', [AppearanceController::class, 'edit'])->name('appearance.edit');
-    });
-
-    // 系统设置
-    Route::prefix('system-settings')->group(function () {
-        // 基础设置
-        Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
-        Route::put('general', UpdateGeneralSettingAction::class)->name('update-general-setting');
-
-        // 工作区管理
-        Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');
-        Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('show-workspace-detail');
-        Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('delete-workspace');
-
-        // 存储设置
-        Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
-        Route::put('storage', UpdateStorageSettingAction::class)->name('update-storage-setting');
-        Route::put('check', CheckStorageSettingAction::class)->name('check-storage-settiing');
-        Route::post('storage/profiles', CreateStorageProfileAction::class)->name('storage-profile.create');
-        Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('storage-profile.update');
-        Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
-        Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
-
-        // 邮箱服务器
-        Route::get('mail', function () {
-            return Inertia::render('systemSettings/MailSetting');
-        })->name('system-setting.get-mail-settings');
-
-        // 外部集成
-        Route::get('integration', function () {
-            return Inertia::render('systemSettings/IntegrationSetting');
-        })->name('system-setting.get-integration-settings');
-
-        // 安全
-        Route::get('security', function () {
-            return Inertia::render('systemSettings/SecuritySetting');
-        })->name('system-setting.get-security-settings');
-
-        // 维护
-        Route::get('/maintenance', function () {
-            return Inertia::render('systemSettings/MaintenanceSetting');
-        })->name('system-setting.get-maintenance-settings');
-    });
 
     // 管理中心
     Route::prefix('manage')->group(function () {

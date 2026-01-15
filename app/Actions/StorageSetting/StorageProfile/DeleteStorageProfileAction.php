@@ -36,7 +36,7 @@ class DeleteStorageProfileAction
         $profile->delete();
     }
 
-    public function asController(Request $request, string $slug, StorageProfile $profile)
+    public function asController(Request $request, StorageProfile $profile)
     {
         $this->handle($profile);
 
@@ -48,4 +48,3 @@ class DeleteStorageProfileAction
         return back();
     }
 }
-

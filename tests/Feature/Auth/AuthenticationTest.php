@@ -20,8 +20,24 @@ test('users can authenticate using the login screen', function () {
         'password' => 'password',
     ]);
 
-    $this->assertAuthenticated();
+    $this->assertAuthenticated('web');
+    $this->assertGuest('admin');
     $response->assertRedirect(route('dashboard', absolute: false));
+});
+
+test('super admin will be redirected to system settings after login', function () {
+    $user = User::factory()->withoutTwoFactor()->create([
+        'is_super_admin' => true,
+    ]);
+
+    $response = $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated('admin');
+    $this->assertGuest('web');
+    $response->assertRedirect('/admin');
 });
 
 test('users with two factor enabled are redirected to two factor challenge', function () {
@@ -68,7 +84,7 @@ test('users can logout', function () {
 
     $response = $this->actingAs($user)->post(route('logout'));
 
-    $this->assertGuest();
+    $this->assertGuest('web');
     $response->assertRedirect(route('home'));
 });
 

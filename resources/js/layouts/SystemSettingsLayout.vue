@@ -3,10 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { getGeneralSetting, getStorageSetting, getWorkspaceList } from '@/routes';
+import {
+  getGeneralSetting,
+  getStorageSetting,
+  getWorkspaceList,
+} from '@/routes';
 import systemSetting from '@/routes/system-setting';
 import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 interface Props {
@@ -16,42 +20,36 @@ interface Props {
 const props = defineProps<Props>();
 
 const { t } = useI18n();
-const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
 
 const sidebarNavItems = computed<NavItem[]>(() => {
   return [
     {
       title: t('基础设置'),
-      href: getGeneralSetting.url(currentWorkspace.value.slug),
+      href: getGeneralSetting.url(),
     },
     {
       title: t('工作区管理'),
-      href: getWorkspaceList.url(currentWorkspace.value.slug),
+      href: getWorkspaceList.url(),
     },
     {
       title: t('存储设置'),
-      href: getStorageSetting.url(currentWorkspace.value.slug),
+      href: getStorageSetting.url(),
     },
     {
       title: t('邮箱服务器'),
-      href: systemSetting.getMailSettings.url(currentWorkspace.value.slug),
+      href: systemSetting.getMailSettings.url(),
     },
     {
       title: t('集成'),
-      href: systemSetting.getIntegrationSettings.url(
-        currentWorkspace.value.slug,
-      ),
+      href: systemSetting.getIntegrationSettings.url(),
     },
     {
       title: t('安全'),
-      href: systemSetting.getSecuritySettings.url(currentWorkspace.value.slug),
+      href: systemSetting.getSecuritySettings.url(),
     },
     {
       title: t('维护'),
-      href: systemSetting.getMaintenanceSettings.url(
-        currentWorkspace.value.slug,
-      ),
+      href: systemSetting.getMaintenanceSettings.url(),
     },
   ];
 });

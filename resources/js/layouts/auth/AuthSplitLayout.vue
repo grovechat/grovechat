@@ -26,7 +26,11 @@ defineProps<{
         :href="home()"
         class="relative z-20 flex items-center text-lg font-medium"
       >
-        <img :src="logo" :alt="name + ' Logo'" class="mr-2 size-8 object-contain" />
+        <img
+          :src="logo"
+          :alt="name + ' Logo'"
+          class="mr-2 size-8 object-contain"
+        />
         {{ name }}
       </Link>
       <div v-if="quote" class="relative z-20 mt-auto">

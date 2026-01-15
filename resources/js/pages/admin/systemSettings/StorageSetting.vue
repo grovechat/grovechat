@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useI18n } from '@/composables/useI18n';
-import AppLayout from '@/layouts/AppLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import { getStorageSetting } from '@/routes';
 import type { AppPageProps } from '@/types';
@@ -30,7 +30,7 @@ const { t } = useI18n();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('存储设置'),
-    href: getStorageSetting.url(page.props.currentWorkspace.slug),
+    href: getStorageSetting.url(),
   },
 ]);
 
@@ -112,7 +112,7 @@ const toggleInternalEndpoint = () => {
 };
 
 const submit = () => {
-  form.put(UpdateStorageSettingAction.url(page.props.currentWorkspace.slug), {
+  form.put(UpdateStorageSettingAction.url(), {
     preserveScroll: true,
     onSuccess: () => {
       form.secret = '';
@@ -130,20 +130,17 @@ const checkConnection = () => {
   checkForm.bucket = form.bucket;
   checkForm.url = form.url;
 
-  checkForm.put(
-    CheckStorageSettingAction.url(page.props.currentWorkspace.slug),
-    {
-      preserveScroll: true,
-      onSuccess: () => {
-        checkForm.secret = '';
-      },
+  checkForm.put(CheckStorageSettingAction.url(), {
+    preserveScroll: true,
+    onSuccess: () => {
+      checkForm.secret = '';
     },
-  );
+  });
 };
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbItems">
+  <SystemAppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('存储设置')" />
 
     <SystemSettingsLayout>
@@ -385,5 +382,5 @@ const checkConnection = () => {
         </form>
       </div>
     </SystemSettingsLayout>
-  </AppLayout>
+  </SystemAppLayout>
 </template>

@@ -1,6 +1,9 @@
 <?php
 
 use App\Exceptions\BusinessException;
+use App\Http\Middleware\AuthenticateSettings;
+use App\Http\Middleware\CheckSuperAdmin;
+use App\Http\Middleware\EnsureSettingsWorkspace;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\HandleLocale;
@@ -18,6 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state', 'locale']);
+
+        $middleware->alias([
+            'is_super_admin' => CheckSuperAdmin::class,
+            'authenticate_settings' => AuthenticateSettings::class,
+            'ensure_settings_workspace' => EnsureSettingsWorkspace::class,
+        ]);
 
         $middleware->web(append: [
             HandleAppearance::class,

@@ -17,6 +17,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useTimezone, type Timezone } from '@/composables/useTimezone';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { availableLocales, type Locale } from '@/locales';
 import { edit } from '@/routes/language';
 import { type BreadcrumbItem } from '@/types';
@@ -26,12 +27,20 @@ const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =
   useTimezone();
 
 const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
+const RootLayout = computed(() =>
+  page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
+);
+const linkOptions = computed(() => ({
+  mergeQuery: {
+    from_workspace: fromWorkspaceSlug.value,
+  },
+}));
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('语言和时区设置'),
-    href: edit(currentWorkspace.value.slug).url,
+    href: edit.url(linkOptions.value),
   },
 ]);
 
@@ -69,7 +78,7 @@ function handleTimezoneChange(value: any) {
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbItems">
+  <component :is="RootLayout" :breadcrumbs="breadcrumbItems">
     <Head :title="t('语言和时区设置')" />
 
     <SettingsLayout>
@@ -154,5 +163,5 @@ function handleTimezoneChange(value: any) {
         </div>
       </div>
     </SettingsLayout>
-  </AppLayout>
+  </component>
 </template>

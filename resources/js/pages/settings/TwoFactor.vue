@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,16 +17,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
 import { Spinner } from '@/components/ui/spinner';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useI18n } from '@/composables/useI18n';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
-import { confirm, disable, enable, regenerateRecoveryCodes, show } from '@/routes/two-factor';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
+import {
+  confirm,
+  disable,
+  enable,
+  regenerateRecoveryCodes,
+  show,
+} from '@/routes/two-factor';
 import { BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
+import { useClipboard } from '@vueuse/core';
 import {
   AlertCircle,
   Check,
@@ -38,8 +50,15 @@ import {
   ShieldBan,
   ShieldCheck,
 } from 'lucide-vue-next';
-import { useClipboard } from '@vueuse/core';
-import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+import {
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  useTemplateRef,
+  watch,
+} from 'vue';
 
 interface Props {
   requiresConfirmation?: boolean;
@@ -53,12 +72,20 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
+const RootLayout = computed(() =>
+  page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
+);
+const linkOptions = computed(() => ({
+  mergeQuery: {
+    from_workspace: fromWorkspaceSlug.value,
+  },
+}));
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
     title: t('两步验证'),
-    href: show(currentWorkspace.value.slug).url,
+    href: show.url(linkOptions.value),
   },
 ]);
 
@@ -186,7 +213,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbs">
+  <component :is="RootLayout" :breadcrumbs="breadcrumbs">
     <Head :title="t('两步验证')" />
     <SettingsLayout>
       <div class="space-y-6">
@@ -215,7 +242,7 @@ onUnmounted(() => {
             </Button>
             <Form
               v-else
-              v-bind="enable.form(currentWorkspace.slug)"
+              v-bind="enable.form()"
               @success="showSetupModal = true"
               #default="{ processing }"
             >
@@ -255,7 +282,10 @@ onUnmounted(() => {
                 class="flex flex-col gap-3 select-none sm:flex-row sm:items-center sm:justify-between"
               >
                 <Button @click="toggleRecoveryCodesVisibility" class="w-fit">
-                  <component :is="isRecoveryCodesVisible ? EyeOff : Eye" class="size-4" />
+                  <component
+                    :is="isRecoveryCodesVisible ? EyeOff : Eye"
+                    class="size-4"
+                  />
                   {{ viewHideButtonText }}
                 </Button>
 
@@ -267,7 +297,11 @@ onUnmounted(() => {
                   @success="fetchRecoveryCodes"
                   #default="{ processing }"
                 >
-                  <Button variant="secondary" type="submit" :disabled="processing">
+                  <Button
+                    variant="secondary"
+                    type="submit"
+                    :disabled="processing"
+                  >
                     <RefreshCw /> {{ t('重新生成恢复码') }}
                   </Button>
                 </Form>
@@ -276,7 +310,9 @@ onUnmounted(() => {
               <div
                 :class="[
                   'relative overflow-hidden transition-all duration-300',
-                  isRecoveryCodesVisible ? 'h-auto opacity-100' : 'h-0 opacity-0',
+                  isRecoveryCodesVisible
+                    ? 'h-auto opacity-100'
+                    : 'h-0 opacity-0',
                 ]"
               >
                 <div v-if="uniqueErrors.length" class="mt-6">
@@ -304,7 +340,11 @@ onUnmounted(() => {
                         class="h-4 animate-pulse rounded bg-muted-foreground/20"
                       ></div>
                     </div>
-                    <div v-else v-for="(rc, index) in recoveryCodesList" :key="index">
+                    <div
+                      v-else
+                      v-for="(rc, index) in recoveryCodesList"
+                      :key="index"
+                    >
                       {{ rc }}
                     </div>
                   </div>
@@ -322,10 +362,7 @@ onUnmounted(() => {
           </Card>
 
           <div class="relative inline">
-            <Form
-              v-bind="disable.form(currentWorkspace.slug)"
-              #default="{ processing }"
-            >
+            <Form v-bind="disable.form()" #default="{ processing }">
               <Button
                 variant="destructive"
                 type="submit"
@@ -398,7 +435,10 @@ onUnmounted(() => {
                       >
                         <Spinner class="size-6" />
                       </div>
-                      <div v-else class="relative z-10 overflow-hidden border p-5">
+                      <div
+                        v-else
+                        class="relative z-10 overflow-hidden border p-5"
+                      >
                         <div
                           v-html="qrCodeSvg"
                           class="aspect-square w-full justify-center rounded-lg bg-white p-2 [&_svg]:size-full"
@@ -414,13 +454,17 @@ onUnmounted(() => {
                   </div>
 
                   <div class="relative flex w-full items-center justify-center">
-                    <div class="absolute inset-0 top-1/2 h-px w-full bg-border" />
+                    <div
+                      class="absolute inset-0 top-1/2 h-px w-full bg-border"
+                    />
                     <span class="relative bg-card px-2 py-1">{{
                       t('或者，手动输入密钥')
                     }}</span>
                   </div>
 
-                  <div class="flex w-full items-center justify-center space-x-2">
+                  <div
+                    class="flex w-full items-center justify-center space-x-2"
+                  >
                     <div
                       class="flex w-full items-stretch overflow-hidden rounded-xl border border-border"
                     >
@@ -459,7 +503,10 @@ onUnmounted(() => {
                   v-slot="{ errors, processing }"
                 >
                   <input type="hidden" name="code" :value="code" />
-                  <div ref="pinInputContainerRef" class="relative w-full space-y-3">
+                  <div
+                    ref="pinInputContainerRef"
+                    class="relative w-full space-y-3"
+                  >
                     <div
                       class="flex w-full flex-col items-center justify-center space-y-3 py-2"
                     >
@@ -477,7 +524,9 @@ onUnmounted(() => {
                           />
                         </InputOTPGroup>
                       </InputOTP>
-                      <div v-show="errors?.confirmTwoFactorAuthentication?.code">
+                      <div
+                        v-show="errors?.confirmTwoFactorAuthentication?.code"
+                      >
                         <p class="text-sm text-red-600 dark:text-red-500">
                           {{ errors?.confirmTwoFactorAuthentication?.code }}
                         </p>
@@ -510,5 +559,5 @@ onUnmounted(() => {
         </Dialog>
       </div>
     </SettingsLayout>
-  </AppLayout>
+  </component>
 </template>

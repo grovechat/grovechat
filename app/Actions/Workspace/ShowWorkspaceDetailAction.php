@@ -9,8 +9,8 @@ use App\Data\WorkspaceMemberData;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
-use Lorisleiva\Actions\Concerns\AsAction;
 use Inertia\Inertia;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class ShowWorkspaceDetailAction
 {
@@ -22,11 +22,16 @@ class ShowWorkspaceDetailAction
         $page = max(1, $page);
 
         $workspace = Workspace::query()
-            ->with(['owner:id,name,email'])
-            ->withCount('users')
+            ->with([
+                'owner' => fn ($query) => $query->withTrashed()->select(['id', 'name', 'email']),
+            ])
+            ->withCount([
+                'users' => fn ($query) => $query->withTrashed(),
+            ])
             ->findOrFail($id);
 
         $paginator = $workspace->users()
+            ->withTrashed()
             ->orderByPivot('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
 
@@ -46,12 +51,12 @@ class ShowWorkspaceDetailAction
             ),
         );
     }
-    
-    public function asController(Request $request, string $slug, string $id)
+
+    public function asController(Request $request, string $id)
     {
         $page = (int) $request->query('page', 1);
         $perPage = (int) $request->query('per_page', 10);
 
-        return Inertia::render('workspace/Show', $this->handle($id, $page, $perPage)->toArray());
+        return Inertia::render('admin/workspace/Show', $this->handle($id, $page, $perPage)->toArray());
     }
 }

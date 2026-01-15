@@ -23,6 +23,7 @@ enum WorkspaceRole: string
     public static function assignableCases(): array
     {
         return [
+            self::OWNER,
             self::ADMIN,
             self::CUSTOMER_SERVICE,
         ];

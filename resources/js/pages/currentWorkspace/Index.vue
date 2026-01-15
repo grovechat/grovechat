@@ -16,19 +16,20 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { getCurrentWorkspace } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { type AppPageProps, type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { Check, Copy } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const page = usePage();
+const page = usePage<AppPageProps>();
 const generalSettings = computed(() => page.props.generalSettings);
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const currentWorkspace = useRequiredWorkspace();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('常规设置'),
@@ -76,15 +77,11 @@ const handleLogoChange = async (event: Event) => {
 
   try {
     uploading.value = true;
-    const response = await axios.post(
-      UploadImageAction.url(),
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+    const response = await axios.post(UploadImageAction.url(), formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
       },
-    );
+    });
     logoId.value = response.data.id;
   } catch {
     logoPreview.value = currentWorkspace.value.logo_url || '';

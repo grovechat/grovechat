@@ -49,6 +49,6 @@ class GetStorageSettingAction
 
     public function asController()
     {
-        return Inertia::render('storageSetting/Index', $this->handle()->toArray());
+        return Inertia::render('admin/storageSetting/Index', $this->handle()->toArray());
     }
 }

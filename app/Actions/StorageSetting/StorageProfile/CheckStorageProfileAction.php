@@ -25,11 +25,12 @@ class CheckStorageProfileAction
                 'storage_profile_id' => $profile->id,
                 'exception' => $e,
             ]);
+
             return false;
         }
     }
 
-    public function asController(Request $request, string $slug, StorageProfile $profile)
+    public function asController(Request $request, StorageProfile $profile)
     {
         $ok = $this->handle($profile);
 
@@ -43,4 +44,3 @@ class CheckStorageProfileAction
         return back();
     }
 }
-

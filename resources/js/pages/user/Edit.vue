@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useI18n } from '@/composables/useI18n';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { showUserList, updateUser } from '@/routes';
@@ -25,7 +26,7 @@ import { computed, ref, watch } from 'vue';
 
 const { t } = useI18n();
 const page = usePage<AppPageProps<UserEditPagePropsData>>();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const currentWorkspace = useRequiredWorkspace();
 const userForm = computed(() => page.props.user_form);
 
 const roleValue = ref<WorkspaceRole>(userForm.value.role);
@@ -164,7 +165,12 @@ const handleAvatarChange = async (event: Event) => {
                 </div>
               </div>
 
-              <input id="avatar" name="avatar" type="hidden" :value="avatarUrl" />
+              <input
+                id="avatar"
+                name="avatar"
+                type="hidden"
+                :value="avatarUrl"
+              />
 
               <div class="flex items-center gap-3">
                 <input
@@ -237,7 +243,7 @@ const handleAvatarChange = async (event: Event) => {
               />
               <button
                 type="button"
-                class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 @click="passwordVisible = !passwordVisible"
               >
                 <EyeOff v-if="passwordVisible" class="h-4 w-4" />
@@ -259,8 +265,10 @@ const handleAvatarChange = async (event: Event) => {
               />
               <button
                 type="button"
-                class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                @click="passwordConfirmationVisible = !passwordConfirmationVisible"
+                class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                @click="
+                  passwordConfirmationVisible = !passwordConfirmationVisible
+                "
               >
                 <EyeOff v-if="passwordConfirmationVisible" class="h-4 w-4" />
                 <Eye v-else class="h-4 w-4" />
@@ -289,4 +297,3 @@ const handleAvatarChange = async (event: Event) => {
     </WorkspaceSettingsLayout>
   </AppLayout>
 </template>
-

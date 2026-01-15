@@ -4,6 +4,7 @@ import InputError from '@/components/common/InputError.vue';
 import { useI18n } from '@/composables/useI18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { edit } from '@/routes/user-password';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -16,18 +17,26 @@ import { type BreadcrumbItem } from '@/types';
 
 const { t } = useI18n();
 const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
+const RootLayout = computed(() =>
+  page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
+);
+const linkOptions = computed(() => ({
+  mergeQuery: {
+    from_workspace: fromWorkspaceSlug.value,
+  },
+}));
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('密码设置'),
-    href: edit(currentWorkspace.value.slug).url,
+    href: edit.url(linkOptions.value),
   },
 ]);
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbItems">
+  <component :is="RootLayout" :breadcrumbs="breadcrumbItems">
     <Head :title="t('密码设置')" />
 
     <SettingsLayout>
@@ -38,7 +47,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         />
 
         <Form
-          v-bind="PasswordController.update.form(currentWorkspace.slug)"
+          v-bind="PasswordController.update.form(linkOptions)"
           :options="{ preserveScroll: true }"
           reset-on-success
           :reset-on-error="[
@@ -118,5 +127,5 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         </Form>
       </div>
     </SettingsLayout>
-  </AppLayout>
+  </component>
 </template>

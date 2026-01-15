@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezonePlugin from 'dayjs/plugin/timezone';
-import 'dayjs/locale/zh-cn';
 import 'dayjs/locale/en';
+import 'dayjs/locale/zh-cn';
+import timezonePlugin from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 
 import { useI18n } from '@/composables/useI18n';
 import { useTimezone } from '@/composables/useTimezone';
@@ -35,4 +35,3 @@ export function useDateTime() {
     formatDateTime,
   };
 }
-

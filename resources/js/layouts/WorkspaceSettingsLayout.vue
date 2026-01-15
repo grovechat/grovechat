@@ -2,8 +2,9 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { getCurrentWorkspace, showUserList, showUserTrashPage } from '@/routes';
+import { getCurrentWorkspace, showUserList } from '@/routes';
 import workspaceSetting from '@/routes/workspace-setting';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -13,8 +14,8 @@ defineProps<{
 }>();
 
 const { t } = useI18n();
-const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+usePage();
+const currentWorkspace = useRequiredWorkspace();
 
 interface SubMenuItem {
   title: string;
@@ -44,10 +45,6 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
         {
           title: t('多客服'),
           href: showUserList.url(currentWorkspace.value.slug),
-        },
-        {
-          title: t('客服回收站'),
-          href: showUserTrashPage.url(currentWorkspace.value.slug),
         },
       ],
     },

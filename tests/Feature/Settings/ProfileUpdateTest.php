@@ -11,7 +11,7 @@ beforeEach(function () {
 test('profile page is displayed', function () {
     $response = $this
         ->actingAs($this->user)
-        ->get(route('profile.edit', ['slug' => $this->workspaceSlug()]));
+        ->get(route('profile.edit', ['from_workspace' => $this->workspaceSlug()]));
 
     $response->assertOk();
 });
@@ -19,14 +19,14 @@ test('profile page is displayed', function () {
 test('profile information can be updated', function () {
     $response = $this
         ->actingAs($this->user)
-        ->patch(route('profile.update', ['slug' => $this->workspaceSlug()]), [
+        ->patch(route('profile.update', ['from_workspace' => $this->workspaceSlug()]), [
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('profile.edit', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('profile.edit', ['from_workspace' => $this->workspaceSlug()]));
 
     $this->user->refresh();
 
@@ -38,14 +38,14 @@ test('profile information can be updated', function () {
 test('email verification status is unchanged when the email address is unchanged', function () {
     $response = $this
         ->actingAs($this->user)
-        ->patch(route('profile.update', ['slug' => $this->workspaceSlug()]), [
+        ->patch(route('profile.update', ['from_workspace' => $this->workspaceSlug()]), [
             'name' => 'Test User',
             'email' => $this->user->email,
         ]);
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('profile.edit', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('profile.edit', ['from_workspace' => $this->workspaceSlug()]));
 
     expect($this->user->refresh()->email_verified_at)->not->toBeNull();
 });
@@ -53,7 +53,7 @@ test('email verification status is unchanged when the email address is unchanged
 test('user can delete their account', function () {
     $response = $this
         ->actingAs($this->user)
-        ->delete(route('profile.destroy', ['slug' => $this->workspaceSlug()]), [
+        ->delete(route('profile.destroy', ['from_workspace' => $this->workspaceSlug()]), [
             'password' => 'password',
         ]);
 
@@ -68,14 +68,14 @@ test('user can delete their account', function () {
 test('correct password must be provided to delete account', function () {
     $response = $this
         ->actingAs($this->user)
-        ->from(route('profile.edit', ['slug' => $this->workspaceSlug()]))
-        ->delete(route('profile.destroy', ['slug' => $this->workspaceSlug()]), [
+        ->from(route('profile.edit', ['from_workspace' => $this->workspaceSlug()]))
+        ->delete(route('profile.destroy', ['from_workspace' => $this->workspaceSlug()]), [
             'password' => 'wrong-password',
         ]);
 
     $response
         ->assertSessionHasErrors('password')
-        ->assertRedirect(route('profile.edit', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('profile.edit', ['from_workspace' => $this->workspaceSlug()]));
 
     expect($this->user->fresh())->not->toBeNull();
 });

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
 import { useI18n } from '@/composables/useI18n';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import ContactsLayout from '@/layouts/ContactsLayout.vue';
 import contact from '@/routes/contact';
@@ -10,7 +11,7 @@ import { computed } from 'vue';
 
 const { t } = useI18n();
 const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const currentWorkspace = useRequiredWorkspace();
 
 // 从路由参数获取类型
 const type = computed(

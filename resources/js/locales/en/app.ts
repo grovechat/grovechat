@@ -47,4 +47,3 @@ export default {
   标签: 'Tags',
   自定义属性: 'Custom Attributes',
 } as const;
-
