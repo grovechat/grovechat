@@ -1,6 +1,6 @@
 ---
 name: frontend-components
-description: 前端 UI 组件和时间显示规范
+description: 前端组件规范
 ---
 
 # UI 组件库（Reka UI）
@@ -47,6 +47,38 @@ import { Label } from '@/components/ui/label';
 - **表单**: Select, Checkbox, InputOTP
 - **导航**: Breadcrumb, NavigationMenu, DropdownMenu
 - **其他**: Collapsible, Tooltip
+
+# 图标（lucide-vue-next）
+
+前端图标统一优先使用 `lucide-vue-next`，保持风格一致且便于按需引入。
+
+## 使用方式
+
+```vue
+<script setup lang="ts">
+import { Search, Trash2 } from 'lucide-vue-next';
+</script>
+
+<template>
+  <button class="inline-flex items-center gap-2">
+    <Search class="h-4 w-4" />
+    搜索
+  </button>
+
+  <Trash2 class="h-4 w-4 text-destructive" />
+</template>
+```
+
+## 约定
+
+- ✅ **优先使用 lucide-vue-next**：除非产品明确要求品牌/特殊图标
+- ✅ **尺寸用 Tailwind 类控制**：推荐 `h-4 w-4` / `h-5 w-5`
+- ✅ **颜色跟随文本颜色**：通过父级 `text-*` 或图标自身 `text-*`
+
+## 禁止事项
+
+❌ **禁止随意引入多个图标库**（保持统一）  
+❌ **禁止内联复制粘贴大量 SVG**（除非作为品牌图标且需复用）  
 
 # 时间显示（多时区支持）
 

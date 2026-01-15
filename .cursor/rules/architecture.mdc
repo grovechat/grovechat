@@ -78,3 +78,11 @@ php artisan typescript:transform
 php artisan test                  # 运行测试
 ./vendor/bin/pint                 # 代码格式化
 ```
+
+# 通用逻辑放置约定
+
+为了避免出现大量 “单方法工具类 / Support 目录膨胀”，本项目统一按以下规则收敛：
+
+- **业务用例（可复用流程）**：优先做成 Action（可通过 `SomeAction::run()` 复用与编排）
+- **纯转换/映射逻辑**：优先内聚到 “所属对象” 上（Enum / Data / Model 的 static 工厂方法，例如 `EnumOptionData::fromCases()`）
+- **基础设施封装（I/O、第三方、框架适配）**：放在 `app/Services/**`（例如 Storage / HTTP client / 外部 SDK 适配）

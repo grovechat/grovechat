@@ -57,6 +57,7 @@ class CreateWorkspaceDTO extends Data
 - ✅ PHP 使用 camelCase 定义属性
 - ✅ 前端接收到的是 snake_case（如 `logo_url`）
 - ✅ 验证规则使用 Laravel 官方 `rules()` 方法，不用注解
+- ✅ 枚举相关（label 多语言 / 选项下发 / 校验同源）：统一参考 `backend-enums.mdc`
 
 ## 类型生成工作流
 
