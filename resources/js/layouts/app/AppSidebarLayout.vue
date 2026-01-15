@@ -199,13 +199,13 @@ const goToCreateWorkspace = () => {
     </template>
 
     <template #collapsedHeaderAddon>
-      <div v-if="page.props.currentWorkspace" class="hidden group-data-[collapsible=icon]:block">
+      <div class="hidden group-data-[collapsible=icon]:block">
         <div
           class="flex h-6 w-6 items-center justify-center overflow-hidden rounded bg-sidebar-primary text-sidebar-primary-foreground"
         >
           <img
             :src="currentWorkspace.logo_url"
-            :alt="page.props.currentWorkspace.name"
+            :alt="currentWorkspace.name"
             class="h-full w-full object-cover"
           />
         </div>

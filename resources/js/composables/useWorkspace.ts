@@ -12,22 +12,6 @@ function getContextForError() {
 }
 
 /**
- * 返回可能为空的 currentWorkspace（用于 /admin、部分 /settings 等页面）。
- */
-export function useWorkspace(): ComputedRef<WorkspaceData | null> {
-  const page = usePage();
-
-  return computed(() => {
-    const ws = (page.props as any)?.currentWorkspace as
-      | WorkspaceData
-      | null
-      | undefined;
-
-    return ws ?? null;
-  });
-}
-
-/**
  * 工作区页面使用：如果 currentWorkspace 不存在会立刻抛错，帮助尽早发现“在错误上下文使用工作区组件”的问题。
  */
 export function useRequiredWorkspace(): ComputedRef<WorkspaceData> {
