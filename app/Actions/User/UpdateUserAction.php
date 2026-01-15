@@ -3,10 +3,12 @@
 namespace App\Actions\User;
 
 use App\Data\UserUpdateData;
+use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -17,22 +19,29 @@ class UpdateUserAction
     public function handle(Workspace $workspace, User $user, UserUpdateData $data): void
     {
         DB::transaction(function () use ($workspace, $user, $data) {
+            $currentRole = WorkspaceRole::tryFrom((string) ($user->pivot?->role ?? '')) ?? WorkspaceRole::OPERATOR;
+
             $user->update([
                 'name' => $data->name,
                 'email' => $data->email,
                 'avatar' => $data->avatar,
-                'external_nickname' => $data->external_nickname,
+                'nickname' => $data->nickname,
             ]);
 
             if (filled($data->password)) {
+                Gate::authorize('workspace-users.updatePassword', [$workspace]);
                 $user->update([
                     'password' => $data->password,
                 ]);
             }
 
-            $workspace->users()->updateExistingPivot($user->id, [
-                'role' => $data->role->value,
-            ]);
+            if ($data->role !== $currentRole) {
+                Gate::authorize('workspace-users.updateRole', [$workspace, $user, $data->role]);
+
+                $workspace->users()->updateExistingPivot($user->id, [
+                    'role' => $data->role->value,
+                ]);
+            }
         });
     }
 

@@ -10,7 +10,7 @@ class UserCreateData extends Data
 {
     public function __construct(
         public string $name,
-        public ?string $external_nickname,
+        public ?string $nickname,
         public ?string $avatar,
         public WorkspaceRole $role,
         public string $email,
@@ -23,7 +23,7 @@ class UserCreateData extends Data
 
         return [
             'name' => ['required', 'string', 'max:50'],
-            'external_nickname' => ['nullable', 'string', 'max:50'],
+            'nickname' => ['nullable', 'string', 'max:50'],
             'avatar' => ['nullable', 'string', 'max:2048'],
             'role' => ['required', Rule::in($roles)],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],

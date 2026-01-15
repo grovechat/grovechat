@@ -29,7 +29,7 @@ const page = usePage<AppPageProps<UserCreatePagePropsData>>();
 const currentWorkspace = useRequiredWorkspace();
 const userForm = computed(() => page.props.user_form);
 
-const roleValue = ref<WorkspaceRole>(userForm.value.role || 'customer_service');
+const roleValue = ref<WorkspaceRole>(userForm.value.role || 'operator');
 const avatarPreview = ref<string>(userForm.value.avatar || '');
 const avatarUrl = ref<string>(userForm.value.avatar || '');
 const uploading = ref(false);
@@ -130,15 +130,15 @@ watch(
           </div>
 
           <div class="grid gap-2">
-            <Label for="external_nickname">{{ t('对外昵称') }}</Label>
+            <Label for="nickname">{{ t('对外昵称') }}</Label>
             <Input
-              id="external_nickname"
-              name="external_nickname"
+              id="nickname"
+              name="nickname"
               class="mt-1 block w-full"
-              :default-value="userForm.external_nickname || ''"
+              :default-value="userForm.nickname || ''"
               :placeholder="t('请输入对外昵称')"
             />
-            <InputError class="mt-2" :message="errors.external_nickname" />
+            <InputError class="mt-2" :message="errors.nickname" />
           </div>
 
           <div class="grid gap-2">

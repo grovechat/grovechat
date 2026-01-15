@@ -49,7 +49,7 @@ test('workspace detail shows members with pagination', function () {
 
     $users = User::factory()->count(12)->create();
     foreach ($users as $u) {
-        $workspace->users()->attach($u->id, ['role' => 'customer_service']);
+        $workspace->users()->attach($u->id, ['role' => 'operator']);
     }
 
     $this->actingAs($this->user, 'admin')

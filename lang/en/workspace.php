@@ -9,6 +9,6 @@ return [
     'roles' => [
         'owner' => 'Owner',
         'admin' => 'Admin',
-        'customer_service' => 'Teammate',
+        'operator' => 'Operator',
     ],
 ];

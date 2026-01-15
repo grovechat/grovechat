@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->ulid('workspace_id');
             $table->ulid('user_id');
-            $table->string('role')->default(WorkspaceRole::CUSTOMER_SERVICE->value)->comment('角色');
+            $table->string('role')->default(WorkspaceRole::OPERATOR->value)->comment('角色');
             $table->primary(['workspace_id', 'user_id']);
         });
     }

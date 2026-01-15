@@ -9,6 +9,6 @@ return [
     'roles' => [
         'owner' => '所有者',
         'admin' => '管理员',
-        'customer_service' => '客服',
+        'operator' => '客服',
     ],
 ];

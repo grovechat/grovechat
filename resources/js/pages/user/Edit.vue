@@ -30,6 +30,15 @@ const currentWorkspace = useRequiredWorkspace();
 const userForm = computed(() => page.props.user_form);
 
 const roleValue = ref<WorkspaceRole>(userForm.value.role);
+const canUpdateRole = computed(() => Boolean(page.props.can_update_role));
+const canUpdatePassword = computed(() => Boolean(page.props.can_update_password));
+
+const roleLabel = (role: WorkspaceRole) =>
+  ({
+    owner: t('所有者'),
+    admin: t('管理员'),
+    operator: t('客服'),
+  })[role];
 
 const avatarPreview = ref<string>(userForm.value.avatar || '');
 const avatarUrl = ref<string>(userForm.value.avatar || '');
@@ -136,15 +145,15 @@ const handleAvatarChange = async (event: Event) => {
           </div>
 
           <div class="grid gap-2">
-            <Label for="external_nickname">{{ t('对外昵称') }}</Label>
+            <Label for="nickname">{{ t('对外昵称') }}</Label>
             <Input
-              id="external_nickname"
-              name="external_nickname"
+              id="nickname"
+              name="nickname"
               class="mt-1 block w-full"
-              :default-value="userForm.external_nickname || ''"
+              :default-value="userForm.nickname || ''"
               :placeholder="t('请输入对外昵称')"
             />
-            <InputError class="mt-2" :message="errors.external_nickname" />
+            <InputError class="mt-2" :message="errors.nickname" />
           </div>
 
           <div class="grid gap-2">
@@ -201,21 +210,32 @@ const handleAvatarChange = async (event: Event) => {
 
           <div class="grid gap-2">
             <Label for="role">{{ t('角色') }}</Label>
-            <input type="hidden" name="role" :value="roleValue" />
-            <Select v-model="roleValue">
-              <SelectTrigger id="role" class="mt-1">
-                <SelectValue :placeholder="t('请选择角色')" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                  v-for="opt in roleOptions"
-                  :key="String(opt.value)"
-                  :value="String(opt.value)"
-                >
-                  {{ opt.label }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <template v-if="canUpdateRole">
+              <input type="hidden" name="role" :value="roleValue" />
+              <Select v-model="roleValue">
+                <SelectTrigger id="role" class="mt-1">
+                  <SelectValue :placeholder="t('请选择角色')" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    v-for="opt in roleOptions"
+                    :key="String(opt.value)"
+                    :value="String(opt.value)"
+                  >
+                    {{ opt.label }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </template>
+            <template v-else>
+              <input type="hidden" name="role" :value="String(userForm.role)" />
+              <Input
+                id="role"
+                class="mt-1"
+                :default-value="roleLabel(userForm.role)"
+                disabled
+              />
+            </template>
             <InputError class="mt-2" :message="errors.role" />
           </div>
 
@@ -233,50 +253,52 @@ const handleAvatarChange = async (event: Event) => {
             <InputError class="mt-2" :message="errors.email" />
           </div>
 
-          <div class="grid gap-2">
-            <Label for="password">{{ t('登录密码') }}</Label>
-            <div class="relative mt-1">
-              <Input
-                id="password"
-                name="password"
-                :type="passwordVisible ? 'text' : 'password'"
-                class="block w-full pr-10"
-                :placeholder="t('不填表示不修改密码')"
-              />
-              <button
-                type="button"
-                class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                @click="passwordVisible = !passwordVisible"
-              >
-                <EyeOff v-if="passwordVisible" class="h-4 w-4" />
-                <Eye v-else class="h-4 w-4" />
-              </button>
+          <template v-if="canUpdatePassword">
+            <div class="grid gap-2">
+              <Label for="password">{{ t('登录密码') }}</Label>
+              <div class="relative mt-1">
+                <Input
+                  id="password"
+                  name="password"
+                  :type="passwordVisible ? 'text' : 'password'"
+                  class="block w-full pr-10"
+                  :placeholder="t('不填表示不修改密码')"
+                />
+                <button
+                  type="button"
+                  class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  @click="passwordVisible = !passwordVisible"
+                >
+                  <EyeOff v-if="passwordVisible" class="h-4 w-4" />
+                  <Eye v-else class="h-4 w-4" />
+                </button>
+              </div>
+              <InputError class="mt-2" :message="errors.password" />
             </div>
-            <InputError class="mt-2" :message="errors.password" />
-          </div>
 
-          <div class="grid gap-2">
-            <Label for="password_confirmation">{{ t('确认密码') }}</Label>
-            <div class="relative mt-1">
-              <Input
-                id="password_confirmation"
-                name="password_confirmation"
-                :type="passwordConfirmationVisible ? 'text' : 'password'"
-                class="block w-full pr-10"
-                :placeholder="t('如填写密码，请再次输入确认')"
-              />
-              <button
-                type="button"
-                class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                @click="
-                  passwordConfirmationVisible = !passwordConfirmationVisible
-                "
-              >
-                <EyeOff v-if="passwordConfirmationVisible" class="h-4 w-4" />
-                <Eye v-else class="h-4 w-4" />
-              </button>
+            <div class="grid gap-2">
+              <Label for="password_confirmation">{{ t('确认密码') }}</Label>
+              <div class="relative mt-1">
+                <Input
+                  id="password_confirmation"
+                  name="password_confirmation"
+                  :type="passwordConfirmationVisible ? 'text' : 'password'"
+                  class="block w-full pr-10"
+                  :placeholder="t('如填写密码，请再次输入确认')"
+                />
+                <button
+                  type="button"
+                  class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  @click="
+                    passwordConfirmationVisible = !passwordConfirmationVisible
+                  "
+                >
+                  <EyeOff v-if="passwordConfirmationVisible" class="h-4 w-4" />
+                  <Eye v-else class="h-4 w-4" />
+                </button>
+              </div>
             </div>
-          </div>
+          </template>
 
           <div class="flex items-center gap-4">
             <Button type="submit" :disabled="processing">

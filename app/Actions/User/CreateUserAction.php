@@ -21,7 +21,7 @@ class CreateUserAction
                 'name' => $data->name,
                 'email' => $data->email,
                 'avatar' => $data->avatar,
-                'external_nickname' => $data->external_nickname,
+                'nickname' => $data->nickname,
                 'password' => $data->password,
             ]);
 

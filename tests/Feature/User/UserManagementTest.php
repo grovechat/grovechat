@@ -21,7 +21,7 @@ test('authenticated user can view user list page', function () {
         'email' => 'a@example.com',
         'online_status' => UserOnlineStatus::OFFLINE->value,
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
         ->get(route('show-user-list', ['slug' => $this->workspaceSlug()]))
@@ -45,7 +45,7 @@ test('authenticated user can view create user page with role options', function 
             ->has('user_form')
             ->has('role_options', 2)
             ->where('role_options.0.value', 'admin')
-            ->where('role_options.1.value', 'customer_service')
+            ->where('role_options.1.value', 'operator')
             ->etc()
         );
 });
@@ -55,7 +55,7 @@ test('authenticated user can view edit user page with role options', function ()
         'name' => '客服Z',
         'email' => 'z@example.com',
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
         ->get(route('show-edit-user-page', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
@@ -65,7 +65,7 @@ test('authenticated user can view edit user page with role options', function ()
             ->has('user_form')
             ->has('role_options', 2)
             ->where('role_options.0.value', 'admin')
-            ->where('role_options.1.value', 'customer_service')
+            ->where('role_options.1.value', 'operator')
             ->etc()
         );
 });
@@ -74,9 +74,9 @@ test('can create a user in current workspace', function () {
     $this->actingAs($this->user)
         ->post(route('create-user', ['slug' => $this->workspaceSlug()]), [
             'name' => '客服B',
-            'external_nickname' => '小B',
+            'nickname' => '小B',
             'avatar' => 'https://example.com/a.png',
-            'role' => 'customer_service',
+            'role' => 'operator',
             'email' => 'b@example.com',
             'password' => 'secret1234',
             'password_confirmation' => 'secret1234',
@@ -88,20 +88,34 @@ test('can create a user in current workspace', function () {
     expect($this->workspace->users()->whereKey($created->id)->exists())->toBeTrue();
 });
 
+test('cannot create a user with owner role', function () {
+    $this->actingAs($this->user)
+        ->post(route('create-user', ['slug' => $this->workspaceSlug()]), [
+            'name' => '非法 Owner',
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'owner',
+            'email' => 'owner-like@example.com',
+            'password' => 'secret1234',
+            'password_confirmation' => 'secret1234',
+        ])
+        ->assertSessionHasErrors(['role']);
+});
+
 test('can update a user without changing password', function () {
     $member = User::factory()->create([
         'name' => '客服C',
         'email' => 'c@example.com',
         'password' => Hash::make('old-password'),
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $oldHash = $member->password;
 
     $this->actingAs($this->user)
         ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'name' => '客服C-新',
-            'external_nickname' => '小C',
+            'nickname' => '小C',
             'avatar' => null,
             'role' => 'admin',
             'email' => 'c@example.com',
@@ -115,20 +129,54 @@ test('can update a user without changing password', function () {
     expect($member->password)->toBe($oldHash);
 });
 
+test('owner cannot change own role', function () {
+    $this->actingAs($this->user)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
+            'name' => $this->user->name,
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'admin',
+            'email' => $this->user->email,
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+
+    $role = $this->workspace->users()->whereKey($this->user->id)->firstOrFail()->pivot->role;
+    expect($role)->toBe('owner');
+});
+
+test('owner can update own profile without changing role', function () {
+    $this->actingAs($this->user)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
+            'name' => 'Owner-新名称',
+            'nickname' => '老板',
+            'avatar' => null,
+            'role' => 'owner',
+            'email' => $this->user->email,
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+
+    $this->user->refresh();
+    expect($this->user->name)->toBe('Owner-新名称');
+});
+
 test('can update a user with new password', function () {
     $member = User::factory()->create([
         'name' => '客服D',
         'email' => 'd@example.com',
         'password' => Hash::make('old-password'),
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
         ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'name' => '客服D',
-            'external_nickname' => null,
+            'nickname' => null,
             'avatar' => null,
-            'role' => 'customer_service',
+            'role' => 'operator',
             'email' => 'd@example.com',
             'password' => 'newpass1234',
             'password_confirmation' => 'newpass1234',
@@ -139,13 +187,97 @@ test('can update a user with new password', function () {
     expect(Hash::check('newpass1234', $member->password))->toBeTrue();
 });
 
+test('owner cannot set another user role to owner', function () {
+    $member = User::factory()->create([
+        'name' => '客服-不可升 Owner',
+        'email' => 'no-owner@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
+
+    $this->actingAs($this->user)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+            'name' => $member->name,
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'owner',
+            'email' => $member->email,
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+
+    $role = $this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->role;
+    expect($role)->toBe('operator');
+});
+
+test('admin cannot change another user role', function () {
+    $admin = User::factory()->create([
+        'name' => '管理员X',
+        'email' => 'admin-x@example.com',
+    ]);
+    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+
+    $member = User::factory()->create([
+        'name' => '客服-角色不可被管理员改',
+        'email' => 'no-admin-role-change@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
+
+    $this->actingAs($admin)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+            'name' => $member->name,
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'admin',
+            'email' => $member->email,
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+
+    $role = $this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->role;
+    expect($role)->toBe('operator');
+});
+
+test('admin cannot change another user password', function () {
+    $admin = User::factory()->create([
+        'name' => '管理员Y',
+        'email' => 'admin-y@example.com',
+    ]);
+    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+
+    $member = User::factory()->create([
+        'name' => '客服-密码不可被管理员改',
+        'email' => 'no-admin-password-change@example.com',
+        'password' => Hash::make('old-password'),
+    ]);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
+
+    $oldHash = $member->password;
+
+    $this->actingAs($admin)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+            'name' => $member->name,
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'operator',
+            'email' => $member->email,
+            'password' => 'newpass1234',
+            'password_confirmation' => 'newpass1234',
+        ])
+        ->assertForbidden();
+
+    $member->refresh();
+    expect($member->password)->toBe($oldHash);
+});
+
 test('can update user online status from list', function () {
     $member = User::factory()->create([
         'name' => '客服E',
         'email' => 'e@example.com',
         'online_status' => UserOnlineStatus::OFFLINE->value,
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
         ->put(route('update-user-online-status', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
@@ -162,7 +294,7 @@ test('can soft delete a user in current workspace', function () {
         'name' => '客服F',
         'email' => 'f@example.com',
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
         ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
@@ -182,7 +314,7 @@ test('trash page shows deleted users and can restore', function () {
         'name' => '回收站客服',
         'email' => 'trash@example.com',
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
         ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))

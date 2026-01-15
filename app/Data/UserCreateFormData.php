@@ -10,10 +10,10 @@ class UserCreateFormData extends Data
 {
     public function __construct(
         public string $name = '',
-        public ?string $external_nickname = null,
+        public ?string $nickname = null,
         public ?string $avatar = null,
         public string $email = '',
-        public WorkspaceRole $role = WorkspaceRole::CUSTOMER_SERVICE,
+        public WorkspaceRole $role = WorkspaceRole::OPERATOR,
         public UserOnlineStatus $online_status = UserOnlineStatus::ONLINE,
     ) {}
 }

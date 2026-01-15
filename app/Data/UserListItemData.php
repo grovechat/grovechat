@@ -22,7 +22,7 @@ class UserListItemData extends Data
 
     public static function fromModel(User $user): self
     {
-        $role = WorkspaceRole::tryFrom((string) ($user->pivot?->role ?? '')) ?? WorkspaceRole::CUSTOMER_SERVICE;
+        $role = WorkspaceRole::tryFrom((string) ($user->pivot?->role ?? '')) ?? WorkspaceRole::OPERATOR;
         $status = UserOnlineStatus::tryFrom((int) $user->online_status) ?? UserOnlineStatus::OFFLINE;
 
         return new self(

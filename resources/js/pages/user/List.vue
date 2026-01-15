@@ -53,7 +53,7 @@ const roleLabel = (role: WorkspaceRole) =>
   ({
     owner: t('所有者'),
     admin: t('管理员'),
-    customer_service: t('客服'),
+    operator: t('客服'),
   })[role];
 
 const onlineStatusLabel = (s: UserOnlineStatus) =>

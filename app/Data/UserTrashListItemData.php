@@ -19,7 +19,7 @@ class UserTrashListItemData extends Data
 
     public static function fromModel(User $user): self
     {
-        $role = WorkspaceRole::tryFrom((string) ($user->pivot?->role ?? '')) ?? WorkspaceRole::CUSTOMER_SERVICE;
+        $role = WorkspaceRole::tryFrom((string) ($user->pivot?->role ?? '')) ?? WorkspaceRole::OPERATOR;
 
         return new self(
             id: (string) $user->id,

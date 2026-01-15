@@ -30,7 +30,6 @@ class User extends Authenticatable
         'password',
         'avatar',
         'nickname',
-        'external_nickname',
         'online_status',
         'last_active_at',
         'is_super_admin',
