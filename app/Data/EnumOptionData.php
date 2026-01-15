@@ -20,4 +20,16 @@ class EnumOptionData extends Data
             label: $enum->label(),
         );
     }
+
+    /**
+     * @param  array<int, \BackedEnum&\App\Contracts\LabeledEnum>  $cases
+     * @return array<int, self>
+     */
+    public static function fromCases(array $cases): array
+    {
+        return array_map(
+            static fn (BackedEnum&LabeledEnum $enum) => self::fromEnum($enum),
+            $cases,
+        );
+    }
 }

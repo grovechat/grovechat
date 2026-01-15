@@ -2,11 +2,11 @@
 
 namespace App\Actions\User;
 
+use App\Data\EnumOptionData;
 use App\Data\UserEditFormData;
 use App\Data\UserEditPagePropsData;
 use App\Enums\WorkspaceRole;
 use App\Models\Workspace;
-use App\Support\EnumOptions;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -22,7 +22,7 @@ class ShowEditUserPageAction
 
         return new UserEditPagePropsData(
             user_form: UserEditFormData::fromModel($user),
-            role_options: EnumOptions::from(WorkspaceRole::assignableCases()),
+            role_options: EnumOptionData::fromCases(WorkspaceRole::assignableCases()),
         );
     }
 
