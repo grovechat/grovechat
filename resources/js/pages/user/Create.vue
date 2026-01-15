@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useI18n } from '@/composables/useI18n';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { createUser, showUserList } from '@/routes';
@@ -25,7 +26,7 @@ import { computed, ref, watch } from 'vue';
 
 const { t } = useI18n();
 const page = usePage<AppPageProps<UserCreatePagePropsData>>();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const currentWorkspace = useRequiredWorkspace();
 const userForm = computed(() => page.props.user_form);
 
 const roleValue = ref<WorkspaceRole>(userForm.value.role || 'customer_service');

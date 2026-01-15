@@ -17,7 +17,7 @@ import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { getWorkspaceList, getWorkspaceTrash, restoreWorkspace } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { WorkspaceTrashPagePropsData } from '@/types/generated';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();

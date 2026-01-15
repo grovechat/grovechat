@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useI18n } from '@/composables/useI18n';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import {
@@ -37,7 +38,7 @@ import { computed, ref } from 'vue';
 
 const { t } = useI18n();
 const page = usePage<AppPageProps<UserListPagePropsData>>();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const currentWorkspace = useRequiredWorkspace();
 const userList = computed(() => page.props.user_list);
 const currentUserId = computed(() => String(page.props.auth?.user?.id ?? ''));
 

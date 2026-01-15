@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
 import { useI18n } from '@/composables/useI18n';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import workspaceSetting from '@/routes/workspace-setting';
@@ -9,8 +10,8 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+usePage();
+const currentWorkspace = useRequiredWorkspace();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {

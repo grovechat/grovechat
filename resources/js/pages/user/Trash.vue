@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { useI18n } from '@/composables/useI18n';
 import { useDateTime } from '@/composables/useDateTime';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { restoreUser, showUserList, showUserTrashPage } from '@/routes';
@@ -25,7 +26,7 @@ import { computed } from 'vue';
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
 const page = usePage<AppPageProps<UserTrashPagePropsData>>();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const currentWorkspace = useRequiredWorkspace();
 const userList = computed(() => page.props.user_list);
 const restoreForm = useForm({});
 

@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { dashboard } from '@/routes/workspace';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -19,8 +20,8 @@ interface MenuItem {
 }
 
 const { t } = useI18n();
-const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+usePage();
+const currentWorkspace = useRequiredWorkspace();
 
 const sidebarNavItems = computed<MenuItem[]>(() => {
   return [

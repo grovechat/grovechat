@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
-import AppLayout from '@/layouts/AppLayout.vue';
+import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
 import { getGeneralSetting, uploadImage } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
@@ -17,11 +17,10 @@ import { computed, ref } from 'vue';
 const page = usePage();
 const { t } = useI18n();
 const generalSettings = computed(() => page.props.generalSettings);
-const currentWorkspace = computed(() => page.props.currentWorkspace);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: getGeneralSetting.url(currentWorkspace.value.slug),
+    href: getGeneralSetting.url(),
   },
 ]);
 const logoPreview = ref<string>(generalSettings.value.logo_url || '');
@@ -69,7 +68,7 @@ const handleLogoChange = async (event: Event) => {
 </script>
 
 <template>
-  <AppLayout :breadcrumbs="breadcrumbItems">
+  <SystemAppLayout :breadcrumbs="breadcrumbItems">
     <Head :title="t('基础设置')" />
 
     <SystemSettingsLayout>
@@ -80,9 +79,7 @@ const handleLogoChange = async (event: Event) => {
         />
 
         <Form
-          v-bind="
-            SystemSetting.UpdateGeneralSettingAction.form(currentWorkspace.slug)
-          "
+          v-bind="SystemSetting.UpdateGeneralSettingAction.form()"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >
@@ -217,5 +214,5 @@ const handleLogoChange = async (event: Event) => {
         </Form>
       </div>
     </SystemSettingsLayout>
-  </AppLayout>
+  </SystemAppLayout>
 </template>

@@ -16,9 +16,10 @@ import logout from '@/routes/logout';
 import { edit } from '@/routes/profile';
 import stats from '@/routes/stats';
 import workspace from '@/routes/workspace';
-import type { BreadcrumbItemType, NavItem } from '@/types';
+import type { AppPageProps, BreadcrumbItemType, NavItem } from '@/types';
 import type { WorkspaceData } from '@/types/generated';
 import { router, usePage } from '@inertiajs/vue3';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import {
   BarChart,
   BookOpen,
@@ -42,17 +43,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const { t } = useI18n();
-const page = usePage();
+const page = usePage<AppPageProps>();
 useErrorHandling();
 
-const currentWorkspace = computed(() => {
-  const workspace = page.props.currentWorkspace;
-  if (!workspace) {
-    throw new Error('currentWorkspace is required for AppSidebarLayout.');
-  }
-
-  return workspace;
-});
+const currentWorkspace = useRequiredWorkspace();
 const user = computed(() => page.props.auth.user);
 const workspaces = computed(() => page.props.workspaces);
 

@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
+import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import stats from '@/routes/stats';
 import { type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const page = usePage();
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+usePage();
+const currentWorkspace = useRequiredWorkspace();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
