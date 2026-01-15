@@ -4,7 +4,9 @@ namespace App\Actions\User;
 
 use App\Data\UserCreateFormData;
 use App\Data\UserCreatePagePropsData;
+use App\Enums\WorkspaceRole;
 use App\Models\Workspace;
+use App\Support\EnumOptions;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -16,6 +18,7 @@ class ShowCreateUserPageAction
     {
         return new UserCreatePagePropsData(
             user_form: new UserCreateFormData,
+            role_options: EnumOptions::from(WorkspaceRole::assignableCases()),
         );
     }
 

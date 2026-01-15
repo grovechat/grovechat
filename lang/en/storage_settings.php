@@ -15,4 +15,16 @@ return [
     'profile_is_active_cannot_delete' => 'This profile is currently active and cannot be deleted.',
     'profile_is_referenced_cannot_delete' => 'This profile is referenced by attachments and cannot be deleted.',
     'profile_credentials_pair_required' => 'Updating credentials requires both Key and Secret.',
+    'providers' => [
+        'aws' => 'Amazon S3',
+        'r2' => 'Cloudflare R2',
+        'aliyun' => 'Alibaba Cloud',
+        'tencent' => 'Tencent Cloud',
+        'baidu' => 'Baidu Cloud',
+        'qiniu' => 'Qiniu Cloud',
+        'huawei' => 'Huawei Cloud',
+        'ucloud' => 'UCloud',
+        'minio' => 'MinIO',
+        'rustfs' => 'RustFS',
+    ],
 ];

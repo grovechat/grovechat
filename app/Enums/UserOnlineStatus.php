@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum UserOnlineStatus: int
+use App\Contracts\LabeledEnum;
+
+enum UserOnlineStatus: int implements LabeledEnum
 {
     case ONLINE = 1;
     case OFFLINE = 0;
@@ -10,8 +12,8 @@ enum UserOnlineStatus: int
     public function label(): string
     {
         return match ($this) {
-            self::ONLINE => '在线',
-            self::OFFLINE => '离线',
+            self::ONLINE => __('user.online_statuses.online'),
+            self::OFFLINE => __('user.online_statuses.offline'),
         };
     }
 }

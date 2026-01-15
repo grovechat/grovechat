@@ -36,6 +36,40 @@ test('authenticated user can view user list page', function () {
         );
 });
 
+test('authenticated user can view create user page with role options', function () {
+    $this->actingAs($this->user)
+        ->get(route('show-create-user-page', ['slug' => $this->workspaceSlug()]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('user/Create')
+            ->has('user_form')
+            ->has('role_options', 2)
+            ->where('role_options.0.value', 'admin')
+            ->where('role_options.1.value', 'customer_service')
+            ->etc()
+        );
+});
+
+test('authenticated user can view edit user page with role options', function () {
+    $member = User::factory()->create([
+        'name' => '客服Z',
+        'email' => 'z@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+
+    $this->actingAs($this->user)
+        ->get(route('show-edit-user-page', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('user/Edit')
+            ->has('user_form')
+            ->has('role_options', 2)
+            ->where('role_options.0.value', 'admin')
+            ->where('role_options.1.value', 'customer_service')
+            ->etc()
+        );
+});
+
 test('can create a user in current workspace', function () {
     $this->actingAs($this->user)
         ->post(route('create-user', ['slug' => $this->workspaceSlug()]), [
