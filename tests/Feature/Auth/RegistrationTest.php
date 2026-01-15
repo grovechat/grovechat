@@ -30,6 +30,21 @@ test('first registered user is super admin and will be redirected to system sett
     $response->assertRedirect('/admin');
 });
 
+test('first registered super admin ignores non-admin intended redirects', function () {
+    $response = $this->withSession([
+        'url.intended' => '/dashboard',
+    ])->post(route('register.store'), [
+        'name' => 'adminuser',
+        'email' => 'admin@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+
+    expect(Auth::guard('admin')->check())->toBeTrue();
+    expect(Auth::guard('web')->check())->toBeFalse();
+    $response->assertRedirect('/admin');
+});
+
 test('new users can register', function () {
     \App\Models\User::factory()->create();
 
@@ -49,5 +64,22 @@ test('new users can register', function () {
 
     // 注册后会重定向到全局 dashboard，然后再重定向到租户 dashboard
     // 所以这里检查重定向到 dashboard 路由即可
+    $response->assertRedirect(route('dashboard', absolute: false));
+});
+
+test('new user register ignores intended redirects and goes to dashboard', function () {
+    \App\Models\User::factory()->create();
+
+    $response = $this->withSession([
+        'url.intended' => '/admin',
+    ])->post(route('register.store'), [
+        'name' => 'testuser',
+        'email' => 'test@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+
+    expect(Auth::guard('web')->check())->toBeTrue();
+    expect(Auth::guard('admin')->check())->toBeFalse();
     $response->assertRedirect(route('dashboard', absolute: false));
 });

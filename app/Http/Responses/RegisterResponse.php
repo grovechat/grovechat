@@ -18,9 +18,9 @@ class RegisterResponse implements RegisterResponseContract
             Auth::guard('admin')->login($user);
             Auth::guard('web')->logout();
 
-            return redirect()->intended(route('admin.home', absolute: false));
+            return redirect()->to(route('admin.home', absolute: false));
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->to(route('dashboard', absolute: false));
     }
 }

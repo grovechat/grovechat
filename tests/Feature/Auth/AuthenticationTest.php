@@ -25,12 +25,44 @@ test('users can authenticate using the login screen', function () {
     $response->assertRedirect(route('dashboard', absolute: false));
 });
 
+test('normal user login ignores intended redirects and goes to dashboard', function () {
+    $user = User::factory()->withoutTwoFactor()->create();
+
+    $response = $this->withSession([
+        'url.intended' => '/admin',
+    ])->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated('web');
+    $this->assertGuest('admin');
+    $response->assertRedirect(route('dashboard', absolute: false));
+});
+
 test('super admin will be redirected to system settings after login', function () {
     $user = User::factory()->withoutTwoFactor()->create([
         'is_super_admin' => true,
     ]);
 
     $response = $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated('admin');
+    $this->assertGuest('web');
+    $response->assertRedirect('/admin');
+});
+
+test('super admin login ignores non-admin intended redirects', function () {
+    $user = User::factory()->withoutTwoFactor()->create([
+        'is_super_admin' => true,
+    ]);
+
+    $response = $this->withSession([
+        'url.intended' => '/dashboard',
+    ])->post(route('login.store'), [
         'email' => $user->email,
         'password' => 'password',
     ]);

@@ -18,9 +18,9 @@ class LoginResponse implements LoginResponseContract
             Auth::guard('admin')->login($user, $request->boolean('remember'));
             Auth::guard('web')->logout();
 
-            return redirect()->intended(route('admin.home', absolute: false));
+            return redirect()->to(route('admin.home', absolute: false));
         }
 
-        return redirect()->intended(config('fortify.home'));
+        return redirect()->to(route('dashboard', absolute: false));
     }
 }
