@@ -82,3 +82,7 @@ const props = defineProps<{
 ❌ **禁止手动编辑** Wayfinder 生成的路由文件  
 ❌ **禁止硬编码路由字符串** - 使用 Wayfinder  
 ❌ **禁止前端多语言 key 使用英文** - 统一使用中文
+
+# 枚举（前端消费约定）
+
+- ✅ 枚举 label / options 统一由后端下发；详细约定请参考：`backend-enums.mdc`

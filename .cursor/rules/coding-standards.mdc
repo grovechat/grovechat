@@ -11,6 +11,7 @@ alwaysApply: true
 **详细规范请参考**：
 - `backend-actions.mdc` - Action 模式规范
 - `backend-data.mdc` - Laravel Data 和类型生成
+- `backend-enums.mdc` - 枚举（Enum）规范（多语言 label / 选项下发）
 - `backend-messages.mdc` - Toast 消息和多语言  
 - `frontend-components.mdc` - UI 组件和时间显示
 - `frontend-routing.mdc` - 路由和多语言

@@ -15,4 +15,16 @@ return [
     'profile_is_active_cannot_delete' => '该配置正在被启用，无法删除',
     'profile_is_referenced_cannot_delete' => '该配置已被附件引用，无法删除',
     'profile_credentials_pair_required' => '更新凭证需要同时填写 Key 和 Secret',
+    'providers' => [
+        'aws' => 'Amazon S3',
+        'r2' => 'Cloudflare R2',
+        'aliyun' => '阿里云',
+        'tencent' => '腾讯云',
+        'baidu' => '百度云',
+        'qiniu' => '七牛云',
+        'huawei' => '华为云',
+        'ucloud' => 'UCloud',
+        'minio' => 'MinIO',
+        'rustfs' => 'RustFS',
+    ],
 ];

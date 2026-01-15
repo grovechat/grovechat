@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum StorageProvider: string
+use App\Contracts\LabeledEnum;
+
+enum StorageProvider: string implements LabeledEnum
 {
     case AWS = 'aws';
     case R2 = 'r2';
@@ -18,16 +20,16 @@ enum StorageProvider: string
     public function label(): string
     {
         return match ($this) {
-            self::AWS => 'Amazon S3',
-            self::R2 => 'Cloudflare R2',
-            self::ALIYUN => '阿里云',
-            self::TENCENT => '腾讯云',
-            self::BAIDU => '百度云',
-            self::QINIU => '七牛云',
-            self::HUAWEI => '华为云',
-            self::UCLOUD => 'UCloud优刻得',
-            self::MINIO => 'MinIO',
-            self::RUSTFS => 'RustFS',
+            self::AWS => __('storage_settings.providers.aws'),
+            self::R2 => __('storage_settings.providers.r2'),
+            self::ALIYUN => __('storage_settings.providers.aliyun'),
+            self::TENCENT => __('storage_settings.providers.tencent'),
+            self::BAIDU => __('storage_settings.providers.baidu'),
+            self::QINIU => __('storage_settings.providers.qiniu'),
+            self::HUAWEI => __('storage_settings.providers.huawei'),
+            self::UCLOUD => __('storage_settings.providers.ucloud'),
+            self::MINIO => __('storage_settings.providers.minio'),
+            self::RUSTFS => __('storage_settings.providers.rustfs'),
         };
     }
 

@@ -1,0 +1,133 @@
+---
+name: backend-enums
+description: 枚举（Enum）开发规范（后端统一输出与多语言）
+---
+
+# 为什么要用 Enum
+
+现代 PHP 的 Enum 是**表达领域约束**的最佳工具之一：
+
+- 避免魔法字符串 / 魔法数字
+- 让校验、存储、序列化、显示文案形成**单一事实来源**
+- 配合 TypeScript Transformer，让前后端类型保持一致
+
+# 基础约束（强制）
+
+## 1) 对外暴露必须使用 Backed Enum
+
+- ✅ **凡是会进入 DB / API / Inertia props 的枚举**，必须是 Backed Enum（`string|int`）
+- ✅ 存储/传输使用 `value`
+- ✅ UI 显示使用 `label()`
+
+## 2) 需要显示文案的枚举必须实现 LabeledEnum
+
+- ✅ 需要显示文案（表格、下拉、详情页等）的枚举必须：
+  - `implements \App\Contracts\LabeledEnum`
+  - `label()` 必须用 `__()`（禁止硬编码）
+
+示例：
+
+```php
+use App\Contracts\LabeledEnum;
+
+enum WorkspaceRole: string implements LabeledEnum
+{
+    case ADMIN = 'admin';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::ADMIN => __('workspace.roles.admin'),
+        };
+    }
+}
+```
+
+# 多语言 key 组织（强约束）
+
+## 1) 按领域文件归档（避免碎文件）
+
+- ✅ 优先放到已有领域文件：
+  - `lang/*/workspace.php` → `workspace.roles.*`
+  - `lang/*/user.php` → `user.online_statuses.*`
+  - `lang/*/storage_settings.php` → `storage_settings.providers.*`
+- ✅ 优先使用嵌套 key 管理子概念（roles/statuses/providers）
+
+## 2) 禁止前端维护 “枚举值 → 文案” 映射
+
+- ❌ 禁止在前端手写 enum 值到文案的映射（会与后端多语言脱节）
+
+# 输出规范：label / options（后端统一）
+
+## 1) 单值字段：同时输出 `*_label`
+
+当页面需要展示某个枚举字段的显示文案（例如列表页）：
+
+- ✅ Data 中增加 `*_label` 字段
+- ✅ `*_label` 必须来自 `$enum->label()`
+
+示例：
+
+```php
+public function __construct(
+    public UserOnlineStatus $online_status,
+    public string $online_status_label,
+) {}
+```
+
+## 2) 下拉/筛选：统一输出 `*_options: EnumOptionData[]`
+
+当页面需要渲染下拉/筛选项（Select/Radio/Filter）：
+
+- ✅ PageProps 中增加 `*_options`
+- ✅ `*_options` 统一使用 `\App\Data\EnumOptionData::fromCases([...])` 生成
+
+示例：
+
+```php
+use App\Data\EnumOptionData;
+use App\Enums\WorkspaceRole;
+
+role_options: EnumOptionData::fromCases(WorkspaceRole::assignableCases()),
+```
+
+# 校验同源（避免前后不一致）
+
+当某字段的可选值来自 Enum：
+
+- ✅ `rules()` 必须基于 `cases()` / `assignableCases()` 生成 `Rule::in(...)`
+- ✅ 让 “校验可选项” 与 “页面 options 输出” 来自同一处
+
+示例：
+
+```php
+$roles = array_map(static fn (WorkspaceRole $r) => $r->value, WorkspaceRole::assignableCases());
+
+return [
+    'role' => ['required', Rule::in($roles)],
+];
+```
+
+# Action 架构下的集成建议
+
+## 1) 业务层（Use Case）用 Action
+
+- ✅ 需要编排/权限/事务/跨模型的逻辑：用 Action（支持 `::run()` 复用）
+- ✅ 页面 props 的构造也属于 Use Case：在 Page Action 中集中输出 `*_options`
+
+## 2) 纯转换逻辑内聚到 Enum/Data
+
+- ✅ 纯转换/映射逻辑：优先内聚到 “所属对象”
+  - 例如 `EnumOptionData::fromCases()`（避免一堆单方法 Support 工具类）
+
+## 3) I/O / 第三方适配放 Services
+
+- ✅ 与 Storage / HTTP / SDK 的交互封装放 `app/Services/**`
+- ✅ Services 不承载业务规则（规则应上移到 Action/Domain）
+
+# 前端消费约定（与本规范绑定）
+
+- ✅ 前端页面优先直接使用 `*_label` / `*_options` props
+- ✅ 需要强类型时在组件内对 `value` 做收窄（例如 `value as WorkspaceRole`）
+- ❌ 禁止前端自行实现枚举值→文案映射
+

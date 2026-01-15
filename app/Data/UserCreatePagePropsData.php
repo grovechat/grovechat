@@ -8,5 +8,7 @@ class UserCreatePagePropsData extends Data
 {
     public function __construct(
         public UserCreateFormData $user_form,
+        /** @var \App\Data\EnumOptionData[] */
+        public array $role_options,
     ) {}
 }

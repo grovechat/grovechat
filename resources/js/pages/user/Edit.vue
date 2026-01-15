@@ -49,10 +49,12 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   },
 ]);
 
-const roleOptions = computed<{ value: WorkspaceRole; label: string }[]>(() => [
-  { value: 'admin', label: t('管理员') },
-  { value: 'customer_service', label: t('客服') },
-]);
+const roleOptions = computed<{ value: WorkspaceRole; label: string }[]>(() =>
+  page.props.role_options.map((opt) => ({
+    value: opt.value as WorkspaceRole,
+    label: opt.label,
+  })),
+);
 
 watch(
   () => roleOptions.value,

@@ -71,3 +71,9 @@ lang/
 __('workspace.created_successfully')
 trans('auth.failed')
 ```
+
+## 语言文件组织（约定）
+
+- ✅ **按领域文件归档**：优先放到已有领域文件（如 `workspace.php`、`user.php`、`storage_settings.php`），避免新增大量碎文件
+- ✅ **优先使用嵌套 key** 管理同一领域下的子概念（例如 roles / statuses / providers）
+- ✅ 枚举的 label / options 规范请参考：`backend-enums.mdc`
