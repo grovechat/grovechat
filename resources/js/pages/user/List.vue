@@ -27,6 +27,7 @@ import {
   showCreateUserPage,
   showEditUserPage,
   showUserList,
+  showUserTrashPage,
   updateUserOnlineStatus,
 } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
@@ -93,17 +94,25 @@ const handleOnlineStatusChange = (userId: string, status: string) => {
   
       <WorkspaceSettingsLayout content-class="max-w-none">
         <div class="space-y-6">
-          <HeadingSmall
-            :title="t('多客服')"
-            :description="t('管理客服账号')"
-          />
+          <div class="flex items-start justify-between gap-4">
+            <HeadingSmall
+              :title="t('多客服')"
+              :description="t('管理客服账号')"
+            />
 
-          <div class="flex items-center justify-end">
-            <Button as-child>
-              <Link :href="showCreateUserPage.url(currentWorkspace.slug)">
-                {{ t('新增客服') }}
-              </Link>
-            </Button>
+            <div class="inline-flex items-center gap-2">
+              <Button as-child>
+                <Link :href="showCreateUserPage.url(currentWorkspace.slug)">
+                  {{ t('新增客服') }}
+                </Link>
+              </Button>
+
+              <Button variant="outline" as-child>
+                <Link :href="showUserTrashPage.url(currentWorkspace.slug)">
+                  {{ t('回收站') }}
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <div class="rounded-lg border">
