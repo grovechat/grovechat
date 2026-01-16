@@ -10,8 +10,15 @@ use Spatie\LaravelData\Data;
 class WorkspaceUserContextData extends Data
 {
     public function __construct(
-        public WorkspaceData $workspace,
-        public WorkspaceUserData $user,
+        public string $workspace_id,
+        public string $workspace_slug,
+        public string $workspace_name,
+        public string $user_id,
+        public string $user_name,
+        public string $user_email,
+        public ?string $user_nickname = null,
+        public ?string $user_avatar = null,
+        public ?WorkspaceRole $role = null,
     ) {}
 
     public static function fromModels(Workspace $workspace, User $user): self
@@ -19,23 +26,15 @@ class WorkspaceUserContextData extends Data
         $role = WorkspaceRole::tryFrom((string) $workspace->users()->whereKey($user->id)->value('user_workspace.role')) ?? null;
 
         return new self(
-            workspace: new WorkspaceData(
-                id: (string) $workspace->id,
-                name: $workspace->name,
-                slug: $workspace->slug,
-                logoUrl: (string) $workspace->logo_url,
-                ownerId: filled($workspace->owner_id) ? (string) $workspace->owner_id : null,
-                logoId: filled($workspace->logo_id) ? (string) $workspace->logo_id : null,
-                role: $role,
-            ),
-            user: new WorkspaceUserData(
-                id: (string) $user->id,
-                name: $user->name,
-                nickname: filled($user->nickname) ? $user->nickname : null,
-                avatar: filled($user->avatar) ? $user->avatar : null,
-                email: $user->email,
-                role: $role,
-            ),
+            workspace_id: (string) $workspace->id,
+            workspace_slug: $workspace->slug,
+            workspace_name: $workspace->name,
+            user_id: (string) $user->id,
+            user_name: $user->name,
+            user_email: $user->email,
+            user_nickname: filled($user->nickname) ? $user->nickname : null,
+            user_avatar: filled($user->avatar) ? $user->avatar : null,
+            role: $role,
         );
     }
 }
