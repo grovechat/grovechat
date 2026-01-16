@@ -30,18 +30,26 @@ const currentWorkspace = useRequiredWorkspace();
 const userForm = computed(() => page.props.user_form);
 
 const roleValue = ref<WorkspaceRole>(userForm.value.role);
-const canUpdateRole = computed(() => Boolean(page.props.can_update_role));
-const canUpdatePassword = computed(() => Boolean(page.props.can_update_password));
+const currentUserId = computed(() => String((page.props as any)?.auth?.user?.id ?? ''));
+const isSelf = computed(() => String(userForm.value.id) === currentUserId.value);
+const isOwner = computed(() => String(currentWorkspace.value.role || '') === 'owner');
+const isAdmin = computed(() => String(currentWorkspace.value.role || '') === 'admin');
 
-const roleLabel = (role: WorkspaceRole) =>
-  ({
-    owner: t('所有者'),
-    admin: t('管理员'),
-    operator: t('客服'),
-  })[role];
+const canUpdateProfile = computed(() => {
+  if (isOwner.value) return true;
+  if (isAdmin.value) return isSelf.value || userForm.value.role === 'operator';
+  return false;
+});
+
+const canUpdateEmail = computed(() => isOwner.value && !isSelf.value);
+const canUpdateRole = computed(() => isOwner.value && !isSelf.value);
+const canUpdatePassword = computed(() => isOwner.value);
 
 const avatarPreview = ref<string>(userForm.value.avatar || '');
 const avatarUrl = ref<string>(userForm.value.avatar || '');
+const avatarSubmitValue = computed(() =>
+  canUpdateProfile.value ? avatarUrl.value : userForm.value.avatar || '',
+);
 const uploading = ref(false);
 const selectedAvatarFileName = ref<string>('');
 const passwordVisible = ref(false);
@@ -76,6 +84,7 @@ watch(
 );
 
 const handleAvatarChange = async (event: Event) => {
+  if (!canUpdateProfile.value) return;
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
   if (!file) return;
@@ -133,26 +142,52 @@ const handleAvatarChange = async (event: Event) => {
         >
           <div class="grid gap-2">
             <Label for="name">{{ t('客服名称') }}</Label>
-            <Input
-              id="name"
-              name="name"
-              class="mt-1 block w-full"
-              required
-              :default-value="userForm.name || ''"
-              :placeholder="t('请输入客服名称')"
-            />
+            <template v-if="canUpdateProfile">
+              <Input
+                id="name"
+                name="name"
+                class="mt-1 block w-full"
+                required
+                :default-value="userForm.name || ''"
+                :placeholder="t('请输入客服名称')"
+              />
+            </template>
+            <template v-else>
+              <input type="hidden" name="name" :value="userForm.name || ''" />
+              <Input
+                id="name"
+                class="mt-1 block w-full"
+                disabled
+                :default-value="userForm.name || ''"
+              />
+            </template>
             <InputError class="mt-2" :message="errors.name" />
           </div>
 
           <div class="grid gap-2">
             <Label for="nickname">{{ t('对外昵称') }}</Label>
-            <Input
-              id="nickname"
-              name="nickname"
-              class="mt-1 block w-full"
-              :default-value="userForm.nickname || ''"
-              :placeholder="t('请输入对外昵称')"
-            />
+            <template v-if="canUpdateProfile">
+              <Input
+                id="nickname"
+                name="nickname"
+                class="mt-1 block w-full"
+                :default-value="userForm.nickname || ''"
+                :placeholder="t('请输入对外昵称')"
+              />
+            </template>
+            <template v-else>
+              <input
+                type="hidden"
+                name="nickname"
+                :value="userForm.nickname || ''"
+              />
+              <Input
+                id="nickname"
+                class="mt-1 block w-full"
+                disabled
+                :default-value="userForm.nickname || ''"
+              />
+            </template>
             <InputError class="mt-2" :message="errors.nickname" />
           </div>
 
@@ -180,7 +215,7 @@ const handleAvatarChange = async (event: Event) => {
                 id="avatar"
                 name="avatar"
                 type="hidden"
-                :value="avatarUrl"
+                :value="avatarSubmitValue"
               />
 
               <div class="flex items-center gap-3">
@@ -189,10 +224,14 @@ const handleAvatarChange = async (event: Event) => {
                   type="file"
                   accept="image/*"
                   class="sr-only"
-                  :disabled="uploading"
+                  :disabled="uploading || !canUpdateProfile"
                   @change="handleAvatarChange"
                 />
-                <Button as-child variant="outline" :disabled="uploading">
+                <Button
+                  as-child
+                  variant="outline"
+                  :disabled="uploading || !canUpdateProfile"
+                >
                   <Label for="avatarFile" class="cursor-pointer">
                     {{ t('选择图片') }}
                   </Label>
@@ -232,7 +271,7 @@ const handleAvatarChange = async (event: Event) => {
               <Input
                 id="role"
                 class="mt-1"
-                :default-value="roleLabel(userForm.role)"
+                :default-value="userForm.role_label"
                 disabled
               />
             </template>
@@ -241,15 +280,27 @@ const handleAvatarChange = async (event: Event) => {
 
           <div class="grid gap-2">
             <Label for="email">{{ t('邮箱') }}</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              class="mt-1 block w-full"
-              required
-              :default-value="userForm.email || ''"
-              :placeholder="t('请输入邮箱')"
-            />
+            <template v-if="canUpdateEmail">
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                class="mt-1 block w-full"
+                required
+                :default-value="userForm.email || ''"
+                :placeholder="t('请输入邮箱')"
+              />
+            </template>
+            <template v-else>
+              <input type="hidden" name="email" :value="userForm.email || ''" />
+              <Input
+                id="email"
+                type="email"
+                class="mt-1 block w-full"
+                disabled
+                :default-value="userForm.email || ''"
+              />
+            </template>
             <InputError class="mt-2" :message="errors.email" />
           </div>
 

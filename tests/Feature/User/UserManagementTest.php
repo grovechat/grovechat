@@ -36,6 +36,24 @@ test('authenticated user can view user list page', function () {
         );
 });
 
+test('operator cannot access manage center pages', function () {
+    $workspace = $this->workspace;
+
+    $operator = User::factory()->create([
+        'name' => '普通客服',
+        'email' => 'operator@example.com',
+    ]);
+    $workspace->users()->attach($operator->id, ['role' => 'operator']);
+
+    $this->actingAs($operator)
+        ->get(route('get-current-workspace', ['slug' => $this->workspaceSlug()]))
+        ->assertForbidden();
+
+    $this->actingAs($operator)
+        ->get(route('show-user-list', ['slug' => $this->workspaceSlug()]))
+        ->assertForbidden();
+});
+
 test('authenticated user can view create user page with role options', function () {
     $this->actingAs($this->user)
         ->get(route('show-create-user-page', ['slug' => $this->workspaceSlug()]))
@@ -129,6 +147,225 @@ test('can update a user without changing password', function () {
     expect($member->password)->toBe($oldHash);
 });
 
+test('admin cannot update own email', function () {
+    $admin = User::factory()->create([
+        'name' => '管理员A',
+        'email' => 'admin-a@example.com',
+    ]);
+    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+
+    $this->actingAs($admin)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $admin->id]), [
+            'name' => $admin->name,
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'admin',
+            'email' => 'admin-a-new@example.com',
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+
+    $admin->refresh();
+    expect($admin->email)->toBe('admin-a@example.com');
+});
+
+test('operator cannot update own email', function () {
+    $operator = User::factory()->create([
+        'name' => '客服O',
+        'email' => 'operator-o@example.com',
+    ]);
+    $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
+
+    $this->actingAs($operator)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+            'name' => $operator->name,
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'operator',
+            'email' => 'operator-o-new@example.com',
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+
+    $operator->refresh();
+    expect($operator->email)->toBe('operator-o@example.com');
+});
+
+test('owner can update another user email', function () {
+    $member = User::factory()->create([
+        'name' => '客服E1',
+        'email' => 'e1@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
+
+    $this->actingAs($this->user)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+            'name' => $member->name,
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'operator',
+            'email' => 'e1-new@example.com',
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+
+    $member->refresh();
+    expect($member->email)->toBe('e1-new@example.com');
+});
+
+test('admin can update other operator profile fields but cannot update email', function () {
+    $admin = User::factory()->create([
+        'name' => '管理员B',
+        'email' => 'admin-b@example.com',
+    ]);
+    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+
+    $operator = User::factory()->create([
+        'name' => '客服P',
+        'email' => 'p@example.com',
+    ]);
+    $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
+
+    $this->actingAs($admin)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+            'name' => '客服P-新',
+            'nickname' => '新昵称',
+            'avatar' => 'https://example.com/a.png',
+            'role' => 'operator',
+            'email' => $operator->email,
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+
+    $operator->refresh();
+    expect($operator->name)->toBe('客服P-新');
+    expect($operator->nickname)->toBe('新昵称');
+    expect($operator->avatar)->toBe('https://example.com/a.png');
+
+    $this->actingAs($admin)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+            'name' => $operator->name,
+            'nickname' => $operator->nickname,
+            'avatar' => $operator->avatar,
+            'role' => 'operator',
+            'email' => 'p-new@example.com',
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+});
+
+test('owner can update other operator profile fields', function () {
+    $operator = User::factory()->create([
+        'name' => '客服X',
+        'email' => 'x@example.com',
+    ]);
+    $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
+
+    $this->actingAs($this->user)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+            'name' => '客服X-新',
+            'nickname' => '新昵称',
+            'avatar' => 'https://example.com/c.png',
+            'role' => 'operator',
+            'email' => $operator->email,
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+
+    $operator->refresh();
+    expect($operator->name)->toBe('客服X-新');
+});
+
+test('admin cannot update another admin email', function () {
+    $admin = User::factory()->create([
+        'name' => '管理员1',
+        'email' => 'admin1@example.com',
+    ]);
+    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+
+    $admin2 = User::factory()->create([
+        'name' => '管理员2',
+        'email' => 'admin2@example.com',
+    ]);
+    $this->workspace->users()->attach($admin2->id, ['role' => 'admin']);
+
+    $this->actingAs($admin)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]), [
+            'name' => $admin2->name,
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'admin',
+            'email' => 'admin2-new@example.com',
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+
+    $admin2->refresh();
+    expect($admin2->email)->toBe('admin2@example.com');
+});
+
+test('owner cannot update own email', function () {
+    $this->actingAs($this->user)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
+            'name' => $this->user->name,
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'owner',
+            'email' => 'owner-new@example.com',
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+
+    $this->user->refresh();
+    expect($this->user->email)->not->toBe('owner-new@example.com');
+});
+
+test('operator cannot update any users via manage center', function () {
+    $operator = User::factory()->create([
+        'name' => '客服Self',
+        'email' => 'self@example.com',
+    ]);
+    $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
+
+    $other = User::factory()->create([
+        'name' => '客服Other',
+        'email' => 'other@example.com',
+    ]);
+    $this->workspace->users()->attach($other->id, ['role' => 'operator']);
+
+    $this->actingAs($operator)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+            'name' => '客服Self-新',
+            'nickname' => '昵称',
+            'avatar' => 'https://example.com/b.png',
+            'role' => 'operator',
+            'email' => $operator->email,
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+
+    $this->actingAs($operator)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $other->id]), [
+            'name' => '客服Other-新',
+            'nickname' => null,
+            'avatar' => null,
+            'role' => 'operator',
+            'email' => $other->email,
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
+});
+
 test('owner cannot change own role', function () {
     $this->actingAs($this->user)
         ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
@@ -210,7 +447,7 @@ test('owner cannot set another user role to owner', function () {
     expect($role)->toBe('operator');
 });
 
-test('admin cannot change another user role', function () {
+test('admin cannot change operator role', function () {
     $admin = User::factory()->create([
         'name' => '管理员X',
         'email' => 'admin-x@example.com',
@@ -237,6 +474,32 @@ test('admin cannot change another user role', function () {
 
     $role = $this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->role;
     expect($role)->toBe('operator');
+});
+
+test('admin cannot update another admin profile fields', function () {
+    $admin = User::factory()->create([
+        'name' => '管理员A',
+        'email' => 'admin-a@example.com',
+    ]);
+    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+
+    $admin2 = User::factory()->create([
+        'name' => '管理员B',
+        'email' => 'admin-b2@example.com',
+    ]);
+    $this->workspace->users()->attach($admin2->id, ['role' => 'admin']);
+
+    $this->actingAs($admin)
+        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]), [
+            'name' => '管理员B-新',
+            'nickname' => '新昵称',
+            'avatar' => 'https://example.com/a.png',
+            'role' => 'admin',
+            'email' => $admin2->email,
+            'password' => '',
+            'password_confirmation' => '',
+        ])
+        ->assertForbidden();
 });
 
 test('admin cannot change another user password', function () {

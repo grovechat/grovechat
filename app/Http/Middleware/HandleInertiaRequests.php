@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Data\WorkspaceData;
+use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,6 +72,7 @@ class HandleInertiaRequests extends Middleware
         $fromWorkspace = null;
 
         if ($user) {
+            /** @var User $user */
             $workspaces = $user->workspaces()->get();
 
             $routeSlug = $request->route('slug');
@@ -100,9 +102,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'generalSettings' => $this->getGeneralSettingAction->run(),
-            'workspaces' => WorkspaceData::collect($workspaces),
-            'currentWorkspace' => $currentWorkspace ? WorkspaceData::from($currentWorkspace) : null,
-            'fromWorkspace' => $fromWorkspace ? WorkspaceData::from($fromWorkspace) : null,
+            'workspaces' => $workspaces->map(fn ($w) => WorkspaceData::fromModel($w))->all(),
+            'currentWorkspace' => $currentWorkspace ? WorkspaceData::fromModel($currentWorkspace) : null,
+            'fromWorkspace' => $fromWorkspace ? WorkspaceData::fromModel($fromWorkspace) : null,
             'fromWorkspaceSlug' => $fromWorkspace?->slug,
         ];
     }

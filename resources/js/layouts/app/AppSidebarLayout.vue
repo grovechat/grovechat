@@ -8,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
-import { useErrorHandling } from '@/composables/useToast';
 import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import SidebarShell, {
   type SidebarShellNavItem,
@@ -46,7 +45,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 const page = usePage<AppPageProps>();
-useErrorHandling();
 
 const currentWorkspace = useRequiredWorkspace();
 const user = computed(() => page.props.auth.user);
@@ -69,6 +67,10 @@ const manageBaseUrl = computed(() => {
     .replace(/\/workspaces\/current$/, '');
 });
 
+const canAccessManageCenter = computed(() =>
+  ['owner', 'admin'].includes(String(currentWorkspace.value.role || '')),
+);
+
 const mainNavItems = computed<MainNavItem[]>(() => [
   {
     title: t('工作台'),
@@ -90,12 +92,16 @@ const mainNavItems = computed<MainNavItem[]>(() => [
     icon: BarChart,
     activeUrls: [stats.index.url(currentWorkspace.value.slug)],
   },
-  {
-    title: t('管理中心'),
-    href: getCurrentWorkspace.url(currentWorkspace.value.slug),
-    icon: Building2,
-    activeUrls: [manageBaseUrl.value],
-  },
+  ...(canAccessManageCenter.value
+    ? ([
+        {
+          title: t('管理中心'),
+          href: getCurrentWorkspace.url(currentWorkspace.value.slug),
+          icon: Building2,
+          activeUrls: [manageBaseUrl.value],
+        },
+      ] as MainNavItem[])
+    : []),
 ]);
 
 const footerNavItems = computed<NavItem[]>(() => [

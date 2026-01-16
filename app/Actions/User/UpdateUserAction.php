@@ -21,12 +21,29 @@ class UpdateUserAction
         DB::transaction(function () use ($workspace, $user, $data) {
             $currentRole = WorkspaceRole::tryFrom((string) ($user->pivot?->role ?? '')) ?? WorkspaceRole::OPERATOR;
 
-            $user->update([
-                'name' => $data->name,
-                'email' => $data->email,
-                'avatar' => $data->avatar,
-                'nickname' => $data->nickname,
-            ]);
+            $profileChanged = $data->name !== $user->name
+                || $data->nickname !== $user->nickname
+                || $data->avatar !== $user->avatar;
+
+            $emailChanged = $data->email !== $user->email;
+
+            if ($profileChanged) {
+                Gate::authorize('workspace-users.updateProfile', [$workspace, $user]);
+
+                $user->update([
+                    'name' => $data->name,
+                    'avatar' => $data->avatar,
+                    'nickname' => $data->nickname,
+                ]);
+            }
+
+            if ($emailChanged) {
+                Gate::authorize('workspace-users.updateEmail', [$workspace, $user]);
+
+                $user->update([
+                    'email' => $data->email,
+                ]);
+            }
 
             if (filled($data->password)) {
                 Gate::authorize('workspace-users.updatePassword', [$workspace]);

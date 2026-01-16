@@ -2,9 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Data\WorkspaceUserContextData;
+use App\Models\User;
 use App\Models\Workspace;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -29,6 +32,14 @@ class IdentifyWorkspace
         app()->instance(Workspace::class, $workspace);
 
         Inertia::share('currentWorkspace', $workspace);
+
+        /** @var User $user */
+        $user = $request->user();
+        app()->instance(WorkspaceUserContextData::class, WorkspaceUserContextData::fromModels($workspace, $user));
+
+        if ($request->is('w/*/manage*')) {
+            Gate::authorize('workspace.canAccessManageCenter', [$workspace]);
+        }
 
         return $next($request);
     }

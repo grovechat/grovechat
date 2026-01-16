@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Data\WorkspaceUserContextData;
 use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;
@@ -23,35 +24,70 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('workspace-users.canUpdateRole', function (User $actor, Workspace $workspace, User $target): bool {
-            $roles = $workspace->users()
-                ->whereIn('users.id', [(string) $actor->id, (string) $target->id])
-                ->pluck('user_workspace.role', 'users.id');
+        $actorContext = static function (Workspace $workspace, User $actor): WorkspaceUserContextData {
+            if (app()->bound(WorkspaceUserContextData::class)) {
+                /** @var WorkspaceUserContextData $ctx */
+                $ctx = app(WorkspaceUserContextData::class);
+                if ((string) $ctx->workspace->id === (string) $workspace->id && (string) $ctx->user->id === (string) $actor->id) {
+                    return $ctx;
+                }
+            }
 
-            $actorRole = WorkspaceRole::tryFrom((string) ($roles[(string) $actor->id] ?? ''));
-            $targetRole = WorkspaceRole::tryFrom((string) ($roles[(string) $target->id] ?? ''));
+            return WorkspaceUserContextData::fromModels($workspace, $actor);
+        };
 
-            return $actorRole === WorkspaceRole::OWNER
-                && (string) $actor->id !== (string) $target->id
-                && $targetRole !== WorkspaceRole::OWNER;
+        Gate::define('workspace.canAccessManageCenter', function (User $actor, Workspace $workspace) use ($actorContext): bool {
+            $ctx = $actorContext($workspace, $actor);
+            $actorRole = $ctx->user->role;
+
+            return in_array($actorRole, [WorkspaceRole::OWNER, WorkspaceRole::ADMIN], true);
         });
 
-        Gate::define('workspace-users.updateRole', function (User $actor, Workspace $workspace, User $target, WorkspaceRole $newRole): bool {
-            $roles = $workspace->users()
-                ->whereIn('users.id', [(string) $actor->id, (string) $target->id])
-                ->pluck('user_workspace.role', 'users.id');
+        Gate::define('workspace-users.updateProfile', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
+            $ctx = $actorContext($workspace, $actor);
+            $actorRole = $ctx->user->role;
+            $targetRole = WorkspaceUserContextData::fromModels($workspace, $target)->user->role;
 
-            $actorRole = WorkspaceRole::tryFrom((string) ($roles[(string) $actor->id] ?? ''));
-            $targetRole = WorkspaceRole::tryFrom((string) ($roles[(string) $target->id] ?? ''));
+            if ($actorRole === WorkspaceRole::OWNER) {
+                return true;
+            }
+
+            if ($actorRole !== WorkspaceRole::ADMIN) {
+                return false;
+            }
+
+            return (string) $actor->id === (string) $target->id
+                || $targetRole === WorkspaceRole::OPERATOR;
+        });
+
+        Gate::define('workspace-users.updateEmail', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
+            $ctx = $actorContext($workspace, $actor);
+            $actorRole = $ctx->user->role;
+
+            return $actorRole === WorkspaceRole::OWNER
+                && (string) $actor->id !== (string) $target->id;
+        });
+
+        Gate::define('workspace-users.canUpdateRole', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
+            $ctx = $actorContext($workspace, $actor);
+            $actorRole = $ctx->user->role;
+
+            return $actorRole === WorkspaceRole::OWNER
+                && (string) $actor->id !== (string) $target->id;
+        });
+
+        Gate::define('workspace-users.updateRole', function (User $actor, Workspace $workspace, User $target, WorkspaceRole $newRole) use ($actorContext): bool {
+            $ctx = $actorContext($workspace, $actor);
+            $actorRole = $ctx->user->role;
 
             return $actorRole === WorkspaceRole::OWNER
                 && (string) $actor->id !== (string) $target->id
-                && $targetRole !== WorkspaceRole::OWNER
                 && in_array($newRole, WorkspaceRole::assignableCases(), true);
         });
 
-        Gate::define('workspace-users.updatePassword', function (User $actor, Workspace $workspace): bool {
-            $actorRole = WorkspaceRole::tryFrom((string) $workspace->users()->whereKey($actor->id)->value('user_workspace.role'));
+        Gate::define('workspace-users.updatePassword', function (User $actor, Workspace $workspace) use ($actorContext): bool {
+            $ctx = $actorContext($workspace, $actor);
+            $actorRole = $ctx->user->role;
 
             return $actorRole === WorkspaceRole::OWNER;
         });
