@@ -20,7 +20,6 @@ class RedirectLastDashboardAction
         $lastWorkspaceSlug = session('last_workspace_slug');
         if ($lastWorkspaceSlug) {
             if ($workspace = $request->user()->workspaces()->where('slug', $lastWorkspaceSlug)->first()) {
-                Log::error('aaaaaaaaaaaaaaa');
                 return redirect()->route('workspace.dashboard', ['slug' => $workspace->slug]);
             }
         }

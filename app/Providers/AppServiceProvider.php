@@ -36,60 +36,79 @@ class AppServiceProvider extends ServiceProvider
             return WorkspaceUserContextData::fromModels($workspace, $actor);
         };
 
+        // 管理中心权限
         Gate::define('workspace.canAccessManageCenter', function (User $actor, Workspace $workspace) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
-            $actorRole = $ctx->role;
+            $actorRole = $ctx->role->value;
 
-            return in_array($actorRole, [WorkspaceRole::OWNER, WorkspaceRole::ADMIN], true);
+            return in_array($actorRole, [WorkspaceRole::OWNER->value, WorkspaceRole::ADMIN->value], true);
+        });
+        
+        // 删除用户权限
+        Gate::define('workspace-users.deleteUser', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
+            $ctx = $actorContext($workspace, $actor);
+            $actorRole = $ctx->role->value;
+
+            return $actorRole === WorkspaceRole::OWNER->value
+                && (string) $actor->id !== (string) $target->id;
+        });
+        
+        // 恢复用户权限
+        Gate::define('workspace-users.restoreUser', function (User $actor, Workspace $workspace) use ($actorContext): bool {
+            $ctx = $actorContext($workspace, $actor);
+            $actorRole = $ctx->role->value;
+
+            return $actorRole === WorkspaceRole::OWNER->value;
         });
 
+        // 更新用户资料权限
         Gate::define('workspace-users.updateProfile', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
-            $actorRole = $ctx->role;
+            $actorRole = $ctx->role->value;
             $targetRole = WorkspaceUserContextData::fromModels($workspace, $target)->role;
 
-            if ($actorRole === WorkspaceRole::OWNER) {
+            if ($actorRole === WorkspaceRole::OWNER->value) {
                 return true;
             }
 
-            if ($actorRole !== WorkspaceRole::ADMIN) {
+            if ($actorRole !== WorkspaceRole::ADMIN->value) {
                 return false;
             }
 
             return (string) $actor->id === (string) $target->id
-                || $targetRole === WorkspaceRole::OPERATOR;
+                || $targetRole === WorkspaceRole::OPERATOR->value;
         });
 
         Gate::define('workspace-users.updateEmail', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
-            $actorRole = $ctx->role;
+            $actorRole = $ctx->role->value;
 
-            return $actorRole === WorkspaceRole::OWNER
+            return $actorRole === WorkspaceRole::OWNER->value
                 && (string) $actor->id !== (string) $target->id;
         });
 
         Gate::define('workspace-users.canUpdateRole', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
-            $actorRole = $ctx->role;
+            $actorRole = $ctx->role->value;
 
-            return $actorRole === WorkspaceRole::OWNER
+            return $actorRole === WorkspaceRole::OWNER->value
                 && (string) $actor->id !== (string) $target->id;
         });
 
         Gate::define('workspace-users.updateRole', function (User $actor, Workspace $workspace, User $target, WorkspaceRole $newRole) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
-            $actorRole = $ctx->role;
+            $actorRole = $ctx->role->value;
 
-            return $actorRole === WorkspaceRole::OWNER
+            return $actorRole === WorkspaceRole::OWNER->value
                 && (string) $actor->id !== (string) $target->id
                 && in_array($newRole, WorkspaceRole::assignableCases(), true);
         });
 
         Gate::define('workspace-users.updatePassword', function (User $actor, Workspace $workspace) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
-            $actorRole = $ctx->role;
+            $actorRole = $ctx->role->value;
 
-            return $actorRole === WorkspaceRole::OWNER;
+            return $actorRole === WorkspaceRole::OWNER->value;
         });
     }
 }

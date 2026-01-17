@@ -2,9 +2,12 @@
 
 namespace App\Actions\User;
 
-use App\Data\UserListItemData;
+use App\Data\EnumOptionData;
 use App\Data\UserListPagePropsData;
+use App\Data\WorkspaceUserContextData;
+use App\Enums\UserOnlineStatus;
 use App\Models\Workspace;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -17,9 +20,15 @@ class ShowUserListAction
         $users = $workspace->users()
             ->orderBy('users.id', 'asc')
             ->get();
-
+            
+        $userList = $users->map(fn ($u) => WorkspaceUserContextData::fromModels($workspace, $u)
+            ->withShowDeleteButton(Gate::allows('workspace-users.deleteUser', [$workspace, $u]))
+        )->all();
+        
         return new UserListPagePropsData(
-            user_list: $users->map(fn ($u) => UserListItemData::fromModel($u))->all(),
+            user_list: $userList,
+            online_status_options: EnumOptionData::fromCases(UserOnlineStatus::cases()),
+            can_restore_user: Gate::allows('workspace-users.restoreUser', [$workspace]),
         );
     }
 

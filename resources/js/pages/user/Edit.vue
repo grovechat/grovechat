@@ -18,32 +18,21 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { showUserList, updateUser } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
-import type { UserEditPagePropsData, WorkspaceRole } from '@/types/generated';
+import type { UserEditPagePropsData } from '@/types/generated';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { Eye, EyeOff } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 const { t } = useI18n();
 const page = usePage<AppPageProps<UserEditPagePropsData>>();
 const currentWorkspace = useRequiredWorkspace();
 const userForm = computed(() => page.props.user_form);
-
-const roleValue = ref<WorkspaceRole>(userForm.value.role);
-const currentUserId = computed(() => String((page.props as any)?.auth?.user?.id ?? ''));
-const isSelf = computed(() => String(userForm.value.id) === currentUserId.value);
-const isOwner = computed(() => String(currentWorkspace.value.role || '') === 'owner');
-const isAdmin = computed(() => String(currentWorkspace.value.role || '') === 'admin');
-
-const canUpdateProfile = computed(() => {
-  if (isOwner.value) return true;
-  if (isAdmin.value) return isSelf.value || userForm.value.role === 'operator';
-  return false;
-});
-
-const canUpdateEmail = computed(() => isOwner.value && !isSelf.value);
-const canUpdateRole = computed(() => isOwner.value && !isSelf.value);
-const canUpdatePassword = computed(() => isOwner.value);
+const roleOptions = computed(() => page.props.role_options);
+const canUpdateProfile = computed(() => page.props.can_update_profile);
+const canUpdateEmail = computed(() => page.props.can_update_email);
+const canUpdateRole = computed(() => page.props.can_update_role);
+const canUpdatePassword = computed(() => page.props.can_update_password);
 
 const avatarPreview = ref<string>(userForm.value.avatar || '');
 const avatarUrl = ref<string>(userForm.value.avatar || '');
@@ -65,23 +54,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     href: '#',
   },
 ]);
-
-const roleOptions = computed<{ value: WorkspaceRole; label: string }[]>(() =>
-  page.props.role_options.map((opt) => ({
-    value: opt.value as WorkspaceRole,
-    label: opt.label,
-  })),
-);
-
-watch(
-  () => roleOptions.value,
-  (opts) => {
-    if (!roleValue.value && opts?.length) {
-      roleValue.value = opts[0].value;
-    }
-  },
-  { immediate: true },
-);
 
 const handleAvatarChange = async (event: Event) => {
   if (!canUpdateProfile.value) return;
@@ -250,8 +222,8 @@ const handleAvatarChange = async (event: Event) => {
           <div class="grid gap-2">
             <Label for="role">{{ t('角色') }}</Label>
             <template v-if="canUpdateRole">
-              <input type="hidden" name="role" :value="roleValue" />
-              <Select v-model="roleValue">
+              <input type="hidden" name="role" :value="userForm.role" />
+              <Select v-model="userForm.role">
                 <SelectTrigger id="role" class="mt-1">
                   <SelectValue :placeholder="t('请选择角色')" />
                 </SelectTrigger>

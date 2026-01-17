@@ -16,9 +16,11 @@ class WorkspaceUserContextData extends Data
         public string $user_id,
         public string $user_name,
         public string $user_email,
+        public EnumOptionData $user_online_status,
+        public EnumOptionData $role,
+        public bool $show_delete_button = true,
         public ?string $user_nickname = null,
         public ?string $user_avatar = null,
-        public ?WorkspaceRole $role = null,
     ) {}
 
     public static function fromModels(Workspace $workspace, User $user): self
@@ -32,9 +34,16 @@ class WorkspaceUserContextData extends Data
             user_id: (string) $user->id,
             user_name: $user->name,
             user_email: $user->email,
+            user_online_status: EnumOptionData::fromEnum($user->online_status),
             user_nickname: filled($user->nickname) ? $user->nickname : null,
             user_avatar: filled($user->avatar) ? $user->avatar : null,
-            role: $role,
+            role: EnumOptionData::fromEnum($role),
         );
+    }    
+    
+    public function withShowDeleteButton(bool $showDeleteButton): self
+    {
+        $this->show_delete_button = $showDeleteButton;
+        return $this;
     }
 }

@@ -34,8 +34,6 @@ import {
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type {
   UserListPagePropsData,
-  UserOnlineStatus,
-  WorkspaceRole,
 } from '@/types/generated';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -44,30 +42,10 @@ const { t } = useI18n();
 const page = usePage<AppPageProps<UserListPagePropsData>>();
 const currentWorkspace = useRequiredWorkspace();
 const userList = computed(() => page.props.user_list);
-const currentUserId = computed(() => String(page.props.auth?.user?.id ?? ''));
-
+const onlineStatusOptions = computed(() => page.props.online_status_options);
+const canRestoreUser = computed(() => page.props.can_restore_user);
 const updatingStatusIds = ref<Record<string, boolean>>({});
 const deleteForm = useForm({});
-
-const roleLabel = (role: WorkspaceRole) =>
-  ({
-    owner: t('所有者'),
-    admin: t('管理员'),
-    operator: t('客服'),
-  })[role];
-
-const onlineStatusLabel = (s: UserOnlineStatus) =>
-  ({
-    1: t('在线'),
-    0: t('离线'),
-  })[s];
-
-const onlineStatusOptions = computed<
-  { value: UserOnlineStatus; label: string }[]
->(() => [
-  { value: 1, label: t('在线') },
-  { value: 0, label: t('离线') },
-]);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
@@ -76,10 +54,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   },
 ]);
 
-const cannotDelete = (u: (typeof userList.value)[number]) =>
-  String(u.id) === currentUserId.value;
-
-const handleOnlineStatusChange = (userId: string, status: string) => {
+const handleOnlineStatusChange = (userId: string, status: number) => {
   updatingStatusIds.value[userId] = true;
   router.put(
     updateUserOnlineStatus.url({
@@ -114,7 +89,7 @@ const handleOnlineStatusChange = (userId: string, status: string) => {
               </Link>
             </Button>
 
-            <Button variant="outline" as-child>
+            <Button variant="outline" as-child v-show="canRestoreUser">
               <Link :href="showUserTrashPage.url(currentWorkspace.slug)">
                 {{ t('回收站') }}
               </Link>
@@ -138,39 +113,39 @@ const handleOnlineStatusChange = (userId: string, status: string) => {
               <tbody>
                 <tr
                   v-for="u in userList"
-                  :key="u.id"
+                  :key="u.user_id"
                   class="border-t bg-background"
                 >
                   <td class="px-4 py-3">
                     <Avatar class="h-9 w-9">
-                      <AvatarImage v-if="u.avatar" :src="u.avatar" />
+                      <AvatarImage v-if="u.user_avatar" :src="u.user_avatar" />
                       <AvatarFallback>
-                        {{ (u.name || '').slice(0, 1) }}
+                        {{ (u.user_name || '').slice(0, 1) }}
                       </AvatarFallback>
                     </Avatar>
                   </td>
                   <td class="px-4 py-3 font-medium">
-                    {{ u.name }}
+                    {{ u.user_name }}
                   </td>
                   <td class="px-4 py-3">
-                    {{ u.email }}
+                    {{ u.user_email }}
                   </td>
                   <td class="px-4 py-3">
-                    {{ roleLabel(u.role) }}
+                    {{ u.role.label }}
                   </td>
                   <td class="px-4 py-3">
                     <Select
-                      :model-value="String(u.online_status)"
-                      :disabled="updatingStatusIds[u.id]"
+                      :model-value="String(u.user_online_status.value)"
+                      :disabled="updatingStatusIds[u.user_id]"
                       @update:model-value="
-                        (v) => handleOnlineStatusChange(u.id, v)
+                        (v) => handleOnlineStatusChange(u.user_id, v)
                       "
                     >
                       <SelectTrigger class="h-9 w-28">
                         <SelectValue
-                          :placeholder="onlineStatusLabel(u.online_status)"
+                          :placeholder="u.user_online_status.label"
                         >
-                          {{ onlineStatusLabel(u.online_status) }}
+                          {{ u.user_online_status.label }}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
@@ -191,7 +166,7 @@ const handleOnlineStatusChange = (userId: string, status: string) => {
                           :href="
                             showEditUserPage.url({
                               slug: currentWorkspace.slug,
-                              id: u.id,
+                              id: u.user_id,
                             })
                           "
                         >
@@ -203,9 +178,9 @@ const handleOnlineStatusChange = (userId: string, status: string) => {
                           <Button
                             variant="destructive"
                             size="sm"
-                            :disabled="cannotDelete(u) || deleteForm.processing"
+                            :disabled="!u.show_delete_button || deleteForm.processing"
                             :title="
-                              cannotDelete(u)
+                              !u.show_delete_button
                                 ? t('当前登录用户不允许删除')
                                 : undefined
                             "
@@ -224,9 +199,9 @@ const handleOnlineStatusChange = (userId: string, status: string) => {
                           </DialogHeader>
 
                           <div class="rounded-md bg-muted/30 p-3 text-sm">
-                            <div class="font-medium">{{ u.name }}</div>
+                            <div class="font-medium">{{ u.user_name }}</div>
                             <div class="text-muted-foreground">
-                              {{ u.email }}
+                              {{ u.user_email }}
                             </div>
                           </div>
 
@@ -242,13 +217,13 @@ const handleOnlineStatusChange = (userId: string, status: string) => {
                             <Button
                               variant="destructive"
                               :disabled="
-                                deleteForm.processing || cannotDelete(u)
+                                deleteForm.processing || !u.show_delete_button
                               "
                               @click="
                                 deleteForm.delete(
                                   deleteUser.url({
                                     slug: currentWorkspace.slug,
-                                    id: u.id,
+                                    id: u.user_id,
                                   }),
                                   { preserveScroll: true },
                                 )

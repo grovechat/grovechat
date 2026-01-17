@@ -4,6 +4,7 @@ namespace App\Actions\User;
 
 use App\Models\Workspace;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -11,19 +12,18 @@ class DeleteUserAction
 {
     use AsAction;
 
-    public function handle(Workspace $workspace, string $id, string $currentUserId): void
+    public function handle(Workspace $workspace, string $id): void
     {
-        if ($id === $currentUserId) {
-            abort(403, __('common.不允许删除当前登录用户'));
-        }
-
-        $user = $workspace->users()->whereKey($id)->firstOrFail();
-        $user->delete();
+        $targetUser = $workspace->users()->whereKey($id)->firstOrFail();
+        
+        Gate::authorize('workspace-users.deleteUser', [$workspace, $targetUser]);
+        
+        $targetUser->delete();
     }
 
     public function asController(Request $request, Workspace $currentWorkspace, string $slug, string $id)
     {
-        $this->handle($currentWorkspace, $id, (string) $request->user()->id);
+        $this->handle($currentWorkspace, $id);
 
         Inertia::flash('toast', [
             'type' => 'success',

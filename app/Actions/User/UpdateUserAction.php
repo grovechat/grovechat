@@ -3,7 +3,6 @@
 namespace App\Actions\User;
 
 use App\Data\UserUpdateData;
-use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -16,71 +15,54 @@ class UpdateUserAction
 {
     use AsAction;
 
-    public function handle(Workspace $workspace, User $user, UserUpdateData $data): void
+    public function handle(Workspace $workspace, $userId, UserUpdateData $data): void
     {
-        DB::transaction(function () use ($workspace, $user, $data) {
-            $currentRole = WorkspaceRole::tryFrom((string) ($user->pivot?->role ?? '')) ?? WorkspaceRole::OPERATOR;
-
-            $profileChanged = $data->name !== $user->name
-                || $data->nickname !== $user->nickname
-                || $data->avatar !== $user->avatar;
-
-            $emailChanged = $data->email !== $user->email;
-
-            if ($profileChanged) {
-                Gate::authorize('workspace-users.updateProfile', [$workspace, $user]);
-
-                $user->update([
-                    'name' => $data->name,
-                    'avatar' => $data->avatar,
-                    'nickname' => $data->nickname,
-                ]);
-            }
-
-            if ($emailChanged) {
-                Gate::authorize('workspace-users.updateEmail', [$workspace, $user]);
-
-                $user->update([
-                    'email' => $data->email,
-                ]);
-            }
+        $targetUser = User::query()->findOrFail($userId);
+        $targetUserWorkspace = $targetUser->workspaces()->where('workspace_id', $workspace->id)->firstOrFail();
+        
+        // 权限检查
+        Gate::authorize('workspace-users.updateProfile', [$workspace, $targetUser]);  
+        if ($data->email != $targetUser->email) {
+            Gate::authorize('workspace-users.updateEmail', [$workspace, $targetUser]);
+        }      
+        if (!empty($data->password)) {
+            Gate::authorize('workspace-users.updatePassword', [$workspace, $targetUser]);
+        }
+        if ($data->role->value != $targetUserWorkspace->pivot->role) {
+            Gate::authorize('workspace-users.updateRole', [$workspace, $targetUser, $data->role]);
+        }
+        
+        // 更新用户资料
+        DB::transaction(function () use ($targetUserWorkspace, $targetUser, $data) {
+            $targetUser->update([
+                'name' => $data->name,
+                'email' => $data->email,
+                'avatar' => $data->avatar,
+                'nickname' => $data->nickname,
+            ]);
 
             if (filled($data->password)) {
-                Gate::authorize('workspace-users.updatePassword', [$workspace]);
-                $user->update([
+                $targetUser->update([
                     'password' => $data->password,
                 ]);
             }
 
-            if ($data->role !== $currentRole) {
-                Gate::authorize('workspace-users.updateRole', [$workspace, $user, $data->role]);
-
-                $workspace->users()->updateExistingPivot($user->id, [
-                    'role' => $data->role->value,
-                ]);
-            }
+            $targetUserWorkspace->pivot->update([
+                'role' => $data->role->value,
+            ]);
         });
     }
 
-    public function asController(Request $request, Workspace $currentWorkspace, string $slug, string $id)
+    public function asController(Request $request, Workspace $workspace, string $slug, string $id)
     {
-        $user = $currentWorkspace->users()->whereKey($id)->firstOrFail();
-
-        if ($request->input('password') === '') {
-            $request->merge([
-                'password' => null,
-                'password_confirmation' => null,
-            ]);
-        }
-
         $data = UserUpdateData::from($request);
-        $this->handle($currentWorkspace, $user, $data);
+        $this->handle($workspace, $id, $data);
 
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('common.操作成功'),
         ]);
 
-        return redirect()->route('show-user-list', ['slug' => $currentWorkspace->slug]);
+        return redirect()->route('show-user-list', ['slug' => $workspace->slug]);
     }
 }

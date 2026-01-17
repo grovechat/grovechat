@@ -4,6 +4,7 @@ namespace App\Actions\User;
 
 use App\Models\Workspace;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -13,6 +14,8 @@ class RestoreUserAction
 
     public function handle(Workspace $workspace, string $id): void
     {
+        Gate::authorize('workspace-users.restoreUser', [$workspace]);
+        
         $user = $workspace->users()
             ->onlyTrashed()
             ->whereKey($id)
