@@ -67,9 +67,7 @@ const manageBaseUrl = computed(() => {
     .replace(/\/workspaces\/current$/, '');
 });
 
-const canAccessManageCenter = computed(() =>
-  ['owner', 'admin'].includes(String(currentWorkspace.value.role || '')),
-);
+const canAccessManageCenter = computed(() => page.props.canAccessManageCenter);
 
 const mainNavItems = computed<MainNavItem[]>(() => [
   {
