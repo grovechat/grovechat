@@ -21,19 +21,20 @@ import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { availableLocales, type Locale } from '@/locales';
 import { edit } from '@/routes/language';
 import { type BreadcrumbItem } from '@/types';
+import { useCurrentWorpsace } from '@/composables/useWorkspace';
 
 const { locale, updateLocale, t } = useI18n();
 const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =
   useTimezone();
 
 const page = usePage();
-const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
+const currentWorkspace = useCurrentWorpsace();
 const RootLayout = computed(() =>
   page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
 );
 const linkOptions = computed(() => ({
   mergeQuery: {
-    from_workspace: fromWorkspaceSlug.value,
+    from_workspace: currentWorkspace.value?.slug ?? '',
   },
 }));
 

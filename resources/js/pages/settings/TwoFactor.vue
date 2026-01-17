@@ -25,6 +25,7 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { useI18n } from '@/composables/useI18n';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import { useCurrentWorpsace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
@@ -72,13 +73,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 const page = usePage();
-const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
+const currentWorkspace = useCurrentWorpsace();
 const RootLayout = computed(() =>
   page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
 );
 const linkOptions = computed(() => ({
   mergeQuery: {
-    from_workspace: fromWorkspaceSlug.value,
+    from_workspace: currentWorkspace.value?.slug ?? '',
   },
 }));
 

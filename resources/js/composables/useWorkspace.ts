@@ -11,6 +11,11 @@ function getContextForError() {
   return { url, component };
 }
 
+export function useCurrentWorpsace(): ComputedRef<WorkspaceData | null> {
+  const page = usePage();
+  return computed(() => page.props.currentWorkspace);
+}
+
 /**
  * 工作区页面使用：如果 currentWorkspace 不存在会立刻抛错，帮助尽早发现“在错误上下文使用工作区组件”的问题。
  */

@@ -40,16 +40,18 @@ use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
+use App\Http\Middleware\AuthenticateSettings;
+use App\Http\Middleware\CheckSuperAdmin;
 use App\Http\Middleware\IdentifyWorkspace;
 use App\Http\Middleware\TrackLastWorkspace;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', ShowHomePageAction::class)->name('home');
-Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth:web', 'verified'])->name('dashboard');
+Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth:web'])->name('dashboard');
 
 // 个人设置（全局，不绑定工作区）
-Route::middleware(['authenticate_settings', 'verified', 'ensure_settings_workspace'])->prefix('settings')->group(function () {
+Route::middleware([AuthenticateSettings::class, IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('settings')->group(function () {
     Route::redirect('/', '/settings/profile');
 
     // 个人资料
@@ -72,7 +74,7 @@ Route::middleware(['authenticate_settings', 'verified', 'ensure_settings_workspa
 });
 
 // 系统设置（仅超级管理员）
-Route::prefix('admin')->middleware(['auth:admin', 'verified', 'is_super_admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->group(function () {
     Route::redirect('/', '/admin/general')->name('admin.home');
 
     // 基础设置
@@ -121,7 +123,7 @@ Route::prefix('admin')->middleware(['auth:admin', 'verified', 'is_super_admin'])
 Route::post('/logout/admin', LogoutAdminAction::class)->middleware(['auth:admin'])->name('logout.admin');
 Route::post('/logout/web', LogoutWebAction::class)->middleware(['auth:web'])->name('logout.web');
 
-Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
+Route::middleware(['auth:web', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
     Route::get('/', RedirectCurrentWorkspaceDashboard::class)->name('workspace.home');
     Route::get('/dashboard', ShowDashboardAction::class)->name('workspace.dashboard');
 
