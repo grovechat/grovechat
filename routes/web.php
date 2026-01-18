@@ -25,15 +25,15 @@ use App\Actions\SystemSetting\User\ShowCreateSystemUserPageAction;
 use App\Actions\SystemSetting\User\ShowEditSystemUserPageAction;
 use App\Actions\SystemSetting\User\ShowSystemUserListAction;
 use App\Actions\SystemSetting\User\UpdateSystemUserAction;
-use App\Actions\User\CreateUserAction;
-use App\Actions\User\DeleteUserAction;
-use App\Actions\User\RestoreUserAction;
-use App\Actions\User\ShowCreateUserPageAction;
-use App\Actions\User\ShowEditUserPageAction;
-use App\Actions\User\ShowUserListAction;
-use App\Actions\User\ShowUserTrashAction;
-use App\Actions\User\UpdateUserAction;
-use App\Actions\User\UpdateUserOnlineStatusAction;
+use App\Actions\Teammate\CreateTeammateAction;
+use App\Actions\Teammate\DeleteTeammateAction;
+use App\Actions\Teammate\RestoreTeammateAction;
+use App\Actions\Teammate\ShowCreateTeammatePageAction;
+use App\Actions\Teammate\ShowEditTeammatePageAction;
+use App\Actions\Teammate\ShowTeammateListAction;
+use App\Actions\Teammate\ShowTeammateTrashAction;
+use App\Actions\Teammate\UpdateTeammateAction;
+use App\Actions\Teammate\UpdateTeammateOnlineStatusAction;
 use App\Actions\Workspace\DeleteWorkspaceAction;
 use App\Actions\Workspace\GetWorkspaceListAction;
 use App\Actions\Workspace\GetWorkspaceTrashListAction;
@@ -148,16 +148,16 @@ Route::middleware(['auth:web', IdentifyWorkspace::class, TrackLastWorkspace::cla
         Route::post('workspaces', CreateWorkspaceAction::class)->name('create-workspace');
         Route::delete('workspaces/current', DeleteCurrentWorkspaceAction::class)->name('delete-current-workspace');
 
-        // 多客服
-        Route::get('users', ShowUserListAction::class)->name('show-user-list');
-        Route::get('users/create', ShowCreateUserPageAction::class)->name('show-create-user-page');
-        Route::get('users/{id}/edit', ShowEditUserPageAction::class)->name('show-edit-user-page');
-        Route::get('users/trash', ShowUserTrashAction::class)->name('show-user-trash-page');
-        Route::post('users', CreateUserAction::class)->name('create-user');
-        Route::put('users/{id}', UpdateUserAction::class)->name('update-user');
-        Route::put('users/{id}/online-status', UpdateUserOnlineStatusAction::class)->name('update-user-online-status');
-        Route::put('users/{id}/restore', RestoreUserAction::class)->name('restore-user');
-        Route::delete('users/{id}', DeleteUserAction::class)->name('delete-user');
+        // teammate（多客服）
+        Route::get('teammates', ShowTeammateListAction::class)->name('show-teammate-list');
+        Route::get('teammates/create', ShowCreateTeammatePageAction::class)->name('show-create-teammate-page');
+        Route::get('teammates/{id}/edit', ShowEditTeammatePageAction::class)->name('show-edit-teammate-page');
+        Route::get('teammates/trash', ShowTeammateTrashAction::class)->name('show-teammate-trash-page');
+        Route::post('teammates', CreateTeammateAction::class)->name('create-teammate');
+        Route::put('teammates/{id}', UpdateTeammateAction::class)->name('update-teammate');
+        Route::put('teammates/{id}/online-status', UpdateTeammateOnlineStatusAction::class)->name('update-teammate-online-status');
+        Route::put('teammates/{id}/restore', RestoreTeammateAction::class)->name('restore-teammate');
+        Route::delete('teammates/{id}', DeleteTeammateAction::class)->name('delete-teammate');
 
         // 渠道
         Route::prefix('channels')->group(function () {

@@ -17,7 +17,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
-import { showUserList, updateUser } from '@/routes';
+import { showTeammateList, updateTeammate } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { UserEditPagePropsData } from '@/types/generated';
 import { Form, Head, usePage } from '@inertiajs/vue3';
@@ -40,7 +40,7 @@ const passwordConfirmationVisible = ref(false);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('多客服'),
-    href: showUserList.url(currentWorkspace.value.slug),
+    href: showTeammateList.url(currentWorkspace.value.slug),
   },
   {
     title: t('编辑客服'),
@@ -63,7 +63,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
         <Form
           v-bind="
-            updateUser.form({
+            updateTeammate.form({
               slug: currentWorkspace.slug,
               id: userForm.id,
             })

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\User;
+namespace App\Actions\Teammate;
 
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -8,16 +8,16 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class DeleteUserAction
+class DeleteTeammateAction
 {
     use AsAction;
 
     public function handle(Workspace $workspace, string $id): void
     {
         $targetUser = $workspace->users()->whereKey($id)->firstOrFail();
-        
+
         Gate::authorize('workspace-users.deleteUser', [$workspace, $targetUser]);
-        
+
         $targetUser->delete();
     }
 

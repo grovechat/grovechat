@@ -17,7 +17,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
-import { restoreUser, showUserList, showUserTrashPage } from '@/routes';
+import { restoreTeammate, showTeammateList, showTeammateTrashPage } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { UserTrashPagePropsData } from '@/types/generated';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
@@ -33,11 +33,11 @@ const restoreForm = useForm({});
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('多客服'),
-    href: showUserList.url(currentWorkspace.value.slug),
+    href: showTeammateList.url(currentWorkspace.value.slug),
   },
   {
     title: t('客服回收站'),
-    href: showUserTrashPage.url(currentWorkspace.value.slug),
+    href: showTeammateTrashPage.url(currentWorkspace.value.slug),
   },
 ]);
 </script>
@@ -150,7 +150,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                             :disabled="restoreForm.processing"
                             @click="
                               restoreForm.put(
-                                restoreUser.url({
+                                restoreTeammate.url({
                                   slug: currentWorkspace.slug,
                                   id: u.id,
                                 }),

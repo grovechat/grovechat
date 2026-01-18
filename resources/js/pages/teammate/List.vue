@@ -24,12 +24,12 @@ import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import {
-  deleteUser,
-  showCreateUserPage,
-  showEditUserPage,
-  showUserList,
-  showUserTrashPage,
-  updateUserOnlineStatus,
+  deleteTeammate,
+  showCreateTeammatePage,
+  showEditTeammatePage,
+  showTeammateList,
+  showTeammateTrashPage,
+  updateTeammateOnlineStatus,
 } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type {
@@ -50,14 +50,14 @@ const deleteForm = useForm({});
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('多客服'),
-    href: showUserList.url(currentWorkspace.value.slug),
+    href: showTeammateList.url(currentWorkspace.value.slug),
   },
 ]);
 
 const handleOnlineStatusChange = (userId: string, status: number) => {
   updatingStatusIds.value[userId] = true;
   router.put(
-    updateUserOnlineStatus.url({
+    updateTeammateOnlineStatus.url({
       slug: currentWorkspace.value.slug,
       id: userId,
     }),
@@ -84,13 +84,13 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
 
           <div class="inline-flex items-center gap-2">
             <Button as-child>
-              <Link :href="showCreateUserPage.url(currentWorkspace.slug)">
+              <Link :href="showCreateTeammatePage.url(currentWorkspace.slug)">
                 {{ t('新增客服') }}
               </Link>
             </Button>
 
             <Button variant="outline" as-child v-show="canRestoreUser">
-              <Link :href="showUserTrashPage.url(currentWorkspace.slug)">
+              <Link :href="showTeammateTrashPage.url(currentWorkspace.slug)">
                 {{ t('回收站') }}
               </Link>
             </Button>
@@ -164,7 +164,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                       <Button as-child variant="outline" size="sm">
                         <Link
                           :href="
-                            showEditUserPage.url({
+                            showEditTeammatePage.url({
                               slug: currentWorkspace.slug,
                               id: u.user_id,
                             })
@@ -221,7 +221,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                               "
                               @click="
                                 deleteForm.delete(
-                                  deleteUser.url({
+                                  deleteTeammate.url({
                                     slug: currentWorkspace.slug,
                                     id: u.user_id,
                                   }),

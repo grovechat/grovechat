@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\User;
+namespace App\Actions\Teammate;
 
 use App\Data\EnumOptionData;
 use App\Data\Teammate\UserEditFormData;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class ShowEditUserPageAction
+class ShowEditTeammatePageAction
 {
     use AsAction;
 
@@ -35,6 +35,6 @@ class ShowEditUserPageAction
     {
         $props = $this->handle($currentWorkspace, $id);
 
-        return Inertia::render('user/Edit', $props->toArray());
+        return Inertia::render('teammate/Edit', $props->toArray());
     }
 }

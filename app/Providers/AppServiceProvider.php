@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
 
             return in_array($actorRole, [WorkspaceRole::OWNER->value, WorkspaceRole::ADMIN->value], true);
         });
-        
+
         // 删除用户权限
         Gate::define('workspace-users.deleteUser', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
             return $actorRole === WorkspaceRole::OWNER->value
                 && (string) $actor->id !== (string) $target->id;
         });
-        
+
         // 恢复用户权限
         Gate::define('workspace-users.restoreUser', function (User $actor, Workspace $workspace) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
@@ -65,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('workspace-users.updateProfile', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
             $actorRole = $ctx->role->value;
-            $targetRole = WorkspaceUserContextData::fromModels($workspace, $target)->role;
+            $targetRole = WorkspaceUserContextData::fromModels($workspace, $target)->role->value;
 
             if ($actorRole === WorkspaceRole::OWNER->value) {
                 return true;

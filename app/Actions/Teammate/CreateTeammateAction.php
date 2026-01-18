@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\User;
+namespace App\Actions\Teammate;
 
 use App\Data\Teammate\UserCreateData;
 use App\Models\User;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class CreateUserAction
+class CreateTeammateAction
 {
     use AsAction;
 
@@ -43,6 +43,6 @@ class CreateUserAction
             'message' => __('common.操作成功'),
         ]);
 
-        return redirect()->route('show-user-list', ['slug' => $currentWorkspace->slug]);
+        return redirect()->route('show-teammate-list', ['slug' => $currentWorkspace->slug]);
     }
 }

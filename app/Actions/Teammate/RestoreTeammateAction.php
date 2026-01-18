@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\User;
+namespace App\Actions\Teammate;
 
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class RestoreUserAction
+class RestoreTeammateAction
 {
     use AsAction;
 
     public function handle(Workspace $workspace, string $id): void
     {
         Gate::authorize('workspace-users.restoreUser', [$workspace]);
-        
+
         $user = $workspace->users()
             ->onlyTrashed()
             ->whereKey($id)

@@ -17,7 +17,7 @@ import { useI18n } from '@/composables/useI18n';
 import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
-import { createUser, showUserList } from '@/routes';
+import { createTeammate, showTeammateList } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { UserCreatePagePropsData, WorkspaceRole } from '@/types/generated';
 import { Form, Head, usePage } from '@inertiajs/vue3';
@@ -36,7 +36,7 @@ const passwordConfirmationVisible = ref(false);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('多客服'),
-    href: showUserList.url(currentWorkspace.value.slug),
+    href: showTeammateList.url(currentWorkspace.value.slug),
   },
   {
     title: t('新增客服'),
@@ -74,7 +74,7 @@ watch(
         />
 
         <Form
-          v-bind="createUser.form(currentWorkspace.slug)"
+          v-bind="createTeammate.form(currentWorkspace.slug)"
           class="space-y-6"
           v-slot="{ errors, processing, recentlySuccessful }"
         >

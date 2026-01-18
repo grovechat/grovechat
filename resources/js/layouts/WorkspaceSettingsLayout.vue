@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { getCurrentWorkspace, showUserList } from '@/routes';
+import { getCurrentWorkspace, showTeammateList } from '@/routes';
 import workspaceSetting from '@/routes/workspace-setting';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -44,7 +44,7 @@ const sidebarNavItems = computed<MenuItem[]>(() => {
       children: [
         {
           title: t('多客服'),
-          href: showUserList.url(currentWorkspace.value.slug),
+          href: showTeammateList.url(currentWorkspace.value.slug),
         },
       ],
     },

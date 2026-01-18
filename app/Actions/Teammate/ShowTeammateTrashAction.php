@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\User;
+namespace App\Actions\Teammate;
 
 use App\Data\Teammate\UserTrashListItemData;
 use App\Data\Teammate\UserTrashPagePropsData;
@@ -8,7 +8,7 @@ use App\Models\Workspace;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class ShowUserTrashAction
+class ShowTeammateTrashAction
 {
     use AsAction;
 
@@ -28,6 +28,6 @@ class ShowUserTrashAction
     {
         $props = $this->handle($currentWorkspace);
 
-        return Inertia::render('user/Trash', $props->toArray());
+        return Inertia::render('teammate/Trash', $props->toArray());
     }
 }

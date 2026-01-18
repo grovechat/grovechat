@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\User;
+namespace App\Actions\Teammate;
 
 use App\Data\EnumOptionData;
 use App\Data\Teammate\UserListPagePropsData;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class ShowUserListAction
+class ShowTeammateListAction
 {
     use AsAction;
 
@@ -20,11 +20,11 @@ class ShowUserListAction
         $users = $workspace->users()
             ->orderBy('users.id', 'asc')
             ->get();
-            
+
         $userList = $users->map(fn ($u) => WorkspaceUserContextData::fromModels($workspace, $u)
             ->withShowDeleteButton(Gate::allows('workspace-users.deleteUser', [$workspace, $u]))
         )->all();
-        
+
         return new UserListPagePropsData(
             user_list: $userList,
             online_status_options: EnumOptionData::fromCases(UserOnlineStatus::cases()),
@@ -36,6 +36,6 @@ class ShowUserListAction
     {
         $props = $this->handle($currentWorkspace);
 
-        return Inertia::render('user/List', $props->toArray());
+        return Inertia::render('teammate/List', $props->toArray());
     }
 }

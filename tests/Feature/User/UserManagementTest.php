@@ -24,13 +24,13 @@ test('authenticated user can view user list page', function () {
     $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->get(route('show-user-list', ['slug' => $this->workspaceSlug()]))
+        ->get(route('show-teammate-list', ['slug' => $this->workspaceSlug()]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('user/List')
+            ->component('teammate/List')
             ->has('user_list')
             ->has('user_list.0', fn (Assert $item) => $item
-                ->hasAll(['id', 'name', 'avatar', 'email', 'role', 'role_label', 'online_status', 'online_status_label'])
+                ->hasAll(['user_id', 'user_name', 'user_avatar', 'user_email', 'role', 'user_online_status', 'show_delete_button'])
                 ->etc()
             )
         );
@@ -50,16 +50,16 @@ test('operator cannot access manage center pages', function () {
         ->assertForbidden();
 
     $this->actingAs($operator)
-        ->get(route('show-user-list', ['slug' => $this->workspaceSlug()]))
+        ->get(route('show-teammate-list', ['slug' => $this->workspaceSlug()]))
         ->assertForbidden();
 });
 
 test('authenticated user can view create user page with role options', function () {
     $this->actingAs($this->user)
-        ->get(route('show-create-user-page', ['slug' => $this->workspaceSlug()]))
+        ->get(route('show-create-teammate-page', ['slug' => $this->workspaceSlug()]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('user/Create')
+            ->component('teammate/Create')
             ->has('user_form')
             ->has('role_options', 2)
             ->where('role_options.0.value', 'admin')
@@ -76,10 +76,10 @@ test('authenticated user can view edit user page with role options', function ()
     $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->get(route('show-edit-user-page', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+        ->get(route('show-edit-teammate-page', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('user/Edit')
+            ->component('teammate/Edit')
             ->has('user_form')
             ->has('role_options', 2)
             ->where('role_options.0.value', 'admin')
@@ -90,7 +90,7 @@ test('authenticated user can view edit user page with role options', function ()
 
 test('can create a user in current workspace', function () {
     $this->actingAs($this->user)
-        ->post(route('create-user', ['slug' => $this->workspaceSlug()]), [
+        ->post(route('create-teammate', ['slug' => $this->workspaceSlug()]), [
             'name' => '客服B',
             'nickname' => '小B',
             'avatar' => 'https://example.com/a.png',
@@ -99,7 +99,7 @@ test('can create a user in current workspace', function () {
             'password' => 'secret1234',
             'password_confirmation' => 'secret1234',
         ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
     $created = User::query()->where('email', 'b@example.com')->firstOrFail();
     expect(Hash::check('secret1234', $created->password))->toBeTrue();
@@ -108,7 +108,7 @@ test('can create a user in current workspace', function () {
 
 test('cannot create a user with owner role', function () {
     $this->actingAs($this->user)
-        ->post(route('create-user', ['slug' => $this->workspaceSlug()]), [
+        ->post(route('create-teammate', ['slug' => $this->workspaceSlug()]), [
             'name' => '非法 Owner',
             'nickname' => null,
             'avatar' => null,
@@ -131,7 +131,7 @@ test('can update a user without changing password', function () {
     $oldHash = $member->password;
 
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'name' => '客服C-新',
             'nickname' => '小C',
             'avatar' => null,
@@ -140,7 +140,7 @@ test('can update a user without changing password', function () {
             'password' => '',
             'password_confirmation' => '',
         ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
     $member->refresh();
     expect($member->name)->toBe('客服C-新');
@@ -155,7 +155,7 @@ test('admin cannot update own email', function () {
     $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
 
     $this->actingAs($admin)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $admin->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $admin->id]), [
             'name' => $admin->name,
             'nickname' => null,
             'avatar' => null,
@@ -178,7 +178,7 @@ test('operator cannot update own email', function () {
     $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
 
     $this->actingAs($operator)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
             'name' => $operator->name,
             'nickname' => null,
             'avatar' => null,
@@ -201,7 +201,7 @@ test('owner can update another user email', function () {
     $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'name' => $member->name,
             'nickname' => null,
             'avatar' => null,
@@ -210,7 +210,7 @@ test('owner can update another user email', function () {
             'password' => '',
             'password_confirmation' => '',
         ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
     $member->refresh();
     expect($member->email)->toBe('e1-new@example.com');
@@ -230,7 +230,7 @@ test('admin can update other operator profile fields but cannot update email', f
     $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
 
     $this->actingAs($admin)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
             'name' => '客服P-新',
             'nickname' => '新昵称',
             'avatar' => 'https://example.com/a.png',
@@ -239,7 +239,7 @@ test('admin can update other operator profile fields but cannot update email', f
             'password' => '',
             'password_confirmation' => '',
         ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
     $operator->refresh();
     expect($operator->name)->toBe('客服P-新');
@@ -247,7 +247,7 @@ test('admin can update other operator profile fields but cannot update email', f
     expect($operator->avatar)->toBe('https://example.com/a.png');
 
     $this->actingAs($admin)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
             'name' => $operator->name,
             'nickname' => $operator->nickname,
             'avatar' => $operator->avatar,
@@ -267,7 +267,7 @@ test('owner can update other operator profile fields', function () {
     $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
             'name' => '客服X-新',
             'nickname' => '新昵称',
             'avatar' => 'https://example.com/c.png',
@@ -276,7 +276,7 @@ test('owner can update other operator profile fields', function () {
             'password' => '',
             'password_confirmation' => '',
         ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
     $operator->refresh();
     expect($operator->name)->toBe('客服X-新');
@@ -296,7 +296,7 @@ test('admin cannot update another admin email', function () {
     $this->workspace->users()->attach($admin2->id, ['role' => 'admin']);
 
     $this->actingAs($admin)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]), [
             'name' => $admin2->name,
             'nickname' => null,
             'avatar' => null,
@@ -313,7 +313,7 @@ test('admin cannot update another admin email', function () {
 
 test('owner cannot update own email', function () {
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
             'name' => $this->user->name,
             'nickname' => null,
             'avatar' => null,
@@ -342,7 +342,7 @@ test('operator cannot update any users via manage center', function () {
     $this->workspace->users()->attach($other->id, ['role' => 'operator']);
 
     $this->actingAs($operator)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
             'name' => '客服Self-新',
             'nickname' => '昵称',
             'avatar' => 'https://example.com/b.png',
@@ -354,7 +354,7 @@ test('operator cannot update any users via manage center', function () {
         ->assertForbidden();
 
     $this->actingAs($operator)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $other->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $other->id]), [
             'name' => '客服Other-新',
             'nickname' => null,
             'avatar' => null,
@@ -368,7 +368,7 @@ test('operator cannot update any users via manage center', function () {
 
 test('owner cannot change own role', function () {
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
             'name' => $this->user->name,
             'nickname' => null,
             'avatar' => null,
@@ -385,7 +385,7 @@ test('owner cannot change own role', function () {
 
 test('owner can update own profile without changing role', function () {
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
             'name' => 'Owner-新名称',
             'nickname' => '老板',
             'avatar' => null,
@@ -394,7 +394,7 @@ test('owner can update own profile without changing role', function () {
             'password' => '',
             'password_confirmation' => '',
         ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
     $this->user->refresh();
     expect($this->user->name)->toBe('Owner-新名称');
@@ -409,7 +409,7 @@ test('can update a user with new password', function () {
     $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'name' => '客服D',
             'nickname' => null,
             'avatar' => null,
@@ -418,7 +418,7 @@ test('can update a user with new password', function () {
             'password' => 'newpass1234',
             'password_confirmation' => 'newpass1234',
         ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
     $member->refresh();
     expect(Hash::check('newpass1234', $member->password))->toBeTrue();
@@ -432,7 +432,7 @@ test('owner cannot set another user role to owner', function () {
     $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'name' => $member->name,
             'nickname' => null,
             'avatar' => null,
@@ -461,7 +461,7 @@ test('admin cannot change operator role', function () {
     $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($admin)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'name' => $member->name,
             'nickname' => null,
             'avatar' => null,
@@ -490,7 +490,7 @@ test('admin cannot update another admin profile fields', function () {
     $this->workspace->users()->attach($admin2->id, ['role' => 'admin']);
 
     $this->actingAs($admin)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]), [
             'name' => '管理员B-新',
             'nickname' => '新昵称',
             'avatar' => 'https://example.com/a.png',
@@ -519,7 +519,7 @@ test('admin cannot change another user password', function () {
     $oldHash = $member->password;
 
     $this->actingAs($admin)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'name' => $member->name,
             'nickname' => null,
             'avatar' => null,
@@ -543,13 +543,13 @@ test('can update user online status from list', function () {
     $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->put(route('update-user-online-status', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+        ->put(route('update-teammate-online-status', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'online_status' => UserOnlineStatus::ONLINE->value,
         ])
         ->assertRedirect();
 
     $member->refresh();
-    expect($member->online_status)->toBe(UserOnlineStatus::ONLINE->value);
+    expect($member->online_status)->toBe(UserOnlineStatus::ONLINE);
 });
 
 test('can soft delete a user in current workspace', function () {
@@ -560,7 +560,7 @@ test('can soft delete a user in current workspace', function () {
     $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+        ->delete(route('delete-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
         ->assertRedirect();
 
     $this->assertSoftDeleted('users', ['id' => $member->id]);
@@ -568,7 +568,7 @@ test('can soft delete a user in current workspace', function () {
 
 test('cannot delete current logged in user', function () {
     $this->actingAs($this->user)
-        ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]))
+        ->delete(route('delete-teammate', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]))
         ->assertForbidden();
 });
 
@@ -580,14 +580,14 @@ test('trash page shows deleted users and can restore', function () {
     $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+        ->delete(route('delete-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
         ->assertRedirect();
 
     $this->actingAs($this->user)
-        ->get(route('show-user-trash-page', ['slug' => $this->workspaceSlug()]))
+        ->get(route('show-teammate-trash-page', ['slug' => $this->workspaceSlug()]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('user/Trash')
+            ->component('teammate/Trash')
             ->has('user_list', 1)
             ->has('user_list.0', fn (Assert $item) => $item
                 ->hasAll(['id', 'avatar', 'name', 'email', 'role', 'deleted_at'])
@@ -597,7 +597,7 @@ test('trash page shows deleted users and can restore', function () {
         );
 
     $this->actingAs($this->user)
-        ->put(route('restore-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+        ->put(route('restore-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
         ->assertRedirect();
 
     expect($member->fresh())->not->toBeNull();

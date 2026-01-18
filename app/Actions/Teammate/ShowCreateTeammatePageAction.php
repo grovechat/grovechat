@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\User;
+namespace App\Actions\Teammate;
 
 use App\Data\EnumOptionData;
 use App\Data\Teammate\UserCreateFormData;
@@ -10,7 +10,7 @@ use App\Models\Workspace;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class ShowCreateUserPageAction
+class ShowCreateTeammatePageAction
 {
     use AsAction;
 
@@ -26,6 +26,6 @@ class ShowCreateUserPageAction
     {
         $props = $this->handle();
 
-        return Inertia::render('user/Create', $props->toArray());
+        return Inertia::render('teammate/Create', $props->toArray());
     }
 }

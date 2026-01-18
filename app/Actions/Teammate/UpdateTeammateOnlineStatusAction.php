@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\User;
+namespace App\Actions\Teammate;
 
 use App\Data\Teammate\UserOnlineStatusUpdateData;
 use App\Models\Workspace;
@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class UpdateUserOnlineStatusAction
+class UpdateTeammateOnlineStatusAction
 {
     use AsAction;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\User;
+namespace App\Actions\Teammate;
 
 use App\Data\Teammate\UserUpdateData;
 use App\Models\User;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class UpdateUserAction
+class UpdateTeammateAction
 {
     use AsAction;
 
@@ -19,19 +19,19 @@ class UpdateUserAction
     {
         $targetUser = User::query()->findOrFail($userId);
         $targetUserWorkspace = $targetUser->workspaces()->where('workspace_id', $workspace->id)->firstOrFail();
-        
+
         // 权限检查
-        Gate::authorize('workspace-users.updateProfile', [$workspace, $targetUser]);  
+        Gate::authorize('workspace-users.updateProfile', [$workspace, $targetUser]);
         if ($data->email != $targetUser->email) {
             Gate::authorize('workspace-users.updateEmail', [$workspace, $targetUser]);
-        }      
-        if (!empty($data->password)) {
+        }
+        if (! empty($data->password)) {
             Gate::authorize('workspace-users.updatePassword', [$workspace, $targetUser]);
         }
         if ($data->role->value != $targetUserWorkspace->pivot->role) {
             Gate::authorize('workspace-users.updateRole', [$workspace, $targetUser, $data->role]);
         }
-        
+
         // 更新用户资料
         DB::transaction(function () use ($targetUserWorkspace, $targetUser, $data) {
             $targetUser->update([
@@ -63,6 +63,6 @@ class UpdateUserAction
             'message' => __('common.操作成功'),
         ]);
 
-        return redirect()->route('show-user-list', ['slug' => $workspace->slug]);
+        return redirect()->route('show-teammate-list', ['slug' => $workspace->slug]);
     }
 }
