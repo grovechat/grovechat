@@ -3,7 +3,7 @@
 namespace App\Actions\User;
 
 use App\Data\EnumOptionData;
-use App\Data\UserListPagePropsData;
+use App\Data\Teammate\UserListPagePropsData;
 use App\Data\WorkspaceUserContextData;
 use App\Enums\UserOnlineStatus;
 use App\Models\Workspace;

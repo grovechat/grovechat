@@ -2,7 +2,7 @@
 
 namespace App\Actions\User;
 
-use App\Data\UserOnlineStatusUpdateData;
+use App\Data\Teammate\UserOnlineStatusUpdateData;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

@@ -2,8 +2,8 @@
 
 namespace App\Actions\User;
 
-use App\Data\UserTrashListItemData;
-use App\Data\UserTrashPagePropsData;
+use App\Data\Teammate\UserTrashListItemData;
+use App\Data\Teammate\UserTrashPagePropsData;
 use App\Models\Workspace;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;

@@ -2,7 +2,7 @@
 
 namespace App\Actions\User;
 
-use App\Data\UserUpdateData;
+use App\Data\Teammate\UserUpdateData;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;

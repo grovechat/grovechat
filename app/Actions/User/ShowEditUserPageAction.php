@@ -3,8 +3,8 @@
 namespace App\Actions\User;
 
 use App\Data\EnumOptionData;
-use App\Data\UserEditFormData;
-use App\Data\UserEditPagePropsData;
+use App\Data\Teammate\UserEditFormData;
+use App\Data\Teammate\UserEditPagePropsData;
 use App\Enums\WorkspaceRole;
 use App\Models\Workspace;
 use Illuminate\Support\Facades\Gate;

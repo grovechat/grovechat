@@ -3,8 +3,8 @@
 namespace App\Actions\User;
 
 use App\Data\EnumOptionData;
-use App\Data\UserCreateFormData;
-use App\Data\UserCreatePagePropsData;
+use App\Data\Teammate\UserCreateFormData;
+use App\Data\Teammate\UserCreatePagePropsData;
 use App\Enums\WorkspaceRole;
 use App\Models\Workspace;
 use Inertia\Inertia;

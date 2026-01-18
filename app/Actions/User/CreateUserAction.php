@@ -2,7 +2,7 @@
 
 namespace App\Actions\User;
 
-use App\Data\UserCreateData;
+use App\Data\Teammate\UserCreateData;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;

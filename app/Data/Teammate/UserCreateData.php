@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\Teammate;
 
 use App\Enums\WorkspaceRole;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Data;
 
-class UserUpdateData extends Data
+class UserCreateData extends Data
 {
     public function __construct(
         public string $name,
@@ -14,21 +14,20 @@ class UserUpdateData extends Data
         public ?string $avatar,
         public WorkspaceRole $role,
         public string $email,
-        public ?string $password = null,
+        public string $password,
     ) {}
 
     public static function rules(): array
     {
-        $roles = array_map(static fn (WorkspaceRole $r) => $r->value, WorkspaceRole::cases());
-        $userId = request()->route('id');
+        $roles = array_map(static fn (WorkspaceRole $r) => $r->value, WorkspaceRole::assignableCases());
 
         return [
             'name' => ['required', 'string', 'max:50'],
             'nickname' => ['nullable', 'string', 'max:50'],
             'avatar' => ['nullable', 'string', 'max:2048'],
             'role' => ['required', Rule::in($roles)],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
 }
