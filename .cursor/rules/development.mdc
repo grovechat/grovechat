@@ -17,14 +17,14 @@ npm run dev
 
 ## 完整的功能开发流程
 
-1. **定义 Data 类**（`app/Data/`）
+1. **定义 Data 类**（`app/Data/<Domain>/`，通用 Data 例外）
    ```bash
-   php artisan make:data CreateWorkspaceDTO
+   php artisan make:data CurrentWorkspace/CreateWorkspaceDTO
    ```
 
-2. **创建 Action**（`app/Actions/`）
+2. **创建 Action**（`app/Actions/<Domain>/`）
    ```bash
-   php artisan make:action Workspace/CreateWorkspaceAction
+   php artisan make:action Manage/CreateWorkspaceAction
    ```
 
 3. **生成 TS 类型**

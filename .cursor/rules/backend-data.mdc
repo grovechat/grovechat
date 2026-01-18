@@ -7,6 +7,15 @@ description: Laravel Data 和类型生成规范
 
 **所有数据传输必须使用 Laravel Data**。
 
+## 目录组织（按领域分目录）
+
+- ✅ Data 默认放在 `app/Data/<Domain>/` 下（例如 `CurrentWorkspace/`、`StorageSetting/`、`Teammate/`、`User/`）
+- ✅ 跨领域复用的通用 Data 可放在 `app/Data/` 根目录（例如 `EnumOptionData`、`SimplePaginationData`）
+- ✅ 通过 “用途 + 领域” 体现语义（输入/表单/页面 props/列表项等），例如：
+  - `UserCreateData` / `UserEditFormData`
+  - `UserListItemData` / `UserListPagePropsData`
+  - `StorageSettingPagePropsData`
+
 ## 基本用法
 
 ```php
@@ -81,7 +90,7 @@ export type WorkspaceData = {
 ## 创建 Data 类
 
 ```bash
-php artisan make:data CreateWorkspaceDTO
+php artisan make:data CurrentWorkspace/CreateWorkspaceDTO
 ```
 
 ## 禁止事项
