@@ -2,8 +2,8 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\SystemUserEditFormData;
-use App\Data\SystemUserEditPagePropsData;
+use App\Data\User\SystemUserEditFormData;
+use App\Data\User\SystemUserEditPagePropsData;
 use App\Models\User;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;

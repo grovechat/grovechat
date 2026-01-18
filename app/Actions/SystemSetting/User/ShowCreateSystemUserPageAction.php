@@ -2,8 +2,8 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\SystemUserCreateFormData;
-use App\Data\SystemUserCreatePagePropsData;
+use App\Data\User\SystemUserCreateFormData;
+use App\Data\User\SystemUserCreatePagePropsData;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 

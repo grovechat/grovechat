@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\User;
 
 use App\Models\User;
 use Spatie\LaravelData\Data;
 
-class SystemUserEditFormData extends Data
+class SystemUserListItemData extends Data
 {
     public function __construct(
         public string $id,
         public string $name,
-        public ?string $avatar,
         public string $email,
+        public ?string $avatar,
         public bool $two_factor_enabled,
     ) {}
 
@@ -20,8 +20,8 @@ class SystemUserEditFormData extends Data
         return new self(
             id: (string) $user->id,
             name: $user->name,
-            avatar: filled($user->avatar) ? $user->avatar : null,
             email: $user->email,
+            avatar: filled($user->avatar) ? $user->avatar : null,
             two_factor_enabled: filled($user->two_factor_confirmed_at),
         );
     }

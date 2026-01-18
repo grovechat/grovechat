@@ -2,7 +2,7 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\SystemUserUpdateData;
+use App\Data\User\SystemUserUpdateData;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

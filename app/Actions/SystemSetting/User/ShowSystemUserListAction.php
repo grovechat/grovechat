@@ -2,9 +2,9 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\SimplePaginationData;
-use App\Data\SystemUserListItemData;
-use App\Data\SystemUserListPagePropsData;
+use App\Data\User\SimplePaginationData;
+use App\Data\User\SystemUserListItemData;
+use App\Data\User\SystemUserListPagePropsData;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

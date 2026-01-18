@@ -2,7 +2,7 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\SystemUserCreateData;
+use App\Data\User\SystemUserCreateData;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
