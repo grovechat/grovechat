@@ -11,10 +11,36 @@ description: Laravel Data 和类型生成规范
 
 - ✅ Data 默认放在 `app/Data/<Domain>/` 下（例如 `CurrentWorkspace/`、`StorageSetting/`、`Teammate/`、`User/`）
 - ✅ 跨领域复用的通用 Data 可放在 `app/Data/` 根目录（例如 `EnumOptionData`、`SimplePaginationData`）
-- ✅ 通过 “用途 + 领域” 体现语义（输入/表单/页面 props/列表项等），例如：
-  - `UserCreateData` / `UserEditFormData`
-  - `UserListItemData` / `UserListPagePropsData`
-  - `StorageSettingPagePropsData`
+- ✅ 通过“动词 + 名词 + 用途”体现语义（输入/表单/页面 props/列表项等）
+
+## 命名规范（重要）
+
+### 基本原则
+
+- ✅ **动词 + 名词**：和 `app/Data/Teammate` 的风格一致（例如 `CreateTeammateData`、`UpdateTeammateData`、`ListTeammateItemData`）
+- ✅ **保持前后端类型可直接复用**：页面 props 尽量使用 “已生成的 Data 类型”，避免前端手写 `{ ... }` props shape
+
+### PagePropsData（页面展示数据）如何取名
+
+- ✅ **展示型页面（列表 / 回收站 / 详情）**：使用 `ShowXXX...PagePropsData`
+  - 例：`ShowUserListPagePropsData`、`ShowWorkspaceListPagePropsData`、`ShowWorkspaceTrashPagePropsData`
+  - 说明：即使当前只有一个字段（例如只有 `*_list`），也建议保留 `Show*PagePropsData`，这样前端可以直接 `defineProps<Show...PagePropsData>()`，并且后续扩展字段无需改动 props 类型结构
+- ✅ **非展示型/仅表单型页面（Create/Edit）**：避免“无意义套娃”
+  - 如果页面 props 只有一个表单对象，**可以直接下发 `CreateXXXFormData` / `EditXXXFormData`**，不必再包一层 `ShowCreate...PagePropsData`
+  - 例：Create 用户页面可以直接返回 `CreateUserFormData` 作为 props（前端同样能直接引用生成的类型）
+
+### 常见 Data 类型命名（示例）
+
+- **输入/提交（Request Data）**：
+  - `CreateUserData` / `UpdateUserData`
+- **表单（Form Data）**：
+  - `CreateUserFormData` / `EditUserFormData`
+- **列表项（Item Data）**：
+  - `ListUserItemData`
+  - `ListWorkspaceItemData` / `TrashWorkspaceItemData`
+- **展示页 Props（PageProps Data）**：
+  - `ShowUserListPagePropsData`
+  - `ShowWorkspaceListPagePropsData` / `ShowWorkspaceTrashPagePropsData`
 
 ## 基本用法
 
@@ -39,7 +65,7 @@ class WorkspaceData extends Data
 ```php
 use Illuminate\Validation\Rule;
 
-class CreateWorkspaceDTO extends Data
+class CreateWorkspaceData extends Data
 {
     public function __construct(
         public string $name,
@@ -90,7 +116,7 @@ export type WorkspaceData = {
 ## 创建 Data 类
 
 ```bash
-php artisan make:data CurrentWorkspace/CreateWorkspaceDTO
+php artisan make:data CurrentWorkspace/CreateWorkspaceData
 ```
 
 ## 禁止事项
