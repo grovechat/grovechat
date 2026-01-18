@@ -18,16 +18,15 @@ import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { restoreTeammate, showTeammateList, showTeammateTrashPage } from '@/routes';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import type { TrashTeammatePagePropsData } from '@/types/generated';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const page = usePage<AppPageProps<TrashTeammatePagePropsData>>();
+const props = defineProps<TrashTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
-const userList = computed(() => page.props.user_list);
 const restoreForm = useForm({});
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -80,7 +79,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               </thead>
               <tbody>
                 <tr
-                  v-for="u in userList"
+                  v-for="u in props.user_list"
                   :key="u.id"
                   class="border-b last:border-b-0"
                 >
@@ -170,7 +169,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   </td>
                 </tr>
 
-                <tr v-if="userList.length === 0">
+                <tr v-if="props.user_list.length === 0">
                   <td
                     colspan="6"
                     class="px-4 py-8 text-center text-muted-foreground"

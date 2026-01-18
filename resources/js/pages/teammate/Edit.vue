@@ -18,24 +18,19 @@ import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { showTeammateList, updateTeammate } from '@/routes';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import type { EditTeammatePagePropsData } from '@/types/generated';
-import { Form, Head, usePage } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const page = usePage<AppPageProps<EditTeammatePagePropsData>>();
+const props = defineProps<EditTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
-const userForm = computed(() => page.props.user_form);
-const roleOptions = computed(() => page.props.role_options);
-const canUpdateProfile = computed(() => page.props.can_update_profile);
-const canUpdateEmail = computed(() => page.props.can_update_email);
-const canUpdateRole = computed(() => page.props.can_update_role);
-const canUpdatePassword = computed(() => page.props.can_update_password);
 
 const passwordVisible = ref(false);
 const passwordConfirmationVisible = ref(false);
+const roleValue = ref<string>(String(props.user_form.role ?? ''));
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
@@ -65,7 +60,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           v-bind="
             updateTeammate.form({
               slug: currentWorkspace.slug,
-              id: userForm.id,
+              id: props.user_form.id,
             })
           "
           class="space-y-6"
@@ -73,23 +68,27 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         >
           <div class="grid gap-2">
             <Label for="name">{{ t('客服名称') }}</Label>
-            <template v-if="canUpdateProfile">
+            <template v-if="props.can_update_profile">
               <Input
                 id="name"
                 name="name"
                 class="mt-1 block w-full"
                 required
-                :default-value="userForm.name || ''"
+                :default-value="props.user_form.name || ''"
                 :placeholder="t('请输入客服名称')"
               />
             </template>
             <template v-else>
-              <input type="hidden" name="name" :value="userForm.name || ''" />
+              <input
+                type="hidden"
+                name="name"
+                :value="props.user_form.name || ''"
+              />
               <Input
                 id="name"
                 class="mt-1 block w-full"
                 disabled
-                :default-value="userForm.name || ''"
+                :default-value="props.user_form.name || ''"
               />
             </template>
             <InputError class="mt-2" :message="errors.name" />
@@ -97,12 +96,12 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
           <div class="grid gap-2">
             <Label for="nickname">{{ t('对外昵称') }}</Label>
-            <template v-if="canUpdateProfile">
+            <template v-if="props.can_update_profile">
               <Input
                 id="nickname"
                 name="nickname"
                 class="mt-1 block w-full"
-                :default-value="userForm.nickname || ''"
+                :default-value="props.user_form.nickname || ''"
                 :placeholder="t('请输入对外昵称')"
               />
             </template>
@@ -110,13 +109,13 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               <input
                 type="hidden"
                 name="nickname"
-                :value="userForm.nickname || ''"
+                :value="props.user_form.nickname || ''"
               />
               <Input
                 id="nickname"
                 class="mt-1 block w-full"
                 disabled
-                :default-value="userForm.nickname || ''"
+                :default-value="props.user_form.nickname || ''"
               />
             </template>
             <InputError class="mt-2" :message="errors.nickname" />
@@ -128,24 +127,24 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             :upload-url="UploadImageAction.url()"
             response-key="full_url"
             folder="avatars"
-            :initial-preview="userForm.avatar || ''"
-            :initial-value="userForm.avatar || ''"
-            :disabled="!canUpdateProfile"
+            :initial-preview="props.user_form.avatar || ''"
+            :initial-value="props.user_form.avatar || ''"
+            :disabled="!props.can_update_profile"
             variant="avatar"
             :error="errors.avatar"
           />
 
           <div class="grid gap-2">
             <Label for="role">{{ t('角色') }}</Label>
-            <template v-if="canUpdateRole">
-              <input type="hidden" name="role" :value="userForm.role" />
-              <Select v-model="userForm.role">
+            <template v-if="props.can_update_role">
+              <input type="hidden" name="role" :value="roleValue" />
+              <Select v-model="roleValue">
                 <SelectTrigger id="role" class="mt-1">
                   <SelectValue :placeholder="t('请选择角色')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
-                    v-for="opt in roleOptions"
+                    v-for="opt in props.role_options"
                     :key="String(opt.value)"
                     :value="String(opt.value)"
                   >
@@ -155,11 +154,15 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               </Select>
             </template>
             <template v-else>
-              <input type="hidden" name="role" :value="String(userForm.role)" />
+              <input
+                type="hidden"
+                name="role"
+                :value="String(props.user_form.role)"
+              />
               <Input
                 id="role"
                 class="mt-1"
-                :default-value="userForm.role_label"
+                :default-value="props.user_form.role_label"
                 disabled
               />
             </template>
@@ -168,31 +171,35 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
           <div class="grid gap-2">
             <Label for="email">{{ t('邮箱') }}</Label>
-            <template v-if="canUpdateEmail">
+            <template v-if="props.can_update_email">
               <Input
                 id="email"
                 name="email"
                 type="email"
                 class="mt-1 block w-full"
                 required
-                :default-value="userForm.email || ''"
+                :default-value="props.user_form.email || ''"
                 :placeholder="t('请输入邮箱')"
               />
             </template>
             <template v-else>
-              <input type="hidden" name="email" :value="userForm.email || ''" />
+              <input
+                type="hidden"
+                name="email"
+                :value="props.user_form.email || ''"
+              />
               <Input
                 id="email"
                 type="email"
                 class="mt-1 block w-full"
                 disabled
-                :default-value="userForm.email || ''"
+                :default-value="props.user_form.email || ''"
               />
             </template>
             <InputError class="mt-2" :message="errors.email" />
           </div>
 
-          <template v-if="canUpdatePassword">
+          <template v-if="props.can_update_password">
             <div class="grid gap-2">
               <Label for="password">{{ t('登录密码') }}</Label>
               <div class="relative mt-1">

@@ -18,18 +18,17 @@ import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { createTeammate, showTeammateList } from '@/routes';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import type { ShowCreateTeammatePagePropsData, WorkspaceRole } from '@/types/generated';
-import { Form, Head, usePage } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 const { t } = useI18n();
-const page = usePage<AppPageProps<ShowCreateTeammatePagePropsData>>();
+const props = defineProps<ShowCreateTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
-const userForm = computed(() => page.props.user_form);
 
-const roleValue = ref<WorkspaceRole>(userForm.value.role || 'operator');
+const roleValue = ref<WorkspaceRole>(props.user_form.role || 'operator');
 const passwordVisible = ref(false);
 const passwordConfirmationVisible = ref(false);
 
@@ -45,7 +44,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 ]);
 
 const roleOptions = computed<{ value: WorkspaceRole; label: string }[]>(() =>
-  page.props.role_options.map((opt) => ({
+  props.role_options.map((opt) => ({
     value: opt.value as WorkspaceRole,
     label: opt.label,
   })),
@@ -85,7 +84,7 @@ watch(
               name="name"
               class="mt-1 block w-full"
               required
-              :default-value="userForm.name || ''"
+              :default-value="props.user_form.name || ''"
               :placeholder="t('请输入客服名称')"
             />
             <InputError class="mt-2" :message="errors.name" />
@@ -97,7 +96,7 @@ watch(
               id="nickname"
               name="nickname"
               class="mt-1 block w-full"
-              :default-value="userForm.nickname || ''"
+              :default-value="props.user_form.nickname || ''"
               :placeholder="t('请输入对外昵称')"
             />
             <InputError class="mt-2" :message="errors.nickname" />
@@ -109,8 +108,8 @@ watch(
             :upload-url="UploadImageAction.url()"
             response-key="full_url"
             folder="avatars"
-            :initial-preview="userForm.avatar || ''"
-            :initial-value="userForm.avatar || ''"
+            :initial-preview="props.user_form.avatar || ''"
+            :initial-value="props.user_form.avatar || ''"
             variant="avatar"
             :error="errors.avatar"
           />
@@ -143,7 +142,7 @@ watch(
               type="email"
               class="mt-1 block w-full"
               required
-              :default-value="userForm.email || ''"
+              :default-value="props.user_form.email || ''"
               :placeholder="t('请输入邮箱')"
             />
             <InputError class="mt-2" :message="errors.email" />

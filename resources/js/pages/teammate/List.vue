@@ -31,19 +31,16 @@ import {
   showTeammateTrashPage,
   updateTeammateOnlineStatus,
 } from '@/routes';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import type {
   ListTeammatePagePropsData,
 } from '@/types/generated';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const page = usePage<AppPageProps<ListTeammatePagePropsData>>();
+const props = defineProps<ListTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
-const userList = computed(() => page.props.user_list);
-const onlineStatusOptions = computed(() => page.props.online_status_options);
-const canRestoreUser = computed(() => page.props.can_restore_user);
 const updatingStatusIds = ref<Record<string, boolean>>({});
 const deleteForm = useForm({});
 
@@ -89,7 +86,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
               </Link>
             </Button>
 
-            <Button variant="outline" as-child v-show="canRestoreUser">
+            <Button variant="outline" as-child v-show="props.can_restore_user">
               <Link :href="showTeammateTrashPage.url(currentWorkspace.slug)">
                 {{ t('回收站') }}
               </Link>
@@ -112,7 +109,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
               </thead>
               <tbody>
                 <tr
-                  v-for="u in userList"
+                  v-for="u in props.user_list"
                   :key="u.user_id"
                   class="border-t bg-background"
                 >
@@ -150,7 +147,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem
-                          v-for="opt in onlineStatusOptions"
+                          v-for="opt in props.online_status_options"
                           :key="String(opt.value)"
                           :value="String(opt.value)"
                         >
@@ -242,7 +239,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                   </td>
                 </tr>
 
-                <tr v-if="userList.length === 0">
+                <tr v-if="props.user_list.length === 0">
                   <td
                     class="px-4 py-8 text-center text-muted-foreground"
                     colspan="6"

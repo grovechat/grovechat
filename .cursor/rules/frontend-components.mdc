@@ -122,3 +122,18 @@ const props = defineProps<{
 
 ❌ **禁止直接显示后端时间** - 必须使用 `formatDateTime()`  
 ❌ **禁止自己实现 UI 组件** - 优先使用 Reka UI 组件库
+
+# Props / defineProps 规范（尽量少拆包）
+
+页面与组件在 `<script setup>` 中接收 Props 时，**优先直接使用 `props.xxx`**，尽量避免为了少打字而创建额外别名或 `computed` 包装（例如 `const userForm = computed(() => props.user_form)`）。
+
+## 推荐写法
+
+- ✅ **直接使用 `props`**：模板与逻辑中都用 `props.xxx` 访问。
+- ✅ **仅对“派生状态”使用 computed**：比如拼接展示字段、过滤列表、分页计算等。
+- ✅ **需要可变状态时用本地 ref**：当 UI 需要 `v-model` 或用户交互会改变值时，用本地 `ref`，并通过 `<input type="hidden" />` 参与表单提交。
+
+## 反模式（避免）
+
+- ❌ **无意义别名/拆包**：仅为了简写 `props.xxx` 而引入 `const xxx = computed(() => props.xxx)` 或解构出一堆变量。
+- ❌ **直接修改 props**：`v-model="props.xxx"` 或对 `props` 赋值（props 在 Vue 中是只读的）。
