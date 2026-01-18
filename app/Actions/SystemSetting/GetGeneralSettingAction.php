@@ -2,7 +2,7 @@
 
 namespace App\Actions\SystemSetting;
 
-use App\Data\GeneralSettingsData;
+use App\Data\GeneralSetting\GeneralSettingsData;
 use App\Settings\GeneralSettings;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;

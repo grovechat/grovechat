@@ -83,8 +83,8 @@ Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->grou
     Route::redirect('/', '/admin/general')->name('admin.home');
 
     // 基础设置
-    Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
-    Route::put('general', UpdateGeneralSettingAction::class)->name('update-general-setting');
+    Route::get('general', GetGeneralSettingAction::class)->name('admin.get-general-setting');
+    Route::put('general', UpdateGeneralSettingAction::class)->name('admin.update-general-setting');
 
     // 工作区管理
     Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');

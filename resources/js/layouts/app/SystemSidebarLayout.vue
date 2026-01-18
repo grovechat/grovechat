@@ -4,13 +4,12 @@ import SidebarShell, {
   type SidebarShellNavItem,
 } from '@/layouts/app/SidebarShell.vue';
 import {
-  getGeneralSetting,
   getStorageSetting,
   getWorkspaceList,
 } from '@/routes';
 import logout from '@/routes/logout';
 import { edit as editProfile } from '@/routes/profile';
-import admin from '@/routes/admin';
+import admin, { getGeneralSetting } from '@/routes/admin';
 import type { BreadcrumbItemType, NavItem } from '@/types';
 import {
   BookOpen,

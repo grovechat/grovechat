@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\Workspace;
 
 use App\Models\User;
 use Spatie\LaravelData\Data;

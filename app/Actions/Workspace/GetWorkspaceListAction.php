@@ -2,8 +2,8 @@
 
 namespace App\Actions\Workspace;
 
-use App\Data\WorkspaceListItemData;
-use App\Data\WorkspaceListPagePropsData;
+use App\Data\Workspace\WorkspaceListItemData;
+use App\Data\Workspace\WorkspaceListPagePropsData;
 use App\Models\Workspace;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;

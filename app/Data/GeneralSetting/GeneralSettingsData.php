@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\GeneralSetting;
 
 use App\Models\Attachment;
 use Spatie\LaravelData\Data;

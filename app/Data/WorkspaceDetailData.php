@@ -2,6 +2,7 @@
 
 namespace App\Data;
 
+use App\Data\Workspace\WorkspaceOwnerData;
 use App\Models\Workspace;
 use Spatie\LaravelData\Data;
 

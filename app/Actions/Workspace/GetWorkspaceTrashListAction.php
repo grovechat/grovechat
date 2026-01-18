@@ -2,8 +2,8 @@
 
 namespace App\Actions\Workspace;
 
-use App\Data\WorkspaceTrashListItemData;
-use App\Data\WorkspaceTrashPagePropsData;
+use App\Data\Workspace\WorkspaceTrashListItemData;
+use App\Data\Workspace\WorkspaceTrashPagePropsData;
 use App\Models\Workspace;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
