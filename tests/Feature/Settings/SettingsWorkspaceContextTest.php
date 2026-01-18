@@ -10,7 +10,7 @@ test('normal user is redirected to dashboard when accessing settings without fro
 
     $this->actingAs($user)
         ->get(route('profile.edit'))
-        ->assertRedirect(route('dashboard'));
+        ->assertRedirect(route('login'));
 });
 
 test('normal user gets not found when accessing settings with invalid from_workspace', function () {

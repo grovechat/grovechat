@@ -2,8 +2,8 @@
 
 namespace App\Actions\Workspace;
 
-use App\Data\Workspace\WorkspaceListItemData;
-use App\Data\Workspace\WorkspaceListPagePropsData;
+use App\Data\Workspace\ListWorkspaceItemData;
+use App\Data\Workspace\ShowWorkspaceListPagePropsData;
 use App\Models\Workspace;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -12,7 +12,7 @@ class GetWorkspaceListAction
 {
     use AsAction;
 
-    public function handle()
+    public function handle(): ShowWorkspaceListPagePropsData
     {
         $workspaces = Workspace::query()
             ->with([
@@ -23,10 +23,10 @@ class GetWorkspaceListAction
             ])
             ->orderByDesc('created_at')
             ->get()
-            ->map(fn (Workspace $w) => WorkspaceListItemData::fromModel($w))
+            ->map(fn (Workspace $w) => ListWorkspaceItemData::fromModel($w))
             ->all();
 
-        return new WorkspaceListPagePropsData(
+        return new ShowWorkspaceListPagePropsData(
             workspace_list: $workspaces,
         );
     }

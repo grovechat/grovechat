@@ -5,7 +5,7 @@ namespace App\Data\User;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Data;
 
-class SystemUserUpdateData extends Data
+class UpdateUserData extends Data
 {
     public function __construct(
         public string $name,

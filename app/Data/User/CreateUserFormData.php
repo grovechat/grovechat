@@ -4,7 +4,7 @@ namespace App\Data\User;
 
 use Spatie\LaravelData\Data;
 
-class SystemUserCreateFormData extends Data
+class CreateUserFormData extends Data
 {
     public function __construct(
         public string $name = '',

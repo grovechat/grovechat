@@ -28,7 +28,7 @@ test('authenticated user can create storage profile when connection check passes
         });
 
     $this->actingAs($this->user, 'admin')
-        ->post(route('storage-profile.create'), [
+        ->post(route('admin.storage-profile.create'), [
             'name' => 'tencent-prod',
             'provider' => 'tencent',
             'region' => 'ap-guangzhou',
@@ -64,7 +64,7 @@ test('create storage profile fails with field error when connection check fails'
         });
 
     $this->actingAs($this->user, 'admin')
-        ->post(route('storage-profile.create'), [
+        ->post(route('admin.storage-profile.create'), [
             'name' => 'tencent-prod',
             'provider' => 'tencent',
             'region' => 'ap-guangzhou',
@@ -92,7 +92,7 @@ test('authenticated user can update profile name/url without changing credential
     Storage::shouldReceive('build')->never();
 
     $this->actingAs($this->user, 'admin')
-        ->put(route('storage-profile.update', ['profile' => $profile->id]), [
+        ->put(route('admin.storage-profile.update', ['profile' => $profile->id]), [
             'name' => 'p1-new',
             'url' => 'https://cdn.example.com',
             'key' => '',
@@ -122,7 +122,7 @@ test('updating credentials requires both key and secret', function () {
     Storage::shouldReceive('build')->never();
 
     $this->actingAs($this->user, 'admin')
-        ->put(route('storage-profile.update', ['profile' => $profile->id]), [
+        ->put(route('admin.storage-profile.update', ['profile' => $profile->id]), [
             'name' => 'p1',
             'url' => '',
             'key' => 'new-key',
@@ -153,7 +153,7 @@ test('authenticated user can update credentials when connection check passes', f
         });
 
     $this->actingAs($this->user, 'admin')
-        ->put(route('storage-profile.update', ['profile' => $profile->id]), [
+        ->put(route('admin.storage-profile.update', ['profile' => $profile->id]), [
             'name' => 'p1',
             'url' => '',
             'key' => 'new-key',
@@ -189,7 +189,7 @@ test('authenticated user can check storage profile connection', function () {
         });
 
     $this->actingAs($this->user, 'admin')
-        ->put(route('storage-profile.check', ['profile' => $profile->id]))
+        ->put(route('admin.storage-profile.check', ['profile' => $profile->id]))
         ->assertRedirect();
 });
 
@@ -211,7 +211,7 @@ test('cannot delete currently selected profile', function () {
     $settings->save();
 
     $this->actingAs($this->user, 'admin')
-        ->delete(route('storage-profile.delete', ['profile' => $profile->id]))
+        ->delete(route('admin.storage-profile.delete', ['profile' => $profile->id]))
         ->assertSessionHasErrors('profile');
 });
 
@@ -242,6 +242,6 @@ test('cannot delete profile that is referenced by attachments', function () {
     ]);
 
     $this->actingAs($this->user, 'admin')
-        ->delete(route('storage-profile.delete', ['profile' => $profile->id]))
+        ->delete(route('admin.storage-profile.delete', ['profile' => $profile->id]))
         ->assertSessionHasErrors('profile');
 });

@@ -2,8 +2,7 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\User\SystemUserEditFormData;
-use App\Data\User\SystemUserEditPagePropsData;
+use App\Data\User\EditUserFormData;
 use App\Models\User;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -12,15 +11,13 @@ class ShowEditUserPageAction
 {
     use AsAction;
 
-    public function handle(string $id): SystemUserEditPagePropsData
+    public function handle(string $id): EditUserFormData
     {
         $user = User::query()
             ->where('is_super_admin', false)
             ->findOrFail($id);
 
-        return new SystemUserEditPagePropsData(
-            user_form: SystemUserEditFormData::fromModel($user),
-        );
+        return EditUserFormData::fromModel($user);
     }
 
     public function asController(string $id)

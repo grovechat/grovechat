@@ -22,7 +22,10 @@ import {
   showWorkspaceDetail,
 } from '@/routes/admin';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
-import type { WorkspaceListItemData } from '@/types/generated';
+import type {
+  ListWorkspaceItemData,
+  ShowWorkspaceListPagePropsData,
+} from '@/types/generated';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -30,11 +33,9 @@ const { t } = useI18n();
 const { formatDateTime } = useDateTime();
 const deleteForm = useForm({});
 const page = usePage<AppPageProps>();
-const props = defineProps<{
-  workspace_list: WorkspaceListItemData[];
-}>();
+const props = defineProps<ShowWorkspaceListPagePropsData>();
 
-const cannotDelete = (ws: WorkspaceListItemData) =>
+const cannotDelete = (ws: ListWorkspaceItemData) =>
   !!ws.owner?.id && String(ws.owner.id) === page.props.auth.user.id;
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {

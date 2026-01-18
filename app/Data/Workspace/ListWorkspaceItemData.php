@@ -5,7 +5,7 @@ namespace App\Data\Workspace;
 use App\Models\Workspace;
 use Spatie\LaravelData\Data;
 
-class WorkspaceListItemData extends Data
+class ListWorkspaceItemData extends Data
 {
     public function __construct(
         public string $id,
@@ -28,4 +28,3 @@ class WorkspaceListItemData extends Data
         );
     }
 }
-

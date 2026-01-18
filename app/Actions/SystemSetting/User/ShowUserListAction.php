@@ -3,8 +3,8 @@
 namespace App\Actions\SystemSetting\User;
 
 use App\Data\SimplePaginationData;
-use App\Data\User\SystemUserListItemData;
-use App\Data\User\SystemUserListPagePropsData;
+use App\Data\User\ListUserItemData;
+use App\Data\User\ShowUserListPagePropsData;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,7 +14,7 @@ class ShowUserListAction
 {
     use AsAction;
 
-    public function handle(int $page = 1, int $perPage = 10): SystemUserListPagePropsData
+    public function handle(int $page = 1, int $perPage = 10): ShowUserListPagePropsData
     {
         $perPage = max(1, min($perPage, 50));
         $page = max(1, $page);
@@ -25,10 +25,10 @@ class ShowUserListAction
             ->paginate($perPage, ['id', 'name', 'email', 'avatar', 'two_factor_confirmed_at'], 'page', $page);
 
         $users = $paginator->getCollection()
-            ->map(fn (User $user) => SystemUserListItemData::fromModel($user))
+            ->map(fn (User $user) => ListUserItemData::fromModel($user))
             ->all();
 
-        return new SystemUserListPagePropsData(
+        return new ShowUserListPagePropsData(
             user_list: $users,
             user_list_pagination: new SimplePaginationData(
                 current_page: $paginator->currentPage(),

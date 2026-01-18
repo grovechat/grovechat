@@ -4,11 +4,10 @@ namespace App\Data\Workspace;
 
 use Spatie\LaravelData\Data;
 
-class WorkspaceListPagePropsData extends Data
+class ShowWorkspaceListPagePropsData extends Data
 {
     public function __construct(
-        /** @var \App\Data\Workspace\WorkspaceListItemData[] */
+        /** @var \App\Data\Workspace\ListWorkspaceItemData[] */
         public array $workspace_list,
     ) {}
 }
-

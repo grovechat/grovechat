@@ -2,8 +2,7 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\User\SystemUserCreateFormData;
-use App\Data\User\SystemUserCreatePagePropsData;
+use App\Data\User\CreateUserFormData;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -11,11 +10,9 @@ class ShowCreateUserPageAction
 {
     use AsAction;
 
-    public function handle(): SystemUserCreatePagePropsData
+    public function handle(): CreateUserFormData
     {
-        return new SystemUserCreatePagePropsData(
-            user_form: new SystemUserCreateFormData,
-        );
+        return new CreateUserFormData;
     }
 
     public function asController()

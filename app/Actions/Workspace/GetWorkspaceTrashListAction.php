@@ -2,8 +2,8 @@
 
 namespace App\Actions\Workspace;
 
-use App\Data\Workspace\WorkspaceTrashListItemData;
-use App\Data\Workspace\WorkspaceTrashPagePropsData;
+use App\Data\Workspace\ShowWorkspaceTrashPagePropsData;
+use App\Data\Workspace\TrashWorkspaceItemData;
 use App\Models\Workspace;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -12,7 +12,7 @@ class GetWorkspaceTrashListAction
 {
     use AsAction;
 
-    public function handle(): WorkspaceTrashPagePropsData
+    public function handle(): ShowWorkspaceTrashPagePropsData
     {
         $workspaces = Workspace::onlyTrashed()
             ->with([
@@ -23,10 +23,10 @@ class GetWorkspaceTrashListAction
             ])
             ->orderByDesc('deleted_at')
             ->get()
-            ->map(fn (Workspace $w) => WorkspaceTrashListItemData::fromModel($w))
+            ->map(fn (Workspace $w) => TrashWorkspaceItemData::fromModel($w))
             ->all();
 
-        return new WorkspaceTrashPagePropsData(
+        return new ShowWorkspaceTrashPagePropsData(
             workspace_trash_list: $workspaces,
         );
     }

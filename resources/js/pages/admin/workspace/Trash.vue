@@ -20,13 +20,13 @@ import {
   restoreWorkspace,
 } from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
-import type { WorkspaceTrashPagePropsData } from '@/types/generated';
+import type { ShowWorkspaceTrashPagePropsData } from '@/types/generated';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const props = defineProps<WorkspaceTrashPagePropsData>();
+const props = defineProps<ShowWorkspaceTrashPagePropsData>();
 const restoreForm = useForm({});
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [

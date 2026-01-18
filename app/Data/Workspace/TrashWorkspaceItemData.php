@@ -5,7 +5,7 @@ namespace App\Data\Workspace;
 use App\Models\Workspace;
 use Spatie\LaravelData\Data;
 
-class WorkspaceTrashListItemData extends Data
+class TrashWorkspaceItemData extends Data
 {
     public function __construct(
         public string $id,

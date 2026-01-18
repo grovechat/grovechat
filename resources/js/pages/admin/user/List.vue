@@ -7,12 +7,12 @@ import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
-import type { SystemUserListPagePropsData } from '@/types/generated';
+import type { ShowUserListPagePropsData } from '@/types/generated';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const props = defineProps<SystemUserListPagePropsData>();
+const props = defineProps<ShowUserListPagePropsData>();
 
 const prevPage = computed(() =>
   Math.max(1, props.user_list_pagination.current_page - 1),

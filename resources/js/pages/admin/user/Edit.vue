@@ -10,13 +10,13 @@ import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
-import type { SystemUserEditPagePropsData } from '@/types/generated';
+import type { EditUserFormData } from '@/types/generated';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const props = defineProps<SystemUserEditPagePropsData>();
+const props = defineProps<EditUserFormData>();
 
 const passwordVisible = ref(false);
 const passwordConfirmationVisible = ref(false);
@@ -25,7 +25,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   { title: t('用户管理'), href: admin.getUserList.url() },
   {
     title: t('编辑用户'),
-    href: admin.showEditUserPage.url(props.user_form.id),
+    href: admin.showEditUserPage.url(props.id),
   },
 ]);
 
@@ -41,7 +41,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           <HeadingSmall :title="t('编辑用户')"/>
 
           <Form
-            v-bind="admin.updateUser.form(props.user_form.id)"
+            v-bind="admin.updateUser.form(props.id)"
             class="space-y-6"
             v-slot="{ errors, processing, recentlySuccessful }"
           >
@@ -52,7 +52,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 name="name"
                 class="mt-1 block w-full"
                 required
-                :default-value="props.user_form.name || ''"
+                :default-value="props.name || ''"
                 :placeholder="t('请输入名称')"
               />
               <InputError class="mt-2" :message="errors.name" />
@@ -66,7 +66,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 type="email"
                 class="mt-1 block w-full"
                 required
-                :default-value="props.user_form.email || ''"
+                :default-value="props.email || ''"
                 :placeholder="t('请输入邮箱')"
               />
               <InputError class="mt-2" :message="errors.email" />
@@ -78,8 +78,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               :upload-url="UploadImageAction.url()"
               response-key="full_url"
               folder="avatars"
-              :initial-preview="props.user_form.avatar || ''"
-              :initial-value="props.user_form.avatar || ''"
+              :initial-preview="props.avatar || ''"
+              :initial-value="props.avatar || ''"
               variant="avatar"
               :error="errors.avatar"
             />
