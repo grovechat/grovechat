@@ -13,6 +13,16 @@ beforeEach(function () {
     $this->user = $this->createUserWithWorkspace([], [
         'name' => 'Test Workspace',
     ]);
+
+    $this->teammateUpdatePayload = fn (User $target, string $role, array $overrides = []) => array_merge([
+        'name' => $target->name,
+        'nickname' => null,
+        'avatar' => null,
+        'role' => $role,
+        'email' => $target->email,
+        'password' => '',
+        'password_confirmation' => '',
+    ], $overrides);
 });
 
 test('authenticated user can view user list page', function () {
@@ -146,51 +156,31 @@ test('can update a user without changing password', function () {
     expect($member->password)->toBe($oldHash);
 });
 
-test('admin cannot update own email', function () {
-    $admin = User::factory()->create([
-        'name' => '管理员A',
-        'email' => 'admin-a@example.com',
-    ]);
-    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+test('owner and admin cannot update own email', function (string $role) {
+    $actor = match ($role) {
+        'owner' => $this->user,
+        'admin' => User::factory()->create([
+            'name' => '管理员A',
+            'email' => 'admin-a@example.com',
+        ]),
+        default => throw new InvalidArgumentException('Unsupported role.'),
+    };
 
-    $this->actingAs($admin)
-        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $admin->id]), [
-            'name' => $admin->name,
-            'nickname' => null,
-            'avatar' => null,
-            'role' => 'admin',
-            'email' => 'admin-a-new@example.com',
-            'password' => '',
-            'password_confirmation' => '',
-        ])
+    if ($role !== 'owner') {
+        $this->workspace->users()->attach($actor->id, ['role' => $role]);
+    }
+
+    $originalEmail = $actor->email;
+
+    $this->actingAs($actor)
+        ->put(
+            route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $actor->id]),
+            ($this->teammateUpdatePayload)($actor, $role, ['email' => fake()->unique()->safeEmail()])
+        )
         ->assertForbidden();
 
-    $admin->refresh();
-    expect($admin->email)->toBe('admin-a@example.com');
-});
-
-test('operator cannot update own email', function () {
-    $operator = User::factory()->create([
-        'name' => '客服O',
-        'email' => 'operator-o@example.com',
-    ]);
-    $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
-
-    $this->actingAs($operator)
-        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
-            'name' => $operator->name,
-            'nickname' => null,
-            'avatar' => null,
-            'role' => 'operator',
-            'email' => 'operator-o-new@example.com',
-            'password' => '',
-            'password_confirmation' => '',
-        ])
-        ->assertForbidden();
-
-    $operator->refresh();
-    expect($operator->email)->toBe('operator-o@example.com');
-});
+    expect($actor->refresh()->email)->toBe($originalEmail);
+})->with(['owner', 'admin']);
 
 test('owner can update another user email', function () {
     $member = User::factory()->create([
@@ -201,9 +191,9 @@ test('owner can update another user email', function () {
 
     $this->actingAs($this->user)
         ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
-            'name' => $member->name,
-            'nickname' => null,
-            'avatar' => null,
+            'name' => '客服E1-新',
+            'nickname' => '新昵称',
+            'avatar' => 'https://example.com/e1.png',
             'role' => 'operator',
             'email' => 'e1-new@example.com',
             'password' => '',
@@ -213,6 +203,9 @@ test('owner can update another user email', function () {
 
     $member->refresh();
     expect($member->email)->toBe('e1-new@example.com');
+    expect($member->name)->toBe('客服E1-新');
+    expect($member->nickname)->toBe('新昵称');
+    expect($member->avatar)->toBe('https://example.com/e1.png');
 });
 
 test('admin can update other operator profile fields but cannot update email', function () {
@@ -258,30 +251,7 @@ test('admin can update other operator profile fields but cannot update email', f
         ->assertForbidden();
 });
 
-test('owner can update other operator profile fields', function () {
-    $operator = User::factory()->create([
-        'name' => '客服X',
-        'email' => 'x@example.com',
-    ]);
-    $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
-
-    $this->actingAs($this->user)
-        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]), [
-            'name' => '客服X-新',
-            'nickname' => '新昵称',
-            'avatar' => 'https://example.com/c.png',
-            'role' => 'operator',
-            'email' => $operator->email,
-            'password' => '',
-            'password_confirmation' => '',
-        ])
-        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
-
-    $operator->refresh();
-    expect($operator->name)->toBe('客服X-新');
-});
-
-test('admin cannot update another admin email', function () {
+test('admin cannot update another admin', function () {
     $admin = User::factory()->create([
         'name' => '管理员1',
         'email' => 'admin1@example.com',
@@ -295,36 +265,18 @@ test('admin cannot update another admin email', function () {
     $this->workspace->users()->attach($admin2->id, ['role' => 'admin']);
 
     $this->actingAs($admin)
-        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]), [
-            'name' => $admin2->name,
-            'nickname' => null,
-            'avatar' => null,
-            'role' => 'admin',
-            'email' => 'admin2-new@example.com',
-            'password' => '',
-            'password_confirmation' => '',
-        ])
+        ->put(
+            route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]),
+            ($this->teammateUpdatePayload)($admin2, 'admin', [
+                'name' => '管理员2-新',
+                'nickname' => '新昵称',
+                'avatar' => 'https://example.com/a.png',
+                'email' => fake()->unique()->safeEmail(),
+                'password' => 'newpass1234',
+                'password_confirmation' => 'newpass1234',
+            ])
+        )
         ->assertForbidden();
-
-    $admin2->refresh();
-    expect($admin2->email)->toBe('admin2@example.com');
-});
-
-test('owner cannot update own email', function () {
-    $this->actingAs($this->user)
-        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
-            'name' => $this->user->name,
-            'nickname' => null,
-            'avatar' => null,
-            'role' => 'owner',
-            'email' => 'owner-new@example.com',
-            'password' => '',
-            'password_confirmation' => '',
-        ])
-        ->assertForbidden();
-
-    $this->user->refresh();
-    expect($this->user->email)->not->toBe('owner-new@example.com');
 });
 
 test('operator cannot update any users via manage center', function () {
@@ -475,32 +427,6 @@ test('admin cannot change operator role', function () {
     expect($role)->toBe('operator');
 });
 
-test('admin cannot update another admin profile fields', function () {
-    $admin = User::factory()->create([
-        'name' => '管理员A',
-        'email' => 'admin-a@example.com',
-    ]);
-    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
-
-    $admin2 = User::factory()->create([
-        'name' => '管理员B',
-        'email' => 'admin-b2@example.com',
-    ]);
-    $this->workspace->users()->attach($admin2->id, ['role' => 'admin']);
-
-    $this->actingAs($admin)
-        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]), [
-            'name' => '管理员B-新',
-            'nickname' => '新昵称',
-            'avatar' => 'https://example.com/a.png',
-            'role' => 'admin',
-            'email' => $admin2->email,
-            'password' => '',
-            'password_confirmation' => '',
-        ])
-        ->assertForbidden();
-});
-
 test('admin cannot change another user password', function () {
     $admin = User::factory()->create([
         'name' => '管理员Y',
@@ -551,20 +477,6 @@ test('can update user online status from list', function () {
     expect($member->online_status)->toBe(UserOnlineStatus::ONLINE);
 });
 
-test('can soft delete a user in current workspace', function () {
-    $member = User::factory()->create([
-        'name' => '客服F',
-        'email' => 'f@example.com',
-    ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
-
-    $this->actingAs($this->user)
-        ->delete(route('delete-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
-        ->assertRedirect();
-
-    $this->assertSoftDeleted('users', ['id' => $member->id]);
-});
-
 test('cannot delete current logged in user', function () {
     $this->actingAs($this->user)
         ->delete(route('delete-teammate', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]))
@@ -581,6 +493,8 @@ test('trash page shows deleted users and can restore', function () {
     $this->actingAs($this->user)
         ->delete(route('delete-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
         ->assertRedirect();
+
+    $this->assertSoftDeleted('users', ['id' => $member->id]);
 
     $this->actingAs($this->user)
         ->get(route('show-teammate-trash-page', ['slug' => $this->workspaceSlug()]))

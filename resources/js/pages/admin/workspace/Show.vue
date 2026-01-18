@@ -114,7 +114,7 @@ const nextPage = computed(() =>
                     <td class="px-4 py-3 text-muted-foreground">
                       {{ m.email }}
                     </td>
-                    <td class="px-4 py-3">{{ m.role || '-' }}</td>
+                    <td class="px-4 py-3">{{ m.role?.label || '-' }}</td>
                     <td class="px-4 py-3 text-muted-foreground">
                       {{ m.joined_at ? formatDateTime(m.joined_at) : '-' }}
                     </td>
