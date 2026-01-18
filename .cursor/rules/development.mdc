@@ -19,7 +19,7 @@ npm run dev
 
 1. **定义 Data 类**（`app/Data/<Domain>/`，通用 Data 例外）
    ```bash
-   php artisan make:data CurrentWorkspace/CreateWorkspaceDTO
+   php artisan make:data CurrentWorkspace/FormCreateWorkspaceData
    ```
 
 2. **创建 Action**（`app/Actions/<Domain>/`）
@@ -52,7 +52,7 @@ Action 模式天然适合测试。
 public function test_can_update_workspace()
 {
     $workspace = Workspace::factory()->create();
-    $data = UpdateWorkspaceData::from(['name' => 'New Name']);
+    $data = FormUpdateWorkspaceData::from(['name' => 'New Name']);
     
     // 直接测试 handle 方法（通过 run 调用）
     UpdateWorkspaceAction::run($workspace, $data);

@@ -28,7 +28,7 @@ const { t } = useI18n();
 const props = defineProps<ShowCreateTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
 
-const roleValue = ref<WorkspaceRole>(props.user_form.role || 'operator');
+const roleValue = ref<WorkspaceRole>('operator');
 const passwordVisible = ref(false);
 const passwordConfirmationVisible = ref(false);
 
@@ -84,7 +84,6 @@ watch(
               name="name"
               class="mt-1 block w-full"
               required
-              :default-value="props.user_form.name || ''"
               :placeholder="t('请输入客服名称')"
             />
             <InputError class="mt-2" :message="errors.name" />
@@ -96,7 +95,6 @@ watch(
               id="nickname"
               name="nickname"
               class="mt-1 block w-full"
-              :default-value="props.user_form.nickname || ''"
               :placeholder="t('请输入对外昵称')"
             />
             <InputError class="mt-2" :message="errors.nickname" />
@@ -108,8 +106,8 @@ watch(
             :upload-url="UploadImageAction.url()"
             response-key="full_url"
             folder="avatars"
-            :initial-preview="props.user_form.avatar || ''"
-            :initial-value="props.user_form.avatar || ''"
+            :initial-preview="''"
+            :initial-value="''"
             variant="avatar"
             :error="errors.avatar"
           />
@@ -142,7 +140,6 @@ watch(
               type="email"
               class="mt-1 block w-full"
               required
-              :default-value="props.user_form.email || ''"
               :placeholder="t('请输入邮箱')"
             />
             <InputError class="mt-2" :message="errors.email" />

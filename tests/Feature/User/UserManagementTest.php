@@ -60,7 +60,6 @@ test('authenticated user can view create user page with role options', function 
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('teammate/Create')
-            ->has('user_form')
             ->has('role_options', 2)
             ->where('role_options.0.value', 'admin')
             ->where('role_options.1.value', 'operator')

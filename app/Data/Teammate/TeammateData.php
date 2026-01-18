@@ -7,7 +7,7 @@ use App\Enums\WorkspaceRole;
 use App\Models\User;
 use Spatie\LaravelData\Data;
 
-class EditTeammateFormData extends Data
+class TeammateData extends Data
 {
     public function __construct(
         public string $id,

@@ -21,7 +21,7 @@ import storageProfile from '@/routes/admin/storage-profile';
 import { type BreadcrumbItem } from '@/types';
 import type {
   StorageProfileData,
-  GetStorageSettingPagePropsData,
+  ShowGetStorageSettingPagePropsData,
   FormCreateStorageProfileData,
   FormCheckStorageSettingData,
   FormUpdateStorageProfileData,
@@ -30,7 +30,7 @@ import type {
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 
-const props = defineProps<GetStorageSettingPagePropsData>();
+const props = defineProps<ShowGetStorageSettingPagePropsData>();
 const { t } = useI18n();
 
 const nullToEmpty = (value: string | null | undefined): string => value ?? '';

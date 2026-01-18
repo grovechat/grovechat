@@ -4,7 +4,7 @@ namespace App\Data\Teammate;
 
 use Spatie\LaravelData\Data;
 
-class TrashTeammatePagePropsData extends Data
+class ShowTrashTeammatePagePropsData extends Data
 {
     public function __construct(
         /** @var \App\Data\Teammate\TrashTeammateItemData[] */

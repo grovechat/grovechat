@@ -7,7 +7,7 @@ use Spatie\LaravelData\Data;
 class EditTeammatePagePropsData extends Data
 {
     public function __construct(
-        public EditTeammateFormData $user_form,
+        public TeammateData $user_form,
         /** @var \App\Data\EnumOptionData[] */
         public array $role_options,
         public bool $can_update_profile,
