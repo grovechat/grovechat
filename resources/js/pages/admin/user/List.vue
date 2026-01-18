@@ -57,7 +57,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     <th class="px-4 py-3">{{ t('头像') }}</th>
                     <th class="px-4 py-3">{{ t('名称') }}</th>
                     <th class="px-4 py-3">{{ t('邮箱') }}</th>
-                    <th class="px-4 py-3">{{ t('两步认证') }}</th>
+                    <th class="px-4 py-3">{{ t('两步验证') }}</th>
                     <th class="px-4 py-3 text-right">{{ t('操作') }}</th>
                   </tr>
                 </thead>
@@ -86,7 +86,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                         {{ t('已启用') }}
                       </Badge>
                       <Badge v-else variant="destructive">
-                        {{ t('未启用') }}
+                        {{ t('已禁用') }}
                       </Badge>
                     </td>
                     <td class="px-4 py-3 text-right">

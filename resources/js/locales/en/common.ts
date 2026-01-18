@@ -37,4 +37,7 @@ export default {
   确认删除: 'Confirm Delete',
   恢复: 'Restore',
   '恢复中...': 'Restoring...',
+
+  // 字段/占位
+  请输入名称: 'Please enter name',
 } as const;

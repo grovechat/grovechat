@@ -145,7 +145,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 leave-to-class="opacity-0"
               >
                 <p v-show="recentlySuccessful" class="text-sm text-neutral-600">
-                  {{ t('保存成功。') }}
+                  {{ t('已保存。') }}
                 </p>
               </Transition>
             </div>
