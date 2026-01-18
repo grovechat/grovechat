@@ -9,14 +9,18 @@ use Spatie\LaravelData\Data;
 class FormUpdateTeammateData extends Data
 {
     public function __construct(
+        public ?string $nickname,
         public WorkspaceRole $role,
     ) {}
 
     public static function rules(): array
     {
-        $roles = array_map(static fn (WorkspaceRole $r) => $r->value, WorkspaceRole::assignableCases());
+        // 更新时允许传入 owner（例如 owner 编辑自己时 role 会作为隐藏字段提交），
+        // 具体是否允许变更由 Gate('workspace-users.updateRole') 决定。
+        $roles = array_map(static fn (WorkspaceRole $r) => $r->value, WorkspaceRole::cases());
 
         return [
+            'nickname' => ['nullable', 'string', 'max:50'],
             'role' => ['required', Rule::in($roles)],
         ];
     }

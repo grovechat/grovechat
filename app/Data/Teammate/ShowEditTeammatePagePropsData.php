@@ -10,6 +10,7 @@ class ShowEditTeammatePagePropsData extends Data
         public TeammateData $user_form,
         /** @var \App\Data\EnumOptionData[] */
         public array $role_options,
+        public bool $can_update_nickname,
         public bool $can_update_role,
     ) {}
 }

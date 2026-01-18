@@ -27,7 +27,7 @@ class TeammateData extends Data
         return new self(
             id: (string) $user->id,
             name: $user->name,
-            nickname: filled($user->nickname) ? $user->nickname : null,
+            nickname: filled($user->pivot?->nickname) ? (string) $user->pivot->nickname : null,
             avatar: filled($user->avatar) ? $user->avatar : null,
             email: $user->email,
             role: $role,

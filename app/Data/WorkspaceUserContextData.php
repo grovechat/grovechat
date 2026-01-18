@@ -25,7 +25,10 @@ class WorkspaceUserContextData extends Data
 
     public static function fromModels(Workspace $workspace, User $user): self
     {
-        $role = WorkspaceRole::tryFrom((string) $workspace->users()->whereKey($user->id)->value('user_workspace.role')) ?? null;
+        $roleValue = $user->pivot?->role ?? $workspace->users()->whereKey($user->id)->value('user_workspace.role');
+        $role = WorkspaceRole::tryFrom((string) $roleValue) ?? null;
+
+        $pivotNickname = $user->pivot?->nickname ?? $workspace->users()->whereKey($user->id)->value('user_workspace.nickname');
 
         return new self(
             workspace_id: (string) $workspace->id,
@@ -35,7 +38,7 @@ class WorkspaceUserContextData extends Data
             user_name: $user->name,
             user_email: $user->email,
             user_online_status: EnumOptionData::fromEnum($user->online_status),
-            user_nickname: filled($user->nickname) ? $user->nickname : null,
+            user_nickname: filled($pivotNickname) ? (string) $pivotNickname : null,
             user_avatar: filled($user->avatar) ? $user->avatar : null,
             role: EnumOptionData::fromEnum($role),
         );

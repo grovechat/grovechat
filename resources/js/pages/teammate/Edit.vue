@@ -83,6 +83,33 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           </div>
 
           <div class="grid gap-2">
+            <Label for="nickname">{{ t('对外昵称') }}</Label>
+            <template v-if="props.can_update_nickname">
+              <Input
+                id="nickname"
+                name="nickname"
+                class="mt-1 block w-full"
+                :default-value="props.user_form.nickname || ''"
+                :placeholder="t('请输入对外昵称')"
+              />
+            </template>
+            <template v-else>
+              <input
+                type="hidden"
+                name="nickname"
+                :value="props.user_form.nickname || ''"
+              />
+              <Input
+                id="nickname"
+                class="mt-1 block w-full"
+                disabled
+                :default-value="props.user_form.nickname || ''"
+              />
+            </template>
+            <InputError class="mt-2" :message="errors.nickname" />
+          </div>
+
+          <div class="grid gap-2">
             <Label for="role">{{ t('身份') }}</Label>
             <template v-if="props.can_update_role">
               <input type="hidden" name="role" :value="roleValue" />

@@ -24,6 +24,7 @@ class ShowEditTeammatePageAction
         return new ShowEditTeammatePagePropsData(
             user_form: TeammateData::fromModel($user),
             role_options: EnumOptionData::fromCases(WorkspaceRole::assignableCases()),
+            can_update_nickname: Gate::allows('workspace-users.updateProfile', [$workspace, $user]),
             can_update_role: Gate::allows('workspace-users.canUpdateRole', [$workspace, $user]),
         );
     }

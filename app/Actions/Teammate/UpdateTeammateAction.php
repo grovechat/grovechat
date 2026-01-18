@@ -17,11 +17,19 @@ class UpdateTeammateAction
     {
         $targetUser = $workspace->users()->whereKey($userId)->firstOrFail();
 
+        $currentNickname = filled($targetUser->pivot?->nickname) ? (string) $targetUser->pivot->nickname : null;
+        $nextNickname = filled($data->nickname) ? $data->nickname : null;
+
+        if ($nextNickname !== $currentNickname) {
+            Gate::authorize('workspace-users.updateProfile', [$workspace, $targetUser]);
+        }
+
         if ($data->role->value !== (string) ($targetUser->pivot?->role ?? '')) {
             Gate::authorize('workspace-users.updateRole', [$workspace, $targetUser, $data->role]);
         }
 
         $targetUser->pivot->update([
+            'nickname' => $nextNickname,
             'role' => $data->role->value,
         ]);
     }

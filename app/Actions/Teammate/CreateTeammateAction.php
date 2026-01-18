@@ -34,6 +34,7 @@ class CreateTeammateAction
 
         $workspace->users()->attach($user->id, [
             'role' => $data->role->value,
+            'nickname' => filled($data->nickname) ? $data->nickname : null,
         ]);
 
         return $user;

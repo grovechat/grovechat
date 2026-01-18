@@ -87,14 +87,6 @@ class AppServiceProvider extends ServiceProvider
                 || $targetRole === WorkspaceRole::OPERATOR->value;
         });
 
-        Gate::define('workspace-users.updateEmail', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
-            $ctx = $actorContext($workspace, $actor);
-            $actorRole = $ctx->role->value;
-
-            return $actorRole === WorkspaceRole::OWNER->value
-                && (string) $actor->id !== (string) $target->id;
-        });
-
         Gate::define('workspace-users.canUpdateRole', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
             $actorRole = $ctx->role->value;
@@ -110,13 +102,6 @@ class AppServiceProvider extends ServiceProvider
             return $actorRole === WorkspaceRole::OWNER->value
                 && (string) $actor->id !== (string) $target->id
                 && in_array($newRole, WorkspaceRole::assignableCases(), true);
-        });
-
-        Gate::define('workspace-users.updatePassword', function (User $actor, Workspace $workspace) use ($actorContext): bool {
-            $ctx = $actorContext($workspace, $actor);
-            $actorRole = $ctx->role->value;
-
-            return $actorRole === WorkspaceRole::OWNER->value;
         });
     }
 }

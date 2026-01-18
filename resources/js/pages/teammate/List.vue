@@ -94,6 +94,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                 <tr class="text-left">
                   <th class="px-4 py-3">{{ t('头像') }}</th>
                   <th class="px-4 py-3">{{ t('名称') }}</th>
+                  <th class="px-4 py-3">{{ t('对外昵称') }}</th>
                   <th class="px-4 py-3">{{ t('邮箱') }}</th>
                   <th class="px-4 py-3">{{ t('身份') }}</th>
                   <th class="px-4 py-3">{{ t('在线状态') }}</th>
@@ -116,6 +117,9 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                   </td>
                   <td class="px-4 py-3 font-medium">
                     {{ u.user_name }}
+                  </td>
+                  <td class="px-4 py-3">
+                    {{ u.user_nickname || '-' }}
                   </td>
                   <td class="px-4 py-3">
                     {{ u.user_email }}
@@ -235,7 +239,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                 <tr v-if="props.user_list.length === 0">
                   <td
                     class="px-4 py-8 text-center text-muted-foreground"
-                    colspan="6"
+                    colspan="7"
                   >
                     {{ t('暂无客服') }}
                   </td>

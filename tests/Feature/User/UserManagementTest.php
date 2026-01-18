@@ -101,12 +101,14 @@ test('can add an existing user into current workspace', function () {
     $this->actingAs($this->user)
         ->post(route('create-teammate', ['slug' => $this->workspaceSlug()]), [
             'user_id' => $candidate->id,
+            'nickname' => '小B',
             'role' => 'operator',
         ])
         ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
     expect($this->workspace->users()->whereKey($candidate->id)->exists())->toBeTrue();
     expect($this->workspace->users()->whereKey($candidate->id)->firstOrFail()->pivot->role)->toBe('operator');
+    expect($this->workspace->users()->whereKey($candidate->id)->firstOrFail()->pivot->nickname)->toBe('小B');
 });
 
 test('cannot add a user with owner role', function () {
@@ -172,11 +174,13 @@ test('owner can update another user role', function () {
 
     $this->actingAs($this->user)
         ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+            'nickname' => '对外昵称D',
             'role' => 'admin',
         ])
         ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
     expect($this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->role)->toBe('admin');
+    expect($this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->nickname)->toBe('对外昵称D');
 });
 
 test('owner cannot set another user role to owner', function () {
@@ -190,7 +194,7 @@ test('owner cannot set another user role to owner', function () {
         ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'role' => 'owner',
         ])
-        ->assertSessionHasErrors(['role']);
+        ->assertForbidden();
 
     $role = $this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->role;
     expect($role)->toBe('operator');

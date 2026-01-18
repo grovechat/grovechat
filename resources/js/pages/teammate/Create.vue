@@ -2,6 +2,7 @@
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import InputError from '@/components/common/InputError.vue';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -113,6 +114,17 @@ watch(
               {{ t('暂无可添加的用户') }}
             </p>
             <InputError class="mt-2" :message="errors.user_id" />
+          </div>
+
+          <div class="grid gap-2">
+            <Label for="nickname">{{ t('对外昵称') }}</Label>
+            <Input
+              id="nickname"
+              name="nickname"
+              class="mt-1 block w-full"
+              :placeholder="t('请输入对外昵称')"
+            />
+            <InputError class="mt-2" :message="errors.nickname" />
           </div>
 
           <div class="grid gap-2">
