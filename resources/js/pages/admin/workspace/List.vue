@@ -21,21 +21,21 @@ import {
   loginAsWorkspaceOwner,
   showWorkspaceDetail,
 } from '@/routes/admin';
-import type { BreadcrumbItem } from '@/types';
+import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { WorkspaceListItemData } from '@/types/generated';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
 const deleteForm = useForm({});
+const page = usePage<AppPageProps>();
 const props = defineProps<{
   workspace_list: WorkspaceListItemData[];
-  auth: { user: { id: string } };
 }>();
 
 const cannotDelete = (ws: WorkspaceListItemData) =>
-  !!ws.owner?.id && String(ws.owner.id) === String(props.auth.user.id);
+  !!ws.owner?.id && String(ws.owner.id) === page.props.auth.user.id;
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('工作区管理'),
