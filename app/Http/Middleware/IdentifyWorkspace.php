@@ -40,7 +40,7 @@ class IdentifyWorkspace
         } else {
             $workspace = $workspaces->firstWhere('slug', $slug);
         }
-        if (! $workspace) {
+        if (empty($workspace)) {
             abort(404, '工作区不存在');
         }
         if (! $request->user()->workspaces()->where('workspaces.id', $workspace->id)->exists()) {
