@@ -2,10 +2,11 @@
 
 namespace App\Actions\Workspace;
 
-use App\Data\SimplePaginationData;
+use App\Data\CurrentWorkspace\ShowWorkspaceDetailPagePropsData;
 use App\Data\CurrentWorkspace\WorkspaceDetailData;
-use App\Data\CurrentWorkspace\WorkspaceDetailPagePropsData;
 use App\Data\CurrentWorkspace\WorkspaceMemberData;
+use App\Data\CurrentWorkspace\WorkspaceMembersData;
+use App\Data\SimplePaginationData;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class ShowWorkspaceDetailAction
 {
     use AsAction;
 
-    public function handle(string $id, int $page = 1, int $perPage = 10)
+    public function handle(string $id, int $page = 1, int $perPage = 10): ShowWorkspaceDetailPagePropsData
     {
         $perPage = max(1, min($perPage, 50));
         $page = max(1, $page);
@@ -24,9 +25,6 @@ class ShowWorkspaceDetailAction
         $workspace = Workspace::query()
             ->with([
                 'owner' => fn ($query) => $query->withTrashed()->select(['id', 'name', 'email']),
-            ])
-            ->withCount([
-                'users' => fn ($query) => $query->withTrashed(),
             ])
             ->findOrFail($id);
 
@@ -40,14 +38,16 @@ class ShowWorkspaceDetailAction
             ->map(fn (User $u) => WorkspaceMemberData::fromModel($u))
             ->all();
 
-        return new WorkspaceDetailPagePropsData(
-            workspace_detail: WorkspaceDetailData::fromModel($workspace),
-            workspace_members: $members,
-            workspace_members_pagination: new SimplePaginationData(
-                current_page: $paginator->currentPage(),
-                last_page: $paginator->lastPage(),
-                per_page: $paginator->perPage(),
-                total: $paginator->total(),
+        return new ShowWorkspaceDetailPagePropsData(
+            workspace: WorkspaceDetailData::fromModel($workspace, $paginator->total()),
+            members: new WorkspaceMembersData(
+                items: $members,
+                pagination: new SimplePaginationData(
+                    current_page: $paginator->currentPage(),
+                    last_page: $paginator->lastPage(),
+                    per_page: $paginator->perPage(),
+                    total: $paginator->total(),
+                ),
             ),
         );
     }

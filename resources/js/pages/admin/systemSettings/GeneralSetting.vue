@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
-import { getGeneralSetting, uploadImage } from '@/routes';
+import { uploadImage } from '@/routes';
+import admin from '@/routes/admin';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -20,7 +21,7 @@ const generalSettings = computed(() => page.props.generalSettings);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
-    href: getGeneralSetting.url(),
+    href: admin.getGeneralSetting.url(),
   },
 ]);
 </script>

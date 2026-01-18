@@ -17,16 +17,15 @@ class WorkspaceDetailData extends Data
         public ?WorkspaceOwnerData $owner,
     ) {}
 
-    public static function fromModel(Workspace $workspace): self
+    public static function fromModel(Workspace $workspace, ?int $membersCount = null): self
     {
         return new self(
             id: $workspace->id,
             name: $workspace->name,
             slug: $workspace->slug,
             created_at: $workspace->created_at?->toIso8601String() ?? '',
-            members_count: (int) ($workspace->users_count ?? 0),
+            members_count: $membersCount ?? (int) ($workspace->users_count ?? 0),
             owner: $workspace->owner ? WorkspaceOwnerData::fromModel($workspace->owner) : null,
         );
     }
 }
-

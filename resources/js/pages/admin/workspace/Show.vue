@@ -5,17 +5,14 @@ import { useDateTime } from '@/composables/useDateTime';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { getWorkspaceList, showWorkspaceDetail } from '@/routes/admin';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
-import type { WorkspaceDetailPagePropsData } from '@/types/generated';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import type { BreadcrumbItem } from '@/types';
+import type { ShowWorkspaceDetailPagePropsData } from '@/types/generated';
+import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const page = usePage<AppPageProps<WorkspaceDetailPagePropsData>>();
-const workspaceDetail = computed(() => page.props.workspace_detail);
-const members = computed(() => page.props.workspace_members);
-const pagination = computed(() => page.props.workspace_members_pagination);
+const props = defineProps<ShowWorkspaceDetailPagePropsData>();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
@@ -23,14 +20,19 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     href: getWorkspaceList.url(),
   },
   {
-    title: workspaceDetail.value?.name || t('详情'),
-    href: showWorkspaceDetail.url(workspaceDetail.value?.id || ''),
+    title: props.workspace?.name || t('详情'),
+    href: showWorkspaceDetail.url(props.workspace?.id || ''),
   },
 ]);
 
-const prevPage = computed(() => Math.max(1, pagination.value.current_page - 1));
+const prevPage = computed(() =>
+  Math.max(1, props.members.pagination.current_page - 1),
+);
 const nextPage = computed(() =>
-  Math.min(pagination.value.last_page, pagination.value.current_page + 1),
+  Math.min(
+    props.members.pagination.last_page,
+    props.members.pagination.current_page + 1,
+  ),
 );
 </script>
 
@@ -41,7 +43,7 @@ const nextPage = computed(() =>
       <div class="mx-auto w-full max-w-none space-y-12">
         <div class="space-y-6">
           <HeadingSmall
-            :title="workspaceDetail.name"
+            :title="props.workspace.name"
             :description="t('查看该工作区的成员列表')"
           />
 
@@ -50,11 +52,11 @@ const nextPage = computed(() =>
               <div class="flex items-baseline justify-between gap-3">
                 <div class="text-muted-foreground">{{ t('所有者') }}</div>
                 <div class="font-medium">
-                  {{ workspaceDetail.owner?.name || '-' }}
+                  {{ props.workspace.owner?.name || '-' }}
                   <span class="text-muted-foreground">
                     {{
-                      workspaceDetail.owner?.email
-                        ? `(${workspaceDetail.owner.email})`
+                      props.workspace.owner?.email
+                        ? `(${props.workspace.owner.email})`
                         : ''
                     }}
                   </span>
@@ -63,13 +65,13 @@ const nextPage = computed(() =>
               <div class="flex items-baseline justify-between gap-3">
                 <div class="text-muted-foreground">{{ t('创建时间') }}</div>
                 <div class="font-medium">
-                  {{ formatDateTime(workspaceDetail.created_at) }}
+                  {{ formatDateTime(props.workspace.created_at) }}
                 </div>
               </div>
               <div class="flex items-baseline justify-between gap-3">
                 <div class="text-muted-foreground">{{ t('成员数') }}</div>
                 <div class="font-medium">
-                  {{ workspaceDetail.members_count }}
+                  {{ props.workspace.members_count }}
                 </div>
               </div>
             </div>
@@ -96,7 +98,7 @@ const nextPage = computed(() =>
                 </thead>
                 <tbody>
                   <tr
-                    v-for="m in members"
+                    v-for="m in props.members.items"
                     :key="m.id"
                     class="border-b last:border-b-0"
                   >
@@ -118,7 +120,7 @@ const nextPage = computed(() =>
                     </td>
                   </tr>
 
-                  <tr v-if="members.length === 0">
+                  <tr v-if="props.members.items.length === 0">
                     <td
                       colspan="4"
                       class="px-4 py-8 text-center text-muted-foreground"
@@ -132,20 +134,20 @@ const nextPage = computed(() =>
 
             <div class="flex items-center justify-between gap-3 border-t p-4">
               <div class="text-sm text-muted-foreground">
-                {{ t('第') }} {{ pagination.current_page }} /
-                {{ pagination.last_page }} {{ t('页，共') }}
-                {{ pagination.total }} {{ t('人') }}
+                {{ t('第') }} {{ props.members.pagination.current_page }} /
+                {{ props.members.pagination.last_page }} {{ t('页，共') }}
+                {{ props.members.pagination.total }} {{ t('人') }}
               </div>
               <div class="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  :disabled="pagination.current_page <= 1"
+                  :disabled="props.members.pagination.current_page <= 1"
                   as-child
                 >
                   <Link
                     :href="
-                      showWorkspaceDetail.url(workspaceDetail.id, {
+                      showWorkspaceDetail.url(props.workspace.id, {
                         query: { page: prevPage },
                       })
                     "
@@ -156,12 +158,15 @@ const nextPage = computed(() =>
                 <Button
                   variant="outline"
                   size="sm"
-                  :disabled="pagination.current_page >= pagination.last_page"
+                  :disabled="
+                    props.members.pagination.current_page >=
+                    props.members.pagination.last_page
+                  "
                   as-child
                 >
                   <Link
                     :href="
-                      showWorkspaceDetail.url(workspaceDetail.id, {
+                      showWorkspaceDetail.url(props.workspace.id, {
                         query: { page: nextPage },
                       })
                     "

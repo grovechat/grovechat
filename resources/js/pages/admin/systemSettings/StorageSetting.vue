@@ -17,7 +17,7 @@ import {
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import SystemSettingsLayout from '@/layouts/SystemSettingsLayout.vue';
-import { getStorageSetting } from '@/routes';
+import admin from '@/routes/admin';
 import type { AppPageProps } from '@/types';
 import { type BreadcrumbItem } from '@/types';
 import type { StorageSettingPagePropsData } from '@/types/generated';
@@ -30,7 +30,7 @@ const { t } = useI18n();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('存储设置'),
-    href: getStorageSetting.url(),
+    href: admin.getStorageSetting.url(),
   },
 ]);
 
