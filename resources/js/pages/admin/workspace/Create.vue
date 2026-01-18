@@ -80,7 +80,7 @@ const fullAccessUrl = computed(() => {
             </div>
 
             <ImageUploadField
-              :label="t('Logo')"
+              :label="t('工作区Logo')"
               name="logo_id"
               :upload-url="UploadImageAction.url()"
               response-key="id"

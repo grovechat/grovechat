@@ -16,9 +16,9 @@ class UpdateWorkspaceAction
 {
     use AsAction;
 
-    public function handle(string $id, FormUpdateSystemWorkspaceData $data): Workspace
+    public function handle(string $id, FormUpdateSystemWorkspaceData $data)
     {
-        return DB::transaction(function () use ($id, $data) {
+        DB::transaction(function () use ($id, $data) {
             $workspace = Workspace::query()->findOrFail($id);
 
             $owner = User::query()
@@ -47,21 +47,19 @@ class UpdateWorkspaceAction
                     $workspace->users()->updateExistingPivot($oldOwnerId, ['role' => WorkspaceRole::ADMIN->value]);
                 }
             }
-
-            return $workspace;
         });
     }
 
     public function asController(Request $request, string $id): RedirectResponse
     {
         $data = FormUpdateSystemWorkspaceData::from($request);
-        $workspace = $this->handle($id, $data);
+        $this->handle($id, $data);
 
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('common.操作成功'),
         ]);
 
-        return redirect()->route('admin.show-workspace-detail', ['id' => $workspace->id]);
+        return redirect()->route('admin.get-workspace-list');
     }
 }

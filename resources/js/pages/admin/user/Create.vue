@@ -33,10 +33,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     <div class="px-4 py-6 sm:px-6">
       <div class="mx-auto w-full max-w-none space-y-12">
         <div class="space-y-6">
-          <HeadingSmall
-            :title="t('新增用户')"
-            :description="t('创建一个新的普通用户（非超级管理员）')"
-          />
+          <HeadingSmall :title="t('新增用户')"/>
 
           <Form
             v-bind="admin.createUser.form()"

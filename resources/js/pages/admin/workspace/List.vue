@@ -23,22 +23,18 @@ import {
   showEditWorkspacePage,
   showWorkspaceDetail,
 } from '@/routes/admin';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import type {
-  ListWorkspaceItemData,
   ShowWorkspaceListPagePropsData,
 } from '@/types/generated';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
 const deleteForm = useForm({});
-const page = usePage<AppPageProps>();
 const props = defineProps<ShowWorkspaceListPagePropsData>();
 
-const cannotDelete = (ws: ListWorkspaceItemData) =>
-  !!ws.owner?.id && String(ws.owner.id) === page.props.auth.user.id;
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('工作区管理'),
@@ -120,14 +116,14 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     <td class="px-4 py-3 text-right">
                       <div class="inline-flex items-center gap-2">
                         <Button variant="outline" size="sm" as-child>
-                          <Link :href="showWorkspaceDetail.url(ws.id)">
-                            {{ t('客服列表') }}
-                          </Link>
-                        </Button>
-
-                        <Button variant="outline" size="sm" as-child>
                           <Link :href="showEditWorkspacePage.url(ws.id)">
                             {{ t('编辑') }}
+                          </Link>
+                        </Button>
+                        
+                        <Button variant="outline" size="sm" as-child>
+                          <Link :href="showWorkspaceDetail.url(ws.id)">
+                            {{ t('客服列表') }}
                           </Link>
                         </Button>
 
@@ -142,7 +138,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {{ t('以所有者打开') }}
+                            {{ t('进入工作区') }}
                           </a>
                         </Button>
 
@@ -151,12 +147,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                             <Button
                               variant="destructive"
                               size="sm"
-                              :disabled="cannotDelete(ws)"
-                              :title="
-                                cannotDelete(ws)
-                                  ? t('不能删除自己作为所有者的工作区')
-                                  : undefined
-                              "
                             >
                               {{ t('删除') }}
                             </Button>

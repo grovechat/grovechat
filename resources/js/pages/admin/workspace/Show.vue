@@ -26,7 +26,6 @@ import {
   addWorkspaceMember,
   deleteWorkspaceMember,
   getWorkspaceList,
-  showEditWorkspacePage,
   showWorkspaceDetail,
 } from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
@@ -106,12 +105,6 @@ const isOwner = (userId: string) =>
               :description="t('查看并管理该工作区的客服与管理员')"
             />
             <div class="flex items-center gap-2">
-              <Button variant="outline" as-child>
-                <Link :href="showEditWorkspacePage.url(props.workspace.id)">
-                  {{ t('编辑工作区') }}
-                </Link>
-              </Button>
-
               <Dialog v-model:open="showAddDialog">
                 <DialogTrigger as-child>
                   <Button :disabled="props.available_users.length === 0">
@@ -205,36 +198,6 @@ const isOwner = (userId: string) =>
             </div>
           </div>
 
-          <div class="space-y-2 rounded-lg border p-4">
-            <div class="grid gap-1 text-sm">
-              <div class="flex items-baseline justify-between gap-3">
-                <div class="text-muted-foreground">{{ t('所有者') }}</div>
-                <div class="font-medium">
-                  {{ props.workspace.owner?.name || '-' }}
-                  <span class="text-muted-foreground">
-                    {{
-                      props.workspace.owner?.email
-                        ? `(${props.workspace.owner.email})`
-                        : ''
-                    }}
-                  </span>
-                </div>
-              </div>
-              <div class="flex items-baseline justify-between gap-3">
-                <div class="text-muted-foreground">{{ t('创建时间') }}</div>
-                <div class="font-medium">
-                  {{ formatDateTime(props.workspace.created_at) }}
-                </div>
-              </div>
-              <div class="flex items-baseline justify-between gap-3">
-                <div class="text-muted-foreground">{{ t('成员数') }}</div>
-                <div class="font-medium">
-                  {{ props.workspace.members_count }}
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="rounded-lg border">
             <div class="overflow-x-auto">
               <table class="w-full text-sm">
@@ -319,7 +282,10 @@ const isOwner = (userId: string) =>
                               variant="destructive"
                               @click="
                                 deleteForm.delete(
-                                  deleteWorkspaceMember.url(props.workspace.id, m.id),
+                                  deleteWorkspaceMember.url({
+                                    id: props.workspace.id,
+                                    userId: m.id,
+                                  }),
                                   { preserveScroll: true },
                                 )
                               "

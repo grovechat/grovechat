@@ -3,6 +3,7 @@ export default {
   // 系统设置页面
   管理系统的配置和设置: 'Manage system configurations and settings',
   基础设置: 'General Settings',
+  用户管理: 'Users',
   存储设置: 'Storage Settings',
   邮箱服务器: 'Mail Server',
   集成: 'Integrations',

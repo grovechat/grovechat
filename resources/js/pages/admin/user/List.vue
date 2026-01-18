@@ -40,10 +40,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
       <div class="mx-auto w-full max-w-none space-y-12">
         <div class="space-y-6">
           <div class="flex items-start justify-between gap-4">
-            <HeadingSmall
-              :title="t('用户管理')"
-              :description="t('工作客服账号列表')"
-            />
+            <HeadingSmall :title="t('用户管理')"/>
 
             <Button as-child>
               <Link :href="admin.showCreateUserPage.url()">
