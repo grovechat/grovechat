@@ -23,6 +23,7 @@ class TeammateData extends Data
     public static function fromModel(User $user): self
     {
         $role = WorkspaceRole::tryFrom((string) ($user->pivot?->role ?? '')) ?? WorkspaceRole::OPERATOR;
+        $onlineStatus = UserOnlineStatus::from((int) ($user->pivot?->online_status ?? UserOnlineStatus::ONLINE->value));
 
         return new self(
             id: (string) $user->id,
@@ -32,7 +33,7 @@ class TeammateData extends Data
             email: $user->email,
             role: $role,
             role_label: $role->label(),
-            online_status: $user->online_status,
+            online_status: $onlineStatus,
         );
     }
 }

@@ -18,9 +18,11 @@ test('authenticated user can view user list page', function () {
     $member = User::factory()->create([
         'name' => '客服A',
         'email' => 'a@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, [
+        'role' => 'operator',
         'online_status' => UserOnlineStatus::OFFLINE->value,
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
         ->get(route('show-teammate-list', ['slug' => $this->workspaceSlug()]))
@@ -227,9 +229,11 @@ test('can update user online status from list', function () {
     $member = User::factory()->create([
         'name' => '客服E',
         'email' => 'e@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, [
+        'role' => 'operator',
         'online_status' => UserOnlineStatus::OFFLINE->value,
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
         ->put(route('update-teammate-online-status', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
@@ -238,7 +242,8 @@ test('can update user online status from list', function () {
         ->assertRedirect();
 
     $member->refresh();
-    expect($member->online_status)->toBe(UserOnlineStatus::ONLINE);
+    expect($this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->online_status)
+        ->toBe(UserOnlineStatus::ONLINE->value);
 });
 
 test('cannot delete current logged in user', function () {

@@ -2,6 +2,7 @@
 
 namespace App\Data;
 
+use App\Enums\UserOnlineStatus;
 use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;
@@ -29,6 +30,8 @@ class WorkspaceUserContextData extends Data
         $role = WorkspaceRole::tryFrom((string) $roleValue) ?? null;
 
         $pivotNickname = $user->pivot?->nickname ?? $workspace->users()->whereKey($user->id)->value('user_workspace.nickname');
+        $pivotOnlineStatus = $user->pivot?->online_status ?? $workspace->users()->whereKey($user->id)->value('user_workspace.online_status') ?? UserOnlineStatus::ONLINE->value;
+        $onlineStatusEnum = UserOnlineStatus::from((int) $pivotOnlineStatus);
 
         return new self(
             workspace_id: (string) $workspace->id,
@@ -37,7 +40,7 @@ class WorkspaceUserContextData extends Data
             user_id: (string) $user->id,
             user_name: $user->name,
             user_email: $user->email,
-            user_online_status: EnumOptionData::fromEnum($user->online_status),
+            user_online_status: EnumOptionData::fromEnum($onlineStatusEnum),
             user_nickname: filled($pivotNickname) ? (string) $pivotNickname : null,
             user_avatar: filled($user->avatar) ? $user->avatar : null,
             role: EnumOptionData::fromEnum($role),

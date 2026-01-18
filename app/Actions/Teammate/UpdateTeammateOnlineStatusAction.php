@@ -16,9 +16,9 @@ class UpdateTeammateOnlineStatusAction
     {
         $user = $workspace->users()->whereKey($id)->firstOrFail();
 
-        $user->forceFill([
+        $user->pivot->update([
             'online_status' => $data->online_status->value,
-        ])->save();
+        ]);
     }
 
     public function asController(Request $request, Workspace $currentWorkspace, string $slug, string $id)

@@ -3,6 +3,7 @@
 namespace App\Actions\Teammate;
 
 use App\Data\Teammate\FormCreateTeammateData;
+use App\Enums\UserOnlineStatus;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -35,6 +36,7 @@ class CreateTeammateAction
         $workspace->users()->attach($user->id, [
             'role' => $data->role->value,
             'nickname' => filled($data->nickname) ? $data->nickname : null,
+            'online_status' => UserOnlineStatus::ONLINE->value,
         ]);
 
         return $user;
