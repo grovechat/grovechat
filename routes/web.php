@@ -97,7 +97,7 @@ Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->grou
     // 存储设置
     Route::get('storage', GetStorageSettingAction::class)->name('admin.get-storage-setting');
     Route::put('storage', UpdateStorageSettingAction::class)->name('admin.update-storage-setting');
-    Route::put('check', CheckStorageSettingAction::class)->name('admin.check-storage-settiing');
+    Route::put('storage/check', CheckStorageSettingAction::class)->name('admin.check-storage-settiing');
     Route::post('storage/profiles', CreateStorageProfileAction::class)->name('admin.storage-profile.create');
     Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('admin.storage-profile.update');
     Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('admin.storage-profile.check');
