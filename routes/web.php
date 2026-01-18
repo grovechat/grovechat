@@ -56,7 +56,7 @@ Route::get('/', ShowHomePageAction::class)->name('home');
 Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth:web'])->name('dashboard');
 
 // 个人设置（全局，不绑定工作区）
-Route::middleware([AuthenticateSettings::class, TrackLastWorkspace::class])->prefix('settings')->group(function () {
+Route::middleware([AuthenticateSettings::class, IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('settings')->group(function () {
     Route::redirect('/', '/settings/profile');
 
     // 个人资料

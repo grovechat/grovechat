@@ -20,6 +20,10 @@ class IdentifyWorkspace
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if ($request->user()->is_super_admin) {
+            return $next($request);
+        }
+
         // 获取当前用户所有工作区
         $workspaces = collect();
         $workspaces = $request->user()->workspaces()->get();
