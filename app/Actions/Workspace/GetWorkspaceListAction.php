@@ -2,7 +2,7 @@
 
 namespace App\Actions\Workspace;
 
-use App\Data\Workspace\ListWorkspaceItemData;
+use App\Data\Workspace\WorkspaceData;
 use App\Data\Workspace\ShowWorkspaceListPagePropsData;
 use App\Models\Workspace;
 use Inertia\Inertia;
@@ -23,7 +23,7 @@ class GetWorkspaceListAction
             ])
             ->orderByDesc('created_at')
             ->get()
-            ->map(fn (Workspace $w) => ListWorkspaceItemData::fromModel($w))
+            ->map(fn (Workspace $w) => WorkspaceData::fromModel($w))
             ->all();
 
         return new ShowWorkspaceListPagePropsData(

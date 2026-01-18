@@ -6,7 +6,7 @@ use App\Enums\WorkspaceRole;
 use App\Models\User;
 use Spatie\LaravelData\Data;
 
-class TrashTeammateItemData extends Data
+class TrashTeammateData extends Data
 {
     public function __construct(
         public string $id,

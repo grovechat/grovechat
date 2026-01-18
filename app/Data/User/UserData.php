@@ -5,7 +5,7 @@ namespace App\Data\User;
 use App\Models\User;
 use Spatie\LaravelData\Data;
 
-class ListUserItemData extends Data
+class UserData extends Data
 {
     public function __construct(
         public string $id,

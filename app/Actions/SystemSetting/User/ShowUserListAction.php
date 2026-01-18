@@ -3,7 +3,7 @@
 namespace App\Actions\SystemSetting\User;
 
 use App\Data\SimplePaginationData;
-use App\Data\User\ListUserItemData;
+use App\Data\User\UserData;
 use App\Data\User\ShowUserListPagePropsData;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ class ShowUserListAction
             ->paginate($perPage, ['id', 'name', 'email', 'avatar', 'two_factor_confirmed_at'], 'page', $page);
 
         $users = $paginator->getCollection()
-            ->map(fn (User $user) => ListUserItemData::fromModel($user))
+            ->map(fn (User $user) => UserData::fromModel($user))
             ->all();
 
         return new ShowUserListPagePropsData(

@@ -3,7 +3,7 @@
 namespace App\Actions\Teammate;
 
 use App\Data\Teammate\ShowTrashTeammatePagePropsData;
-use App\Data\Teammate\TrashTeammateItemData;
+use App\Data\Teammate\TrashTeammateData;
 use App\Models\Workspace;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -20,7 +20,7 @@ class ShowTeammateTrashAction
             ->get();
 
         return new ShowTrashTeammatePagePropsData(
-            user_list: $users->map(fn ($u) => TrashTeammateItemData::fromModel($u))->all(),
+            user_list: $users->map(fn ($u) => TrashTeammateData::fromModel($u))->all(),
         );
     }
 
