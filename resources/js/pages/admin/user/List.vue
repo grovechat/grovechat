@@ -3,16 +3,27 @@ import HeadingSmall from '@/components/common/HeadingSmall.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
 import type { ShowUserListPagePropsData } from '@/types/generated';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const props = defineProps<ShowUserListPagePropsData>();
+const resetTwoFactorForm = useForm({});
 
 const prevPage = computed(() =>
   Math.max(1, props.user_list_pagination.current_page - 1),
@@ -82,19 +93,75 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                       {{ u.email }}
                     </td>
                     <td class="px-4 py-3">
-                      <Badge v-if="u.two_factor_enabled" variant="default">
+                      <Badge
+                        v-if="u.two_factor_enabled"
+                        class="border-transparent bg-emerald-600 text-white hover:bg-emerald-600/90 dark:bg-emerald-500 dark:hover:bg-emerald-500/90"
+                      >
                         {{ t('已启用') }}
                       </Badge>
-                      <Badge v-else variant="destructive">
-                        {{ t('已禁用') }}
+                      <Badge
+                        v-else
+                        class="border-transparent bg-muted text-muted-foreground hover:bg-muted/80"
+                      >
+                        {{ t('未启用') }}
                       </Badge>
                     </td>
                     <td class="px-4 py-3 text-right">
-                      <Button as-child variant="outline" size="sm">
-                        <Link :href="admin.showEditUserPage.url(u.id)">
-                          {{ t('编辑') }}
-                        </Link>
-                      </Button>
+                      <div class="inline-flex items-center gap-2">
+                        <Button as-child variant="outline" size="sm">
+                          <Link :href="admin.showEditUserPage.url(u.id)">
+                            {{ t('编辑') }}
+                          </Link>
+                        </Button>
+
+                        <Dialog v-if="u.two_factor_enabled">
+                          <DialogTrigger as-child>
+                            <Button variant="outline" size="sm">
+                              {{ t('重置两步验证') }}
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader class="space-y-3">
+                              <DialogTitle>{{ t('确认重置两步验证？') }}</DialogTitle>
+                              <DialogDescription>
+                                {{ t('重置后，该用户需要重新绑定两步验证。') }}
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            <div class="rounded-md bg-muted/30 p-3 text-sm">
+                              <div class="font-medium">{{ u.name }}</div>
+                              <div class="text-muted-foreground">{{ u.email }}</div>
+                            </div>
+
+                            <DialogFooter class="gap-2">
+                              <DialogClose as-child>
+                                <Button
+                                  variant="secondary"
+                                  :disabled="resetTwoFactorForm.processing"
+                                >
+                                  {{ t('取消') }}
+                                </Button>
+                              </DialogClose>
+                              <Button
+                                variant="destructive"
+                                :disabled="resetTwoFactorForm.processing"
+                                @click="
+                                  resetTwoFactorForm.put(
+                                    admin.resetUserTwoFactorAuthentication.url(u.id),
+                                    { preserveScroll: true },
+                                  )
+                                "
+                              >
+                                {{
+                                  resetTwoFactorForm.processing
+                                    ? t('重置中...')
+                                    : t('确认')
+                                }}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
                     </td>
                   </tr>
 

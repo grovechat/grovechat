@@ -21,6 +21,7 @@ use App\Actions\StorageSetting\UpdateStorageSettingAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
 use App\Actions\SystemSetting\User\CreateUserAction;
+use App\Actions\SystemSetting\User\ResetUserTwoFactorAuthenticationAction;
 use App\Actions\SystemSetting\User\ShowCreateUserPageAction;
 use App\Actions\SystemSetting\User\ShowEditUserPageAction;
 use App\Actions\SystemSetting\User\ShowUserListAction;
@@ -121,6 +122,7 @@ Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->grou
     Route::post('users', CreateUserAction::class)->name('admin.create-user');
     Route::get('users/{id}/edit', ShowEditUserPageAction::class)->name('admin.show-edit-user-page');
     Route::put('users/{id}', UpdateUserAction::class)->name('admin.update-user');
+    Route::put('users/{id}/two-factor/reset', ResetUserTwoFactorAuthenticationAction::class)->name('admin.reset-user-two-factor-authentication');
 
     // 邮箱服务器
     Route::get('mail', function () {

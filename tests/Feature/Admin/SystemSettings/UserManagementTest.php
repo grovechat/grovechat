@@ -110,3 +110,48 @@ test('super admin cannot edit a super admin via system user routes', function ()
         ->get(route('admin.show-edit-user-page', ['id' => $target->id]))
         ->assertNotFound();
 });
+
+test('super admin can reset a user two factor authentication', function () {
+    $user = User::factory()->create([
+        'is_super_admin' => false,
+        'email' => 'u-2fa@example.com',
+    ]);
+
+    expect($user->two_factor_confirmed_at)->not->toBeNull();
+    expect($user->two_factor_secret)->not->toBeNull();
+    expect($user->two_factor_recovery_codes)->not->toBeNull();
+
+    $this->actingAs($this->superAdmin, 'admin')
+        ->put(route('admin.reset-user-two-factor-authentication', ['id' => $user->id]))
+        ->assertRedirect(route('admin.get-user-list'));
+
+    $user->refresh();
+    expect($user->two_factor_confirmed_at)->toBeNull();
+    expect($user->two_factor_secret)->toBeNull();
+    expect($user->two_factor_recovery_codes)->toBeNull();
+});
+
+test('super admin cannot reset two factor authentication for a super admin', function () {
+    $target = User::factory()->create([
+        'is_super_admin' => true,
+        'email' => 'sa-2fa@example.com',
+    ]);
+
+    $this->actingAs($this->superAdmin, 'admin')
+        ->put(route('admin.reset-user-two-factor-authentication', ['id' => $target->id]))
+        ->assertNotFound();
+});
+
+test('non-super-admin cannot reset a user two factor authentication', function () {
+    $actor = User::factory()->create([
+        'is_super_admin' => false,
+    ]);
+
+    $user = User::factory()->create([
+        'is_super_admin' => false,
+    ]);
+
+    $this->actingAs($actor, 'admin')
+        ->put(route('admin.reset-user-two-factor-authentication', ['id' => $user->id]))
+        ->assertForbidden();
+});
