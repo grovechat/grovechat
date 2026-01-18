@@ -2,6 +2,8 @@
 
 namespace App\Data\StorageSetting;
 
+use App\Data\EnumOptionData;
+use App\Enums\StorageProvider;
 use App\Models\StorageProfile;
 use Spatie\LaravelData\Data;
 
@@ -10,7 +12,7 @@ class StorageProfileData extends Data
     public function __construct(
         public string $id,
         public string $name,
-        public string $provider,
+        public EnumOptionData $provider,
         public ?string $bucket,
         public ?string $region,
         public ?string $endpoint,
@@ -21,6 +23,12 @@ class StorageProfileData extends Data
 
     public static function fromModel(StorageProfile $profile): self
     {
+        $providerValue = (string) $profile->provider;
+        $providerEnum = StorageProvider::tryFrom($providerValue);
+        $providerOption = $providerEnum
+            ? EnumOptionData::fromEnum($providerEnum)
+            : new EnumOptionData(value: $providerValue, label: $providerValue);
+
         $key = $profile->key;
         $masked = null;
 
@@ -34,7 +42,7 @@ class StorageProfileData extends Data
         return new self(
             id: (string) $profile->id,
             name: (string) $profile->name,
-            provider: (string) $profile->provider,
+            provider: $providerOption,
             bucket: $profile->bucket,
             region: $profile->region,
             endpoint: $profile->endpoint,
@@ -44,4 +52,3 @@ class StorageProfileData extends Data
         );
     }
 }
-

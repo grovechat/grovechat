@@ -18,16 +18,15 @@ import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { getStorageSetting } from '@/routes/admin';
 import storageProfile from '@/routes/admin/storage-profile';
-import type { AppPageProps } from '@/types';
 import { type BreadcrumbItem } from '@/types';
 import type {
   StorageProfileData,
-  StorageSettingPagePropsData,
+  GetStorageSettingPagePropsData,
 } from '@/types/generated';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 
-const page = usePage<AppPageProps<StorageSettingPagePropsData>>();
+const props = defineProps<GetStorageSettingPagePropsData>();
 const { t } = useI18n();
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -38,8 +37,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 ]);
 
 const settingsForm = useForm({
-  enabled: page.props.storage_settings.enabled,
-  current_profile_id: page.props.storage_settings.current_profile_id || '',
+  enabled: props.settings.enabled,
+  current_profile_id: props.settings.current_profile_id || '',
 });
 const actionForm = useForm({});
 
@@ -75,7 +74,7 @@ const checkCreateForm = useForm({
 const useInternalEndpoint = ref<boolean>(false);
 
 const currentProvider = computed(() =>
-  page.props.storage_config.find((p) => p.value === createForm.provider),
+  props.providers.find((p) => p.provider.value === createForm.provider),
 );
 
 const currentRegions = computed(() => currentProvider.value?.regions || []);
@@ -93,9 +92,7 @@ const hasInternalEndpoint = computed(
 watch(
   () => createForm.provider,
   (newProvider) => {
-    const provider = page.props.storage_config.find(
-      (p) => p.value === newProvider,
-    );
+    const provider = props.providers.find((p) => p.provider.value === newProvider);
     if (provider && provider.regions.length > 0) {
       createForm.region = '';
       createForm.endpoint = '';
@@ -203,8 +200,6 @@ const deleteProfile = (profileId: string) => {
   });
 };
 
-const providerLabel = (value: string) =>
-  page.props.storage_config.find((p) => p.value === value)?.label || value;
 </script>
 
 <template>
@@ -248,11 +243,11 @@ const providerLabel = (value: string) =>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem
-                      v-for="p in page.props.storage_profiles"
+                      v-for="p in props.profiles"
                       :key="p.id"
                       :value="p.id"
                     >
-                      {{ p.name }}（{{ providerLabel(p.provider) }}）
+                      {{ p.name }}（{{ p.provider.label }}）
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -331,11 +326,11 @@ const providerLabel = (value: string) =>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem
-                      v-for="providerOption in page.props.storage_config"
-                      :key="providerOption.value"
-                      :value="providerOption.value"
+                      v-for="providerOption in props.providers"
+                      :key="providerOption.provider.value"
+                      :value="providerOption.provider.value"
                     >
-                      {{ providerOption.label }}
+                      {{ providerOption.provider.label }}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -509,7 +504,7 @@ const providerLabel = (value: string) =>
 
             <div class="space-y-3">
               <div
-                v-for="p in page.props.storage_profiles"
+                v-for="p in props.profiles"
                 :key="p.id"
                 class="space-y-3 rounded-lg border p-4"
               >
@@ -518,7 +513,7 @@ const providerLabel = (value: string) =>
                     <div class="font-medium">
                       {{ p.name }}
                       <span class="text-muted-foreground"
-                        >（{{ providerLabel(p.provider) }}）</span
+                        >（{{ p.provider.label }}）</span
                       >
                     </div>
                     <dl class="mt-2 grid gap-1 text-sm text-muted-foreground">
