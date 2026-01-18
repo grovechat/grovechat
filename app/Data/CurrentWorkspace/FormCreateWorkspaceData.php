@@ -4,7 +4,7 @@ namespace App\Data\CurrentWorkspace;
 
 use Spatie\LaravelData\Data;
 
-class UpdateWorkspaceData extends Data
+class FormCreateWorkspaceData extends Data
 {
     public function __construct(
         public string $name,

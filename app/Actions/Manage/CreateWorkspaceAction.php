@@ -2,7 +2,7 @@
 
 namespace App\Actions\Manage;
 
-use App\Data\CurrentWorkspace\CreateWorkspaceData;
+use App\Data\CurrentWorkspace\FormCreateWorkspaceData;
 use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;
@@ -14,7 +14,7 @@ class CreateWorkspaceAction
 {
     use AsAction;
 
-    public function handle(User $user, CreateWorkspaceData $data)
+    public function handle(User $user, FormCreateWorkspaceData $data)
     {
         return DB::transaction(function () use ($user, $data) {
             $workspace = Workspace::query()->create($data->toArray());
@@ -26,7 +26,7 @@ class CreateWorkspaceAction
 
     public function asController(Request $request)
     {
-        $data = CreateWorkspaceData::from($request);
+        $data = FormCreateWorkspaceData::from($request);
         $newWorkspace = $this->handle($request->user(), $data);
 
         return redirect(route('get-current-workspace', $newWorkspace->slug));
