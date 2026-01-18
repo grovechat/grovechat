@@ -23,7 +23,6 @@ class UserEditFormData extends Data
     public static function fromModel(User $user): self
     {
         $role = WorkspaceRole::tryFrom((string) ($user->pivot?->role ?? '')) ?? WorkspaceRole::OPERATOR;
-        $status = UserOnlineStatus::tryFrom((int) $user->online_status) ?? UserOnlineStatus::OFFLINE;
 
         return new self(
             id: (string) $user->id,
@@ -33,7 +32,7 @@ class UserEditFormData extends Data
             email: $user->email,
             role: $role,
             role_label: $role->label(),
-            online_status: $status,
+            online_status: $user->online_status,
         );
     }
 }
