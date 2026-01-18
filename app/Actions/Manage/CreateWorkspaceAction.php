@@ -2,7 +2,7 @@
 
 namespace App\Actions\Manage;
 
-use App\Data\CreateWorkspaceDTO;
+use App\Data\CurrentWorkspace\CreateWorkspaceDTO;
 use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;

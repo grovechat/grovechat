@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Data\WorkspaceData;
+use App\Data\CurrentWorkspace\WorkspaceData;
 use App\Data\WorkspaceUserContextData;
 use App\Models\Workspace;
 use Closure;

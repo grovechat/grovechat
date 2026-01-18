@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\CurrentWorkspace;
 
 use App\Enums\WorkspaceRole;
 use App\Models\Workspace;

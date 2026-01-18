@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\CurrentWorkspace;
 
 use App\Data\Workspace\WorkspaceOwnerData;
 use App\Models\Workspace;

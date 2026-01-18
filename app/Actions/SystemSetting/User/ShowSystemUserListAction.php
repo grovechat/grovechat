@@ -2,7 +2,7 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\User\SimplePaginationData;
+use App\Data\SimplePaginationData;
 use App\Data\User\SystemUserListItemData;
 use App\Data\User\SystemUserListPagePropsData;
 use App\Models\User;

@@ -2,6 +2,7 @@
 
 namespace App\Data\User;
 
+use App\Data\SimplePaginationData;
 use Spatie\LaravelData\Data;
 
 class SystemUserListPagePropsData extends Data

@@ -12,7 +12,8 @@ import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import SidebarShell, {
   type SidebarShellNavItem,
 } from '@/layouts/app/SidebarShell.vue';
-import { getCurrentWorkspace, getGeneralSetting } from '@/routes';
+import { getCurrentWorkspace } from '@/routes';
+import { getGeneralSetting } from '@/routes/admin';
 import contact from '@/routes/contact';
 import logout from '@/routes/logout';
 import { edit } from '@/routes/profile';
