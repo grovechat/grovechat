@@ -8,7 +8,7 @@ use App\Models\User;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class ShowEditSystemUserPageAction
+class ShowEditUserPageAction
 {
     use AsAction;
 

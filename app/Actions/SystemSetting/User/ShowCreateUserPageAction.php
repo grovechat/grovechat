@@ -7,7 +7,7 @@ use App\Data\User\SystemUserCreatePagePropsData;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class ShowCreateSystemUserPageAction
+class ShowCreateUserPageAction
 {
     use AsAction;
 

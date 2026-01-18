@@ -20,11 +20,11 @@ use App\Actions\StorageSetting\StorageProfile\UpdateStorageProfileAction;
 use App\Actions\StorageSetting\UpdateStorageSettingAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
-use App\Actions\SystemSetting\User\CreateSystemUserAction;
-use App\Actions\SystemSetting\User\ShowCreateSystemUserPageAction;
-use App\Actions\SystemSetting\User\ShowEditSystemUserPageAction;
-use App\Actions\SystemSetting\User\ShowSystemUserListAction;
-use App\Actions\SystemSetting\User\UpdateSystemUserAction;
+use App\Actions\SystemSetting\User\CreateUserAction;
+use App\Actions\SystemSetting\User\ShowCreateUserPageAction;
+use App\Actions\SystemSetting\User\ShowEditUserPageAction;
+use App\Actions\SystemSetting\User\ShowUserListAction;
+use App\Actions\SystemSetting\User\UpdateUserAction;
 use App\Actions\Teammate\CreateTeammateAction;
 use App\Actions\Teammate\DeleteTeammateAction;
 use App\Actions\Teammate\RestoreTeammateAction;
@@ -104,11 +104,11 @@ Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->grou
     Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('admin.storage-profile.delete');
 
     // 用户管理
-    Route::get('users', ShowSystemUserListAction::class)->name('admin.get-user-list');
-    Route::get('users/create', ShowCreateSystemUserPageAction::class)->name('admin.show-create-user-page');
-    Route::post('users', CreateSystemUserAction::class)->name('admin.create-user');
-    Route::get('users/{id}/edit', ShowEditSystemUserPageAction::class)->name('admin.show-edit-user-page');
-    Route::put('users/{id}', UpdateSystemUserAction::class)->name('admin.update-user');
+    Route::get('users', ShowUserListAction::class)->name('admin.get-user-list');
+    Route::get('users/create', ShowCreateUserPageAction::class)->name('admin.show-create-user-page');
+    Route::post('users', CreateUserAction::class)->name('admin.create-user');
+    Route::get('users/{id}/edit', ShowEditUserPageAction::class)->name('admin.show-edit-user-page');
+    Route::put('users/{id}', UpdateUserAction::class)->name('admin.update-user');
 
     // 邮箱服务器
     Route::get('mail', function () {

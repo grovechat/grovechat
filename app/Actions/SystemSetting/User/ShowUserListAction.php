@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class ShowSystemUserListAction
+class ShowUserListAction
 {
     use AsAction;
 

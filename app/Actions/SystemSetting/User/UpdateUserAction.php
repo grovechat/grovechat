@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class UpdateSystemUserAction
+class UpdateUserAction
 {
     use AsAction;
 
