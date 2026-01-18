@@ -4,7 +4,7 @@ namespace App\Data\CurrentWorkspace;
 
 use Spatie\LaravelData\Data;
 
-class CreateWorkspaceDTO extends Data
+class CreateWorkspaceData extends Data
 {
     public function __construct(
         public string $name,

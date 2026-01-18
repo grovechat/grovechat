@@ -4,7 +4,7 @@ namespace App\Data\CurrentWorkspace;
 
 use Spatie\LaravelData\Data;
 
-class UpdateWorkspaceDTO extends Data
+class UpdateWorkspaceData extends Data
 {
     public function __construct(
         public string $name,

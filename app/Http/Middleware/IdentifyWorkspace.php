@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Data\CurrentWorkspace\WorkspaceData;
 use App\Data\WorkspaceUserContextData;
 use App\Models\Workspace;
 use Closure;
@@ -38,8 +37,6 @@ class IdentifyWorkspace
             $hasFromWorkspace = is_string($from) && $from !== '';
             if ($hasFromWorkspace) {
                 $workspace = $workspaces->firstWhere('slug', $from);
-                Inertia::share('fromWorkspace', WorkspaceData::fromModel($workspace));
-                Inertia::share('fromWorkspaceSlug', $workspace->slug);
             }
         } else {
             $workspace = $workspaces->firstWhere('slug', $slug);
