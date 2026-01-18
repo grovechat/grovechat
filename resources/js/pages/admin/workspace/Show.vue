@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useDateTime } from '@/composables/useDateTime';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
-import { getWorkspaceList, showWorkspaceDetail } from '@/routes';
+import { getWorkspaceList, showWorkspaceDetail } from '@/routes/admin';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { WorkspaceDetailPagePropsData } from '@/types/generated';
 import { Head, Link, usePage } from '@inertiajs/vue3';

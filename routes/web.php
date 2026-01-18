@@ -87,12 +87,12 @@ Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->grou
     Route::put('general', UpdateGeneralSettingAction::class)->name('admin.update-general-setting');
 
     // 工作区管理
-    Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');
-    Route::get('workspaces/trash', GetWorkspaceTrashListAction::class)->name('get-workspace-trash');
-    Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('show-workspace-detail');
-    Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('delete-workspace');
-    Route::put('workspaces/{id}/restore', RestoreWorkspaceAction::class)->name('restore-workspace');
-    Route::get('workspaces/{id}/login-as-owner', LoginAsWorkspaceOwnerAction::class)->name('login-as-workspace-owner');
+    Route::get('workspaces', GetWorkspaceListAction::class)->name('admin.get-workspace-list');
+    Route::get('workspaces/trash', GetWorkspaceTrashListAction::class)->name('admin.get-workspace-trash');
+    Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('admin.show-workspace-detail');
+    Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('admin.delete-workspace');
+    Route::put('workspaces/{id}/restore', RestoreWorkspaceAction::class)->name('admin.restore-workspace');
+    Route::get('workspaces/{id}/login-as-owner', LoginAsWorkspaceOwnerAction::class)->name('admin.login-as-workspace-owner');
 
     // 存储设置
     Route::get('storage', GetStorageSettingAction::class)->name('admin.get-storage-setting');

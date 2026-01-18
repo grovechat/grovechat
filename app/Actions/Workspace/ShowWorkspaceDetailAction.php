@@ -3,9 +3,9 @@
 namespace App\Actions\Workspace;
 
 use App\Data\SimplePaginationData;
-use App\Data\WorkspaceDetailData;
-use App\Data\WorkspaceDetailPagePropsData;
-use App\Data\WorkspaceMemberData;
+use App\Data\CurrentWorkspace\WorkspaceDetailData;
+use App\Data\CurrentWorkspace\WorkspaceDetailPagePropsData;
+use App\Data\CurrentWorkspace\WorkspaceMemberData;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;

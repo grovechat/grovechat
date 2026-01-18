@@ -18,7 +18,7 @@ import {
   getWorkspaceList,
   getWorkspaceTrash,
   restoreWorkspace,
-} from '@/routes';
+} from '@/routes/admin';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { WorkspaceTrashPagePropsData } from '@/types/generated';
 import { Head, useForm, usePage } from '@inertiajs/vue3';

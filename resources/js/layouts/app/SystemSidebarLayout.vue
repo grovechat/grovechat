@@ -3,12 +3,9 @@ import { useI18n } from '@/composables/useI18n';
 import SidebarShell, {
   type SidebarShellNavItem,
 } from '@/layouts/app/SidebarShell.vue';
-import {
-  getWorkspaceList,
-} from '@/routes';
 import logout from '@/routes/logout';
 import { edit as editProfile } from '@/routes/profile';
-import admin, { getGeneralSetting, getStorageSetting } from '@/routes/admin';
+import admin, { getGeneralSetting, getStorageSetting, getWorkspaceList } from '@/routes/admin';
 import type { BreadcrumbItemType, NavItem } from '@/types';
 import {
   BookOpen,
