@@ -19,7 +19,7 @@ export interface NavItem {
 }
 
 export type AppPageProps<
-  T extends Record<string, unknown> = Record<string, unknown>,
+  T extends object = {},
 > = T & {
   name: string;
   quote: { message: string; author: string };

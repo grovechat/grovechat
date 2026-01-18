@@ -9,15 +9,14 @@ import { Label } from '@/components/ui/label';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import admin from '@/routes/admin';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import type { SystemUserCreatePagePropsData } from '@/types/generated';
-import { Form, Head, Link, usePage } from '@inertiajs/vue3';
+import { Form, Head, Link } from '@inertiajs/vue3';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const page = usePage<AppPageProps<SystemUserCreatePagePropsData>>();
-const userForm = computed(() => page.props.user_form);
+const props = defineProps<SystemUserCreatePagePropsData>();
 
 const passwordVisible = ref(false);
 const passwordConfirmationVisible = ref(false);
@@ -53,7 +52,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 name="name"
                 class="mt-1 block w-full"
                 required
-                :default-value="userForm.name || ''"
+                :default-value="props.user_form.name || ''"
                 :placeholder="t('请输入名称')"
               />
               <InputError class="mt-2" :message="errors.name" />
@@ -67,7 +66,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 type="email"
                 class="mt-1 block w-full"
                 required
-                :default-value="userForm.email || ''"
+                :default-value="props.user_form.email || ''"
                 :placeholder="t('请输入邮箱')"
               />
               <InputError class="mt-2" :message="errors.email" />
@@ -79,8 +78,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               :upload-url="UploadImageAction.url()"
               response-key="full_url"
               folder="avatars"
-              :initial-preview="userForm.avatar || ''"
-              :initial-value="userForm.avatar || ''"
+              :initial-preview="props.user_form.avatar || ''"
+              :initial-value="props.user_form.avatar || ''"
               variant="avatar"
               :error="errors.avatar"
             />

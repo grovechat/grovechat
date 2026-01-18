@@ -19,15 +19,14 @@ import {
   getWorkspaceTrash,
   restoreWorkspace,
 } from '@/routes/admin';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import type { WorkspaceTrashPagePropsData } from '@/types/generated';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const page = usePage<AppPageProps<WorkspaceTrashPagePropsData>>();
-const workspaceList = computed(() => page.props.workspace_trash_list);
+const props = defineProps<WorkspaceTrashPagePropsData>();
 const restoreForm = useForm({});
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -82,7 +81,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 </thead>
                 <tbody>
                   <tr
-                    v-for="ws in workspaceList"
+                    v-for="ws in props.workspace_trash_list"
                     :key="ws.id"
                     class="border-b last:border-b-0"
                   >
@@ -165,7 +164,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </td>
                   </tr>
 
-                  <tr v-if="workspaceList.length === 0">
+                  <tr v-if="props.workspace_trash_list.length === 0">
                     <td
                       colspan="6"
                       class="px-4 py-8 text-center text-muted-foreground"

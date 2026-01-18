@@ -4,7 +4,7 @@ namespace App\Actions\Teammate;
 
 use App\Data\EnumOptionData;
 use App\Data\Teammate\CreateTeammateFormData;
-use App\Data\Teammate\CreateTeammatePagePropsData;
+use App\Data\Teammate\ShowCreateTeammatePagePropsData;
 use App\Enums\WorkspaceRole;
 use App\Models\Workspace;
 use Inertia\Inertia;
@@ -14,9 +14,9 @@ class ShowCreateTeammatePageAction
 {
     use AsAction;
 
-    public function handle(): CreateTeammatePagePropsData
+    public function handle(): ShowCreateTeammatePagePropsData
     {
-        return new CreateTeammatePagePropsData(
+        return new ShowCreateTeammatePagePropsData(
             user_form: new CreateTeammateFormData,
             role_options: EnumOptionData::fromCases(WorkspaceRole::assignableCases()),
         );

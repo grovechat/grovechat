@@ -4,7 +4,7 @@ namespace App\Data\Teammate;
 
 use Spatie\LaravelData\Data;
 
-class CreateTeammatePagePropsData extends Data
+class ShowCreateTeammatePagePropsData extends Data
 {
     public function __construct(
         public CreateTeammateFormData $user_form,

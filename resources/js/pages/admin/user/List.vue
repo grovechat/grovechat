@@ -6,19 +6,22 @@ import { Button } from '@/components/ui/button';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import admin from '@/routes/admin';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem } from '@/types';
 import type { SystemUserListPagePropsData } from '@/types/generated';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const page = usePage<AppPageProps<SystemUserListPagePropsData>>();
-const userList = computed(() => page.props.user_list);
-const pagination = computed(() => page.props.user_list_pagination);
+const props = defineProps<SystemUserListPagePropsData>();
 
-const prevPage = computed(() => Math.max(1, pagination.value.current_page - 1));
+const prevPage = computed(() =>
+  Math.max(1, props.user_list_pagination.current_page - 1),
+);
 const nextPage = computed(() =>
-  Math.min(pagination.value.last_page, pagination.value.current_page + 1),
+  Math.min(
+    props.user_list_pagination.last_page,
+    props.user_list_pagination.current_page + 1,
+  ),
 );
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -63,7 +66,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 </thead>
                 <tbody>
                   <tr
-                    v-for="u in userList"
+                    v-for="u in props.user_list"
                     :key="u.id"
                     class="border-t bg-background"
                   >
@@ -98,7 +101,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </td>
                   </tr>
 
-                  <tr v-if="userList.length === 0">
+                  <tr v-if="props.user_list.length === 0">
                     <td
                       class="px-4 py-8 text-center text-muted-foreground"
                       colspan="5"
@@ -112,15 +115,15 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
             <div class="flex items-center justify-between gap-3 border-t p-4">
               <div class="text-sm text-muted-foreground">
-                {{ t('第') }} {{ pagination.current_page }} /
-                {{ pagination.last_page }} {{ t('页，共') }}
-                {{ pagination.total }} {{ t('人') }}
+                {{ t('第') }} {{ props.user_list_pagination.current_page }} /
+                {{ props.user_list_pagination.last_page }} {{ t('页，共') }}
+                {{ props.user_list_pagination.total }} {{ t('人') }}
               </div>
               <div class="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  :disabled="pagination.current_page <= 1"
+                  :disabled="props.user_list_pagination.current_page <= 1"
                   as-child
                 >
                   <Link
@@ -132,7 +135,10 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 <Button
                   variant="outline"
                   size="sm"
-                  :disabled="pagination.current_page >= pagination.last_page"
+                  :disabled="
+                    props.user_list_pagination.current_page >=
+                    props.user_list_pagination.last_page
+                  "
                   as-child
                 >
                   <Link

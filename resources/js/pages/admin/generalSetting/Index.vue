@@ -11,12 +11,12 @@ import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { getGeneralSetting } from '@/routes/admin';
 import { type BreadcrumbItem } from '@/types';
-import { Form, Head, usePage } from '@inertiajs/vue3';
+import type { GeneralSettingsData } from '@/types/generated';
+import { Form, Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const page = usePage();
+const props = defineProps<{ generalSettings: GeneralSettingsData }>();
 const { t } = useI18n();
-const generalSettings = computed(() => page.props.generalSettings);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('基础设置'),
@@ -49,7 +49,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 name="base_url"
                 type="url"
                 class="mt-1 block w-full"
-                :default-value="generalSettings.base_url || undefined"
+              :default-value="props.generalSettings.base_url || undefined"
                 required
                 :placeholder="t('请输入主机地址，例如：https://example.com')"
               />
@@ -62,7 +62,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 id="name"
                 name="name"
                 class="mt-1 block w-full"
-                :default-value="generalSettings.name || undefined"
+              :default-value="props.generalSettings.name || undefined"
                 required
                 :placeholder="t('请输入系统名称')"
               />
@@ -74,8 +74,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               name="logo_id"
               :upload-url="UploadImageAction.url()"
               response-key="id"
-              :initial-preview="generalSettings.logo_url || ''"
-              :initial-value="generalSettings.logo_id || ''"
+            :initial-preview="props.generalSettings.logo_url || ''"
+            :initial-value="props.generalSettings.logo_id || ''"
               variant="logo"
               :error="errors.logo_id"
             />
@@ -86,7 +86,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 id="copyright"
                 name="copyright"
                 class="mt-1 block w-full"
-                :default-value="generalSettings.copyright || undefined"
+              :default-value="props.generalSettings.copyright || undefined"
                 :placeholder="t('请输入版权信息')"
               />
               <InputError class="mt-2" :message="errors.copyright" />
@@ -98,7 +98,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 id="icp_record"
                 name="icp_record"
                 class="mt-1 block w-full"
-                :default-value="generalSettings.icp_record || undefined"
+              :default-value="props.generalSettings.icp_record || undefined"
                 :placeholder="t('请输入备案信息')"
               />
               <InputError class="mt-2" :message="errors.icp_record" />
@@ -107,7 +107,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             <div class="grid gap-2">
               <Label>{{ t('版本号') }}</Label>
               <div class="py-2 text-sm text-muted-foreground">
-                {{ generalSettings.version || t('未设置') }}
+              {{ props.generalSettings.version || t('未设置') }}
               </div>
             </div>
 

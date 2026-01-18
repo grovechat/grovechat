@@ -19,13 +19,13 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { createTeammate, showTeammateList } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
-import type { CreateTeammatePagePropsData, WorkspaceRole } from '@/types/generated';
+import type { ShowCreateTeammatePagePropsData, WorkspaceRole } from '@/types/generated';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 const { t } = useI18n();
-const page = usePage<AppPageProps<CreateTeammatePagePropsData>>();
+const page = usePage<AppPageProps<ShowCreateTeammatePagePropsData>>();
 const currentWorkspace = useRequiredWorkspace();
 const userForm = computed(() => page.props.user_form);
 

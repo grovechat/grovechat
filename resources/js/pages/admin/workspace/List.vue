@@ -21,22 +21,21 @@ import {
   loginAsWorkspaceOwner,
   showWorkspaceDetail,
 } from '@/routes/admin';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
-import type { WorkspaceListPagePropsData } from '@/types/generated';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import type { BreadcrumbItem } from '@/types';
+import type { WorkspaceListItemData } from '@/types/generated';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const page = usePage<AppPageProps<WorkspaceListPagePropsData>>();
-const workspaceList = computed(() => page.props.workspace_list);
 const deleteForm = useForm({});
-const currentUserId = computed(() =>
-  String((page.props as any)?.auth?.user?.id ?? ''),
-);
+const props = defineProps<{
+  workspace_list: WorkspaceListItemData[];
+  auth: { user: { id: string } };
+}>();
 
-const cannotDelete = (ws: (typeof workspaceList.value)[number]) =>
-  !!ws.owner?.id && String(ws.owner.id) === currentUserId.value;
+const cannotDelete = (ws: WorkspaceListItemData) =>
+  !!ws.owner?.id && String(ws.owner.id) === String(props.auth.user.id);
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('工作区管理'),
@@ -84,7 +83,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 </thead>
                 <tbody>
                   <tr
-                    v-for="ws in workspaceList"
+                    v-for="ws in props.workspace_list"
                     :key="ws.id"
                     class="border-b last:border-b-0"
                   >
@@ -197,7 +196,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </td>
                   </tr>
 
-                  <tr v-if="workspaceList.length === 0">
+                  <tr v-if="props.workspace_list.length === 0">
                     <td
                       colspan="5"
                       class="px-4 py-8 text-center text-muted-foreground"
