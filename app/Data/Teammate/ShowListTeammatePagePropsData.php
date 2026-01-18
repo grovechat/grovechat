@@ -4,7 +4,7 @@ namespace App\Data\Teammate;
 
 use Spatie\LaravelData\Data;
 
-class ListTeammatePagePropsData extends Data
+class ShowListTeammatePagePropsData extends Data
 {
     public function __construct(
         /** @var \App\Data\WorkspaceUserContextData[] */

@@ -19,13 +19,13 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { showTeammateList, updateTeammate } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
-import type { EditTeammatePagePropsData } from '@/types/generated';
+import type { ShowEditTeammatePagePropsData } from '@/types/generated';
 import { Form, Head } from '@inertiajs/vue3';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const props = defineProps<EditTeammatePagePropsData>();
+const props = defineProps<ShowEditTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
 
 const passwordVisible = ref(false);

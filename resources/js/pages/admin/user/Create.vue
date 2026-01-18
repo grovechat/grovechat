@@ -10,13 +10,11 @@ import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
-import type { CreateUserFormData } from '@/types/generated';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const props = defineProps<CreateUserFormData>();
 
 const passwordVisible = ref(false);
 const passwordConfirmationVisible = ref(false);
@@ -52,7 +50,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 name="name"
                 class="mt-1 block w-full"
                 required
-                :default-value="props.name || ''"
                 :placeholder="t('请输入名称')"
               />
               <InputError class="mt-2" :message="errors.name" />
@@ -66,7 +63,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 type="email"
                 class="mt-1 block w-full"
                 required
-                :default-value="props.email || ''"
                 :placeholder="t('请输入邮箱')"
               />
               <InputError class="mt-2" :message="errors.email" />
@@ -78,8 +74,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               :upload-url="UploadImageAction.url()"
               response-key="full_url"
               folder="avatars"
-              :initial-preview="props.avatar || ''"
-              :initial-value="props.avatar || ''"
+              :initial-preview="''"
+              :initial-value="''"
               variant="avatar"
               :error="errors.avatar"
             />

@@ -10,13 +10,13 @@ import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import admin from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
-import type { EditUserFormData } from '@/types/generated';
+import type { ShowEditUserFormData } from '@/types/generated';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const props = defineProps<EditUserFormData>();
+const props = defineProps<ShowEditUserFormData>();
 
 const passwordVisible = ref(false);
 const passwordConfirmationVisible = ref(false);

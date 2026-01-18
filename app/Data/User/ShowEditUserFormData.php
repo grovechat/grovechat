@@ -5,7 +5,7 @@ namespace App\Data\User;
 use App\Models\User;
 use Spatie\LaravelData\Data;
 
-class EditUserFormData extends Data
+class ShowEditUserFormData extends Data
 {
     public function __construct(
         public string $id,

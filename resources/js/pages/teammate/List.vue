@@ -33,13 +33,13 @@ import {
 } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import type {
-  ListTeammatePagePropsData,
+  ShowListTeammatePagePropsData,
 } from '@/types/generated';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const props = defineProps<ListTeammatePagePropsData>();
+const props = defineProps<ShowListTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
 const updatingStatusIds = ref<Record<string, boolean>>({});
 const deleteForm = useForm({});
