@@ -34,12 +34,18 @@ use App\Actions\Teammate\ShowTeammateListAction;
 use App\Actions\Teammate\ShowTeammateTrashAction;
 use App\Actions\Teammate\UpdateTeammateAction;
 use App\Actions\Teammate\UpdateTeammateOnlineStatusAction;
+use App\Actions\Workspace\AddWorkspaceMemberAction;
+use App\Actions\Workspace\CreateWorkspaceAction as WorkspaceCreateWorkspaceAction;
 use App\Actions\Workspace\DeleteWorkspaceAction;
+use App\Actions\Workspace\DeleteWorkspaceMemberAction;
 use App\Actions\Workspace\GetWorkspaceListAction;
 use App\Actions\Workspace\GetWorkspaceTrashListAction;
 use App\Actions\Workspace\LoginAsWorkspaceOwnerAction;
 use App\Actions\Workspace\RestoreWorkspaceAction;
+use App\Actions\Workspace\ShowCreateWorkspacePageAction as WorkspaceShowCreateWorkspacePageAction;
+use App\Actions\Workspace\ShowEditWorkspacePageAction;
 use App\Actions\Workspace\ShowWorkspaceDetailAction;
+use App\Actions\Workspace\UpdateWorkspaceAction as WorkspaceUpdateWorkspaceAction;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
@@ -89,10 +95,16 @@ Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->grou
     // 工作区管理
     Route::get('workspaces', GetWorkspaceListAction::class)->name('admin.get-workspace-list');
     Route::get('workspaces/trash', GetWorkspaceTrashListAction::class)->name('admin.get-workspace-trash');
+    Route::get('workspaces/create', WorkspaceShowCreateWorkspacePageAction::class)->name('admin.show-create-workspace-page');
+    Route::post('workspaces', WorkspaceCreateWorkspaceAction::class)->name('admin.create-workspace');
     Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('admin.show-workspace-detail');
+    Route::get('workspaces/{id}/edit', ShowEditWorkspacePageAction::class)->name('admin.show-edit-workspace-page');
+    Route::put('workspaces/{id}', WorkspaceUpdateWorkspaceAction::class)->name('admin.update-workspace');
     Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('admin.delete-workspace');
     Route::put('workspaces/{id}/restore', RestoreWorkspaceAction::class)->name('admin.restore-workspace');
     Route::get('workspaces/{id}/login-as-owner', LoginAsWorkspaceOwnerAction::class)->name('admin.login-as-workspace-owner');
+    Route::post('workspaces/{id}/members', AddWorkspaceMemberAction::class)->name('admin.add-workspace-member');
+    Route::delete('workspaces/{id}/members/{userId}', DeleteWorkspaceMemberAction::class)->name('admin.delete-workspace-member');
 
     // 存储设置
     Route::get('storage', GetStorageSettingAction::class)->name('admin.get-storage-setting');

@@ -39,6 +39,12 @@ const mainNavItems = computed<SidebarShellNavItem[]>(() => [
     activeUrls: ['/admin/general'],
   },
   {
+    title: t('用户管理'),
+    href: admin.getUserList.url(),
+    icon: Users,
+    activeUrls: ['/admin/users'],
+  },
+  {
     title: t('工作区管理'),
     href: getWorkspaceList.url(),
     icon: Building2,
@@ -49,12 +55,6 @@ const mainNavItems = computed<SidebarShellNavItem[]>(() => [
     href: getStorageSetting.url(),
     icon: Database,
     activeUrls: ['/admin/storage'],
-  },
-  {
-    title: t('用户管理'),
-    href: admin.getUserList.url(),
-    icon: Users,
-    activeUrls: ['/admin/users'],
   },
   {
     title: t('邮箱服务器'),

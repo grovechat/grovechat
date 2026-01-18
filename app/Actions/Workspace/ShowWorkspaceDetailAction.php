@@ -6,7 +6,10 @@ use App\Data\CurrentWorkspace\ShowWorkspaceDetailPagePropsData;
 use App\Data\CurrentWorkspace\WorkspaceDetailData;
 use App\Data\CurrentWorkspace\WorkspaceMemberData;
 use App\Data\CurrentWorkspace\WorkspaceMembersData;
+use App\Data\EnumOptionData;
 use App\Data\SimplePaginationData;
+use App\Data\User\UserOptionData;
+use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -27,6 +30,21 @@ class ShowWorkspaceDetailAction
                 'owner' => fn ($query) => $query->withTrashed()->select(['id', 'name', 'email']),
             ])
             ->findOrFail($id);
+
+        $memberIds = $workspace->users()
+            ->withTrashed()
+            ->pluck('users.id')
+            ->map(static fn ($v) => (string) $v)
+            ->all();
+
+        $availableUsers = User::query()
+            ->where('is_super_admin', false)
+            ->when(filled($workspace->owner_id), fn ($q) => $q->whereKeyNot((string) $workspace->owner_id))
+            ->when(! empty($memberIds), fn ($q) => $q->whereKeyNot($memberIds))
+            ->orderBy('id')
+            ->get(['id', 'name', 'email'])
+            ->map(fn (User $u) => UserOptionData::fromModel($u))
+            ->all();
 
         $paginator = $workspace->users()
             ->withTrashed()
@@ -49,6 +67,8 @@ class ShowWorkspaceDetailAction
                     total: $paginator->total(),
                 ),
             ),
+            role_options: EnumOptionData::fromCases(WorkspaceRole::assignableCases()),
+            available_users: $availableUsers,
         );
     }
 

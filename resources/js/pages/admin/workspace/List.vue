@@ -19,6 +19,8 @@ import {
   getWorkspaceList,
   getWorkspaceTrash,
   loginAsWorkspaceOwner,
+  showCreateWorkspacePage,
+  showEditWorkspacePage,
   showWorkspaceDetail,
 } from '@/routes/admin';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
@@ -55,9 +57,16 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               :title="t('工作区管理')"
               :description="t('查看系统中所有工作区及其成员信息')"
             />
-            <Button variant="outline" as-child>
-              <Link :href="getWorkspaceTrash.url()">{{ t('回收站') }}</Link>
-            </Button>
+            <div class="flex items-center gap-2">
+              <Button as-child>
+                <Link :href="showCreateWorkspacePage.url()">
+                  {{ t('新建工作区') }}
+                </Link>
+              </Button>
+              <Button variant="outline" as-child>
+                <Link :href="getWorkspaceTrash.url()">{{ t('回收站') }}</Link>
+              </Button>
+            </div>
           </div>
 
           <div class="rounded-lg border">
@@ -112,7 +121,13 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                       <div class="inline-flex items-center gap-2">
                         <Button variant="outline" size="sm" as-child>
                           <Link :href="showWorkspaceDetail.url(ws.id)">
-                            {{ t('查看详情') }}
+                            {{ t('客服列表') }}
+                          </Link>
+                        </Button>
+
+                        <Button variant="outline" size="sm" as-child>
+                          <Link :href="showEditWorkspacePage.url(ws.id)">
+                            {{ t('编辑') }}
                           </Link>
                         </Button>
 
