@@ -95,13 +95,13 @@ Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->grou
     Route::get('workspaces/{id}/login-as-owner', LoginAsWorkspaceOwnerAction::class)->name('login-as-workspace-owner');
 
     // 存储设置
-    Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
-    Route::put('storage', UpdateStorageSettingAction::class)->name('update-storage-setting');
-    Route::put('check', CheckStorageSettingAction::class)->name('check-storage-settiing');
-    Route::post('storage/profiles', CreateStorageProfileAction::class)->name('storage-profile.create');
-    Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('storage-profile.update');
-    Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
-    Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
+    Route::get('storage', GetStorageSettingAction::class)->name('admin.get-storage-setting');
+    Route::put('storage', UpdateStorageSettingAction::class)->name('admin.update-storage-setting');
+    Route::put('check', CheckStorageSettingAction::class)->name('admin.check-storage-settiing');
+    Route::post('storage/profiles', CreateStorageProfileAction::class)->name('admin.storage-profile.create');
+    Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('admin.storage-profile.update');
+    Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('admin.storage-profile.check');
+    Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('admin.storage-profile.delete');
 
     // 用户管理
     Route::get('users', ShowSystemUserListAction::class)->name('admin.get-user-list');

@@ -16,8 +16,8 @@ import {
 } from '@/components/ui/select';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
-import { getStorageSetting } from '@/routes';
-import storageProfile from '@/routes/storage-profile';
+import { getStorageSetting } from '@/routes/admin';
+import storageProfile from '@/routes/admin/storage-profile';
 import type { AppPageProps } from '@/types';
 import { type BreadcrumbItem } from '@/types';
 import type {
