@@ -21,13 +21,23 @@ import {
 } from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
 import type { ShowWorkspaceTrashPagePropsData } from '@/types/generated';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
 const props = defineProps<ShowWorkspaceTrashPagePropsData>();
 const restoreForm = useForm({});
+
+const prevPage = computed(() =>
+  Math.max(1, props.workspace_trash_list_pagination.current_page - 1),
+);
+const nextPage = computed(() =>
+  Math.min(
+    props.workspace_trash_list_pagination.last_page,
+    props.workspace_trash_list_pagination.current_page + 1,
+  ),
+);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
@@ -174,6 +184,41 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 border-t p-4">
+              <div class="text-sm text-muted-foreground">
+                {{ t('第') }} {{ props.workspace_trash_list_pagination.current_page }}
+                / {{ props.workspace_trash_list_pagination.last_page }}
+                {{ t('页，共') }}
+                {{ props.workspace_trash_list_pagination.total }}
+                {{ t('个工作区') }}
+              </div>
+              <div class="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  :disabled="props.workspace_trash_list_pagination.current_page <= 1"
+                  as-child
+                >
+                  <Link :href="getWorkspaceTrash.url({ query: { page: prevPage } })">
+                    {{ t('上一页') }}
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  :disabled="
+                    props.workspace_trash_list_pagination.current_page >=
+                    props.workspace_trash_list_pagination.last_page
+                  "
+                  as-child
+                >
+                  <Link :href="getWorkspaceTrash.url({ query: { page: nextPage } })">
+                    {{ t('下一页') }}
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

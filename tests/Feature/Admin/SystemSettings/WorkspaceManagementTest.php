@@ -34,10 +34,31 @@ test('super admin can view workspace management list page', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->component('admin/workspace/List')
             ->has('workspace_list')
+            ->has('workspace_list_pagination')
+            ->where('workspace_list_pagination.current_page', 1)
             ->has('workspace_list.0', fn (Assert $item) => $item
                 ->hasAll(['id', 'name', 'slug', 'created_at', 'members_count', 'owner'])
                 ->etc()
             )
+        );
+});
+
+test('workspace management list supports pagination params', function () {
+    $owner = User::factory()->create();
+
+    Workspace::factory()->count(12)->create([
+        'owner_id' => $owner->id,
+    ]);
+
+    $this->actingAs($this->user, 'admin')
+        ->get(route('admin.get-workspace-list', ['page' => 2, 'per_page' => 10]))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('admin/workspace/List')
+            ->has('workspace_list', 2)
+            ->where('workspace_list_pagination.current_page', 2)
+            ->where('workspace_list_pagination.per_page', 10)
+            ->where('workspace_list_pagination.total', 12)
         );
 });
 
