@@ -3,8 +3,8 @@
 namespace App\Actions\StorageSetting\StorageProfile;
 
 use App\Actions\StorageSetting\CheckStorageSettingAction;
-use App\Data\StorageProfileCreateData;
-use App\Data\StorageSettingCheckData;
+use App\Data\StorageSetting\StorageProfileCreateData;
+use App\Data\StorageSetting\StorageSettingCheckData;
 use App\Models\StorageProfile;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;

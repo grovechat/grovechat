@@ -2,10 +2,10 @@
 
 namespace App\Actions\StorageSetting;
 
-use App\Data\StorageConfigData;
-use App\Data\StorageProfileData;
-use App\Data\StorageSettingData;
-use App\Data\StorageSettingPagePropsData;
+use App\Data\StorageSetting\StorageConfigData;
+use App\Data\StorageSetting\StorageProfileData;
+use App\Data\StorageSetting\StorageSettingData;
+use App\Data\StorageSetting\StorageSettingPagePropsData;
 use App\Enums\StorageProvider;
 use App\Models\StorageProfile;
 use App\Settings\StorageSettings;

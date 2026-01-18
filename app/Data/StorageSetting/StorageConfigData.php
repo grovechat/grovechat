@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\StorageSetting;
 
 use Spatie\LaravelData\Data;
 
@@ -10,7 +10,7 @@ class StorageConfigData extends Data
         public string $value,
         public string $label,
         public string $helpLink,
-        /** @var \App\Data\StorageRegionData[] */
+        /** @var \App\Data\StorageSetting\StorageRegionData[] */
         public array $regions,
     ) {}
 }

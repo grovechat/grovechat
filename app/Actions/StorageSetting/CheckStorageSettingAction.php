@@ -2,7 +2,7 @@
 
 namespace App\Actions\StorageSetting;
 
-use App\Data\StorageSettingCheckData;
+use App\Data\StorageSetting\StorageSettingCheckData;
 use App\Enums\StorageProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

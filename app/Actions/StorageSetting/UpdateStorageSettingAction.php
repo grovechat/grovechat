@@ -2,7 +2,7 @@
 
 namespace App\Actions\StorageSetting;
 
-use App\Data\StorageSettingData;
+use App\Data\StorageSetting\StorageSettingData;
 use App\Models\StorageProfile;
 use App\Services\Storage\StorageProfileDisk;
 use App\Settings\StorageSettings;
@@ -54,7 +54,7 @@ class UpdateStorageSettingAction
             Log::warning('Storage profile connection check failed during save', [
                 'storage_profile_id' => $profile->id,
                 'exception' => $e,
-            ]);
+            ]); 
 
             throw ValidationException::withMessages([
                 'current_profile_id' => __('storage_settings.connection_check_failed'),
