@@ -2,7 +2,7 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\User\CreateUserData;
+use App\Data\User\FormCreateUserData;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,7 +12,7 @@ class CreateUserAction
 {
     use AsAction;
 
-    public function handle(CreateUserData $data): User
+    public function handle(FormCreateUserData $data): User
     {
         return User::query()->create([
             'name' => $data->name,
@@ -25,7 +25,7 @@ class CreateUserAction
 
     public function asController(Request $request)
     {
-        $data = CreateUserData::from($request);
+        $data = FormCreateUserData::from($request);
         $this->handle($data);
 
         Inertia::flash('toast', [

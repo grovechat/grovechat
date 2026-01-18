@@ -2,7 +2,7 @@
 
 namespace App\Actions\SystemSetting\User;
 
-use App\Data\User\UpdateUserData;
+use App\Data\User\FormUpdateUserData;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,7 +12,7 @@ class UpdateUserAction
 {
     use AsAction;
 
-    public function handle(string $id, UpdateUserData $data): void
+    public function handle(string $id, FormUpdateUserData $data): void
     {
         $user = User::query()
             ->where('is_super_admin', false)
@@ -33,7 +33,7 @@ class UpdateUserAction
 
     public function asController(Request $request, string $id)
     {
-        $data = UpdateUserData::from($request);
+        $data = FormUpdateUserData::from($request);
         $this->handle($id, $data);
 
         Inertia::flash('toast', [
