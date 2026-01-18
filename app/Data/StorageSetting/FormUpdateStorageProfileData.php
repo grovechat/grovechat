@@ -4,7 +4,7 @@ namespace App\Data\StorageSetting;
 
 use Spatie\LaravelData\Data;
 
-class UpdateStorageProfileData extends Data
+class FormUpdateStorageProfileData extends Data
 {
     public function __construct(
         public string $name,
@@ -23,4 +23,3 @@ class UpdateStorageProfileData extends Data
         ];
     }
 }
-

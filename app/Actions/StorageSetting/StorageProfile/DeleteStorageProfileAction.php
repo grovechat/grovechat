@@ -42,7 +42,7 @@ class DeleteStorageProfileAction
 
         Inertia::flash('toast', [
             'type' => 'success',
-            'message' => __('storage_settings.profile_deleted'),
+            'message' => __('common.操作成功'),
         ]);
 
         return back();

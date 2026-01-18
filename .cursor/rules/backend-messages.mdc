@@ -36,7 +36,7 @@ public function asController(Request $request)
     // ✅ 通过 flash 传递 toast 消息
     Inertia::flash('toast', [
         'type' => 'success',  // success | error | warning | info
-        'message' => __('workspace.workspace_deleted'),
+        'message' => __('common.操作成功'),
     ]);
     
     return redirect()->route('...');

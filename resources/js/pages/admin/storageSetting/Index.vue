@@ -22,10 +22,10 @@ import { type BreadcrumbItem } from '@/types';
 import type {
   StorageProfileData,
   GetStorageSettingPagePropsData,
-  StorageSettingData,
-  CreateStorageProfileData,
-  CheckStorageSettingData,
-  UpdateStorageProfileData,
+  FormCreateStorageProfileData,
+  FormCheckStorageSettingData,
+  FormUpdateStorageProfileData,
+  FormStorageSettingData,
 } from '@/types/generated';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
@@ -43,7 +43,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   },
 ]);
 
-const settingsForm = useForm<StorageSettingData>({
+const settingsForm = useForm<FormStorageSettingData>({
   enabled: props.settings.enabled,
   current_profile_id: props.settings.current_profile_id,
 });
@@ -64,7 +64,7 @@ const saveSettings = () => {
 
 const showCreate = ref(false);
 
-const createForm = useForm<CreateStorageProfileData>({
+const createForm = useForm<FormCreateStorageProfileData>({
   name: '',
   provider: 'aws',
   region: '',
@@ -82,7 +82,7 @@ const createUrl = computed<string>({
   },
 });
 
-const checkCreateForm = useForm<CheckStorageSettingData>({
+const checkCreateForm = useForm<FormCheckStorageSettingData>({
   provider: '',
   region: '',
   endpoint: '',
@@ -158,7 +158,7 @@ const createProfile = () => {
   });
 };
 
-const getCheckCreateData = (): CheckStorageSettingData => ({
+const getCheckCreateData = (): FormCheckStorageSettingData => ({
   provider: createForm.provider,
   region: createForm.region,
   endpoint: createForm.endpoint,
@@ -186,7 +186,7 @@ const checkConnectionForCreate = () => {
 
 const editingProfileId = ref<string | null>(null);
 
-const editForm = useForm<UpdateStorageProfileData>({
+const editForm = useForm<FormUpdateStorageProfileData>({
   name: '',
   url: null,
   key: null,
