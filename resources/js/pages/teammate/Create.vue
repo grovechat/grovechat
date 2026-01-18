@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import UploadImageAction from '@/actions/App/Actions/Attachment/UploadImageAction';
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
-import ImageUploadField from '@/components/common/ImageUploadField.vue';
-import InputError from '@/components/common/InputError.vue';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import InputError from '@/components/common/InputError.vue';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -19,18 +16,23 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { createTeammate, showTeammateList } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
-import type { ShowCreateTeammatePagePropsData, WorkspaceRole } from '@/types/generated';
+import type {
+  ShowCreateTeammatePagePropsData,
+  WorkspaceRole,
+} from '@/types/generated';
 import { Form, Head } from '@inertiajs/vue3';
-import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 const { t } = useI18n();
 const props = defineProps<ShowCreateTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
 
+const availableUsers = computed(() =>
+  Array.isArray(props.available_users) ? props.available_users : [],
+);
+
+const userId = ref<string>('');
 const roleValue = ref<WorkspaceRole>('operator');
-const passwordVisible = ref(false);
-const passwordConfirmationVisible = ref(false);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
@@ -48,6 +50,16 @@ const roleOptions = computed<{ value: WorkspaceRole; label: string }[]>(() =>
     value: opt.value as WorkspaceRole,
     label: opt.label,
   })),
+);
+
+watch(
+  () => availableUsers.value,
+  (opts) => {
+    if (!userId.value && opts?.length) {
+      userId.value = String(opts[0].id);
+    }
+  },
+  { immediate: true },
 );
 
 watch(
@@ -69,7 +81,7 @@ watch(
       <div class="space-y-6">
         <HeadingSmall
           :title="t('新增客服')"
-          :description="t('创建一个新的客服账号并分配角色')"
+          :description="t('关联已有用户并分配身份')"
         />
 
         <Form
@@ -78,46 +90,37 @@ watch(
           v-slot="{ errors, processing, recentlySuccessful }"
         >
           <div class="grid gap-2">
-            <Label for="name">{{ t('客服名称') }}</Label>
-            <Input
-              id="name"
-              name="name"
-              class="mt-1 block w-full"
-              required
-              :placeholder="t('请输入客服名称')"
-            />
-            <InputError class="mt-2" :message="errors.name" />
+            <Label for="user_id">{{ t('用户') }}</Label>
+            <input type="hidden" name="user_id" :value="userId" />
+            <Select v-model="userId">
+              <SelectTrigger id="user_id" class="mt-1">
+                <SelectValue :placeholder="t('请选择用户')" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="u in availableUsers"
+                  :key="String(u.id)"
+                  :value="String(u.id)"
+                >
+                  {{ u.name }} ({{ u.email }})
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p
+              v-if="availableUsers.length === 0"
+              class="text-sm text-muted-foreground"
+            >
+              {{ t('暂无可添加的用户') }}
+            </p>
+            <InputError class="mt-2" :message="errors.user_id" />
           </div>
 
           <div class="grid gap-2">
-            <Label for="nickname">{{ t('对外昵称') }}</Label>
-            <Input
-              id="nickname"
-              name="nickname"
-              class="mt-1 block w-full"
-              :placeholder="t('请输入对外昵称')"
-            />
-            <InputError class="mt-2" :message="errors.nickname" />
-          </div>
-
-          <ImageUploadField
-            :label="t('头像')"
-            name="avatar"
-            :upload-url="UploadImageAction.url()"
-            response-key="full_url"
-            folder="avatars"
-            :initial-preview="''"
-            :initial-value="''"
-            variant="avatar"
-            :error="errors.avatar"
-          />
-
-          <div class="grid gap-2">
-            <Label for="role">{{ t('角色') }}</Label>
+            <Label for="role">{{ t('身份') }}</Label>
             <input type="hidden" name="role" :value="roleValue" />
             <Select v-model="roleValue">
               <SelectTrigger id="role" class="mt-1">
-                <SelectValue :placeholder="t('请选择角色')" />
+                <SelectValue :placeholder="t('请选择身份')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem
@@ -132,68 +135,16 @@ watch(
             <InputError class="mt-2" :message="errors.role" />
           </div>
 
-          <div class="grid gap-2">
-            <Label for="email">{{ t('邮箱') }}</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              class="mt-1 block w-full"
-              required
-              :placeholder="t('请输入邮箱')"
-            />
-            <InputError class="mt-2" :message="errors.email" />
-          </div>
-
-          <div class="grid gap-2">
-            <Label for="password">{{ t('登录密码') }}</Label>
-            <div class="relative mt-1">
-              <Input
-                id="password"
-                name="password"
-                :type="passwordVisible ? 'text' : 'password'"
-                class="block w-full pr-10"
-                required
-                :placeholder="t('请输入登录密码')"
-              />
-              <button
-                type="button"
-                class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                @click="passwordVisible = !passwordVisible"
-              >
-                <EyeOff v-if="passwordVisible" class="h-4 w-4" />
-                <Eye v-else class="h-4 w-4" />
-              </button>
-            </div>
-            <InputError class="mt-2" :message="errors.password" />
-          </div>
-
-          <div class="grid gap-2">
-            <Label for="password_confirmation">{{ t('确认密码') }}</Label>
-            <div class="relative mt-1">
-              <Input
-                id="password_confirmation"
-                name="password_confirmation"
-                :type="passwordConfirmationVisible ? 'text' : 'password'"
-                class="block w-full pr-10"
-                required
-                :placeholder="t('请再次输入登录密码')"
-              />
-              <button
-                type="button"
-                class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                @click="
-                  passwordConfirmationVisible = !passwordConfirmationVisible
-                "
-              >
-                <EyeOff v-if="passwordConfirmationVisible" class="h-4 w-4" />
-                <Eye v-else class="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
           <div class="flex items-center gap-4">
-            <Button type="submit" :disabled="processing">
+            <Button
+              type="submit"
+              :disabled="
+                processing ||
+                availableUsers.length === 0 ||
+                !userId ||
+                !roleValue
+              "
+            >
               {{ t('创建') }}
             </Button>
 

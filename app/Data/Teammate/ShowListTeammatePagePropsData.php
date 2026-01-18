@@ -12,7 +12,5 @@ class ShowListTeammatePagePropsData extends Data
 
         /** @var \App\Data\EnumOptionData[] */
         public array $online_status_options,
-
-        public bool $can_restore_user,
     ) {}
 }

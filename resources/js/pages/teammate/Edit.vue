@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import UploadImageAction from '@/actions/App/Actions/Attachment/UploadImageAction';
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
-import ImageUploadField from '@/components/common/ImageUploadField.vue';
 import InputError from '@/components/common/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,15 +19,12 @@ import { showTeammateList, updateTeammate } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
 import type { ShowEditTeammatePagePropsData } from '@/types/generated';
 import { Form, Head } from '@inertiajs/vue3';
-import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
 const props = defineProps<ShowEditTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
 
-const passwordVisible = ref(false);
-const passwordConfirmationVisible = ref(false);
 const roleValue = ref<string>(String(props.user_form.role ?? ''));
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -53,7 +48,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
       <div class="space-y-6">
         <HeadingSmall
           :title="t('编辑客服')"
-          :description="t('更新客服资料，密码可选不填表示不修改')"
+          :description="t('仅支持调整客服身份')"
         />
 
         <Form
@@ -68,79 +63,32 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
         >
           <div class="grid gap-2">
             <Label for="name">{{ t('客服名称') }}</Label>
-            <template v-if="props.can_update_profile">
-              <Input
-                id="name"
-                name="name"
-                class="mt-1 block w-full"
-                required
-                :default-value="props.user_form.name || ''"
-                :placeholder="t('请输入客服名称')"
-              />
-            </template>
-            <template v-else>
-              <input
-                type="hidden"
-                name="name"
-                :value="props.user_form.name || ''"
-              />
-              <Input
-                id="name"
-                class="mt-1 block w-full"
-                disabled
-                :default-value="props.user_form.name || ''"
-              />
-            </template>
-            <InputError class="mt-2" :message="errors.name" />
+            <Input
+              id="name"
+              class="mt-1 block w-full"
+              disabled
+              :default-value="props.user_form.name || ''"
+            />
           </div>
 
           <div class="grid gap-2">
-            <Label for="nickname">{{ t('对外昵称') }}</Label>
-            <template v-if="props.can_update_profile">
-              <Input
-                id="nickname"
-                name="nickname"
-                class="mt-1 block w-full"
-                :default-value="props.user_form.nickname || ''"
-                :placeholder="t('请输入对外昵称')"
-              />
-            </template>
-            <template v-else>
-              <input
-                type="hidden"
-                name="nickname"
-                :value="props.user_form.nickname || ''"
-              />
-              <Input
-                id="nickname"
-                class="mt-1 block w-full"
-                disabled
-                :default-value="props.user_form.nickname || ''"
-              />
-            </template>
-            <InputError class="mt-2" :message="errors.nickname" />
+            <Label for="email">{{ t('邮箱') }}</Label>
+            <Input
+              id="email"
+              type="email"
+              class="mt-1 block w-full"
+              disabled
+              :default-value="props.user_form.email || ''"
+            />
           </div>
 
-          <ImageUploadField
-            :label="t('头像')"
-            name="avatar"
-            :upload-url="UploadImageAction.url()"
-            response-key="full_url"
-            folder="avatars"
-            :initial-preview="props.user_form.avatar || ''"
-            :initial-value="props.user_form.avatar || ''"
-            :disabled="!props.can_update_profile"
-            variant="avatar"
-            :error="errors.avatar"
-          />
-
           <div class="grid gap-2">
-            <Label for="role">{{ t('角色') }}</Label>
+            <Label for="role">{{ t('身份') }}</Label>
             <template v-if="props.can_update_role">
               <input type="hidden" name="role" :value="roleValue" />
               <Select v-model="roleValue">
                 <SelectTrigger id="role" class="mt-1">
-                  <SelectValue :placeholder="t('请选择角色')" />
+                  <SelectValue :placeholder="t('请选择身份')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
@@ -168,83 +116,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             </template>
             <InputError class="mt-2" :message="errors.role" />
           </div>
-
-          <div class="grid gap-2">
-            <Label for="email">{{ t('邮箱') }}</Label>
-            <template v-if="props.can_update_email">
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                class="mt-1 block w-full"
-                required
-                :default-value="props.user_form.email || ''"
-                :placeholder="t('请输入邮箱')"
-              />
-            </template>
-            <template v-else>
-              <input
-                type="hidden"
-                name="email"
-                :value="props.user_form.email || ''"
-              />
-              <Input
-                id="email"
-                type="email"
-                class="mt-1 block w-full"
-                disabled
-                :default-value="props.user_form.email || ''"
-              />
-            </template>
-            <InputError class="mt-2" :message="errors.email" />
-          </div>
-
-          <template v-if="props.can_update_password">
-            <div class="grid gap-2">
-              <Label for="password">{{ t('登录密码') }}</Label>
-              <div class="relative mt-1">
-                <Input
-                  id="password"
-                  name="password"
-                  :type="passwordVisible ? 'text' : 'password'"
-                  class="block w-full pr-10"
-                  :placeholder="t('不填表示不修改密码')"
-                />
-                <button
-                  type="button"
-                  class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  @click="passwordVisible = !passwordVisible"
-                >
-                  <EyeOff v-if="passwordVisible" class="h-4 w-4" />
-                  <Eye v-else class="h-4 w-4" />
-                </button>
-              </div>
-              <InputError class="mt-2" :message="errors.password" />
-            </div>
-
-            <div class="grid gap-2">
-              <Label for="password_confirmation">{{ t('确认密码') }}</Label>
-              <div class="relative mt-1">
-                <Input
-                  id="password_confirmation"
-                  name="password_confirmation"
-                  :type="passwordConfirmationVisible ? 'text' : 'password'"
-                  class="block w-full pr-10"
-                  :placeholder="t('如填写密码，请再次输入确认')"
-                />
-                <button
-                  type="button"
-                  class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  @click="
-                    passwordConfirmationVisible = !passwordConfirmationVisible
-                  "
-                >
-                  <EyeOff v-if="passwordConfirmationVisible" class="h-4 w-4" />
-                  <Eye v-else class="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </template>
 
           <div class="flex items-center gap-4">
             <Button type="submit" :disabled="processing">

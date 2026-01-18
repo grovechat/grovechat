@@ -6,7 +6,7 @@ use App\Data\Teammate\FormCreateTeammateData;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -16,21 +16,27 @@ class CreateTeammateAction
 
     public function handle(Workspace $workspace, FormCreateTeammateData $data): User
     {
-        return DB::transaction(function () use ($workspace, $data) {
-            $user = User::query()->create([
-                'name' => $data->name,
-                'email' => $data->email,
-                'avatar' => $data->avatar,
-                'nickname' => $data->nickname,
-                'password' => $data->password,
-            ]);
+        $user = User::query()
+            ->where('is_super_admin', false)
+            ->findOrFail($data->user_id);
 
-            $workspace->users()->attach($user->id, [
-                'role' => $data->role->value,
+        if (filled($workspace->owner_id) && (string) $workspace->owner_id === (string) $user->id) {
+            throw ValidationException::withMessages([
+                'user_id' => __('workspace.cannot_select_owner'),
             ]);
+        }
 
-            return $user;
-        });
+        if ($workspace->users()->whereKey($user->id)->exists()) {
+            throw ValidationException::withMessages([
+                'user_id' => __('workspace.user_already_in_workspace'),
+            ]);
+        }
+
+        $workspace->users()->attach($user->id, [
+            'role' => $data->role->value,
+        ]);
+
+        return $user;
     }
 
     public function asController(Request $request, Workspace $currentWorkspace)

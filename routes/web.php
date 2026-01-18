@@ -27,12 +27,10 @@ use App\Actions\SystemSetting\User\ShowEditUserPageAction;
 use App\Actions\SystemSetting\User\ShowUserListAction;
 use App\Actions\SystemSetting\User\UpdateUserAction;
 use App\Actions\Teammate\CreateTeammateAction;
-use App\Actions\Teammate\DeleteTeammateAction;
-use App\Actions\Teammate\RestoreTeammateAction;
+use App\Actions\Teammate\RemoveTeammateAction;
 use App\Actions\Teammate\ShowCreateTeammatePageAction;
 use App\Actions\Teammate\ShowEditTeammatePageAction;
 use App\Actions\Teammate\ShowTeammateListAction;
-use App\Actions\Teammate\ShowTeammateTrashAction;
 use App\Actions\Teammate\UpdateTeammateAction;
 use App\Actions\Teammate\UpdateTeammateOnlineStatusAction;
 use App\Actions\Workspace\AddWorkspaceMemberAction;
@@ -166,12 +164,10 @@ Route::middleware(['auth:web', IdentifyWorkspace::class, TrackLastWorkspace::cla
         Route::get('teammates', ShowTeammateListAction::class)->name('show-teammate-list');
         Route::get('teammates/create', ShowCreateTeammatePageAction::class)->name('show-create-teammate-page');
         Route::get('teammates/{id}/edit', ShowEditTeammatePageAction::class)->name('show-edit-teammate-page');
-        Route::get('teammates/trash', ShowTeammateTrashAction::class)->name('show-teammate-trash-page');
         Route::post('teammates', CreateTeammateAction::class)->name('create-teammate');
         Route::put('teammates/{id}', UpdateTeammateAction::class)->name('update-teammate');
         Route::put('teammates/{id}/online-status', UpdateTeammateOnlineStatusAction::class)->name('update-teammate-online-status');
-        Route::put('teammates/{id}/restore', RestoreTeammateAction::class)->name('restore-teammate');
-        Route::delete('teammates/{id}', DeleteTeammateAction::class)->name('delete-teammate');
+        Route::delete('teammates/{id}', RemoveTeammateAction::class)->name('remove-teammate');
 
         // 渠道
         Route::prefix('channels')->group(function () {

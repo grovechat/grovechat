@@ -22,13 +22,12 @@ class ShowTeammateListAction
             ->get();
 
         $userList = $users->map(fn ($u) => WorkspaceUserContextData::fromModels($workspace, $u)
-            ->withShowDeleteButton(Gate::allows('workspace-users.deleteUser', [$workspace, $u]))
+            ->withShowRemoveButton(Gate::allows('workspace-users.removeMember', [$workspace, $u]))
         )->all();
 
         return new ShowListTeammatePagePropsData(
             user_list: $userList,
             online_status_options: EnumOptionData::fromCases(UserOnlineStatus::cases()),
-            can_restore_user: Gate::allows('workspace-users.restoreUser', [$workspace]),
         );
     }
 

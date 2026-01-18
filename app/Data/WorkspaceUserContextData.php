@@ -18,7 +18,7 @@ class WorkspaceUserContextData extends Data
         public string $user_email,
         public EnumOptionData $user_online_status,
         public EnumOptionData $role,
-        public bool $show_delete_button = true,
+        public bool $show_remove_button = true,
         public ?string $user_nickname = null,
         public ?string $user_avatar = null,
     ) {}
@@ -39,11 +39,12 @@ class WorkspaceUserContextData extends Data
             user_avatar: filled($user->avatar) ? $user->avatar : null,
             role: EnumOptionData::fromEnum($role),
         );
-    }    
-    
-    public function withShowDeleteButton(bool $showDeleteButton): self
+    }
+
+    public function withShowRemoveButton(bool $showRemoveButton): self
     {
-        $this->show_delete_button = $showDeleteButton;
+        $this->show_remove_button = $showRemoveButton;
+
         return $this;
     }
 }

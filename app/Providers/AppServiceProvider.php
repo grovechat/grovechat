@@ -44,21 +44,29 @@ class AppServiceProvider extends ServiceProvider
             return in_array($actorRole, [WorkspaceRole::OWNER->value, WorkspaceRole::ADMIN->value], true);
         });
 
-        // 删除用户权限
-        Gate::define('workspace-users.deleteUser', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
+        // 从工作区移除成员权限（仅解除关联，不删除用户）
+        Gate::define('workspace-users.removeMember', function (User $actor, Workspace $workspace, User $target) use ($actorContext): bool {
             $ctx = $actorContext($workspace, $actor);
             $actorRole = $ctx->role->value;
+            $targetRole = WorkspaceUserContextData::fromModels($workspace, $target)->role->value;
 
-            return $actorRole === WorkspaceRole::OWNER->value
-                && (string) $actor->id !== (string) $target->id;
-        });
+            if (filled($workspace->owner_id) && (string) $workspace->owner_id === (string) $target->id) {
+                return false;
+            }
 
-        // 恢复用户权限
-        Gate::define('workspace-users.restoreUser', function (User $actor, Workspace $workspace) use ($actorContext): bool {
-            $ctx = $actorContext($workspace, $actor);
-            $actorRole = $ctx->role->value;
+            if ((string) $actor->id === (string) $target->id) {
+                return false;
+            }
 
-            return $actorRole === WorkspaceRole::OWNER->value;
+            if ($actorRole === WorkspaceRole::OWNER->value) {
+                return true;
+            }
+
+            if ($actorRole !== WorkspaceRole::ADMIN->value) {
+                return false;
+            }
+
+            return $targetRole === WorkspaceRole::OPERATOR->value;
         });
 
         // 更新用户资料权限

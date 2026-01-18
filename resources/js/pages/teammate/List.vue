@@ -24,11 +24,10 @@ import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import {
-  deleteTeammate,
+  removeTeammate,
   showCreateTeammatePage,
   showEditTeammatePage,
   showTeammateList,
-  showTeammateTrashPage,
   updateTeammateOnlineStatus,
 } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -42,7 +41,7 @@ const { t } = useI18n();
 const props = defineProps<ShowListTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
 const updatingStatusIds = ref<Record<string, boolean>>({});
-const deleteForm = useForm({});
+const removeForm = useForm({});
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
@@ -83,12 +82,6 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
             <Button as-child>
               <Link :href="showCreateTeammatePage.url(currentWorkspace.slug)">
                 {{ t('新增客服') }}
-              </Link>
-            </Button>
-
-            <Button variant="outline" as-child v-show="props.can_restore_user">
-              <Link :href="showTeammateTrashPage.url(currentWorkspace.slug)">
-                {{ t('回收站') }}
               </Link>
             </Button>
           </div>
@@ -175,23 +168,23 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                           <Button
                             variant="destructive"
                             size="sm"
-                            :disabled="!u.show_delete_button || deleteForm.processing"
+                            :disabled="!u.show_remove_button || removeForm.processing"
                             :title="
-                              !u.show_delete_button
+                              !u.show_remove_button
                                 ? t('当前登录用户不允许删除')
                                 : undefined
                             "
                           >
-                            {{ t('删除') }}
+                            {{ t('移除') }}
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader class="space-y-3">
                             <DialogTitle>
-                              {{ t('确认删除客服？') }}
+                              {{ t('确认移除客服？') }}
                             </DialogTitle>
                             <DialogDescription>
-                              {{ t('将该客服账号放入回收站，可以后续恢复。') }}
+                              {{ t('将从当前工作区移除该成员的访问权限（不会删除用户）。') }}
                             </DialogDescription>
                           </DialogHeader>
 
@@ -206,7 +199,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                             <DialogClose as-child>
                               <Button
                                 variant="secondary"
-                                :disabled="deleteForm.processing"
+                                :disabled="removeForm.processing"
                               >
                                 {{ t('取消') }}
                               </Button>
@@ -214,11 +207,11 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                             <Button
                               variant="destructive"
                               :disabled="
-                                deleteForm.processing || !u.show_delete_button
+                                removeForm.processing || !u.show_remove_button
                               "
                               @click="
-                                deleteForm.delete(
-                                  deleteTeammate.url({
+                                removeForm.delete(
+                                  removeTeammate.url({
                                     slug: currentWorkspace.slug,
                                     id: u.user_id,
                                   }),
@@ -227,9 +220,9 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                               "
                             >
                               {{
-                                deleteForm.processing
-                                  ? t('删除中...')
-                                  : t('确认删除')
+                                removeForm.processing
+                                  ? t('移除中...')
+                                  : t('确认移除')
                               }}
                             </Button>
                           </DialogFooter>

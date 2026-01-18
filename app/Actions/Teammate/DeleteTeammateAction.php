@@ -5,10 +5,11 @@ namespace App\Actions\Teammate;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
-class DeleteTeammateAction
+class RemoveTeammateAction
 {
     use AsAction;
 
@@ -16,9 +17,15 @@ class DeleteTeammateAction
     {
         $targetUser = $workspace->users()->whereKey($id)->firstOrFail();
 
-        Gate::authorize('workspace-users.deleteUser', [$workspace, $targetUser]);
+        Gate::authorize('workspace-users.removeMember', [$workspace, $targetUser]);
 
-        $targetUser->delete();
+        if (filled($workspace->owner_id) && (string) $workspace->owner_id === (string) $targetUser->id) {
+            throw ValidationException::withMessages([
+                'user_id' => __('workspace.cannot_remove_owner'),
+            ]);
+        }
+
+        $workspace->users()->detach($targetUser->id);
     }
 
     public function asController(Request $request, Workspace $currentWorkspace, string $slug, string $id)
