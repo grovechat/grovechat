@@ -2,7 +2,7 @@
 
 namespace App\Actions\StorageSetting;
 
-use App\Data\StorageSetting\StorageSettingCheckData;
+use App\Data\StorageSetting\CheckStorageSettingData;
 use App\Enums\StorageProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +16,7 @@ class CheckStorageSettingAction
 {
     use AsAction;
 
-    public function handle(StorageSettingCheckData $data)
+    public function handle(CheckStorageSettingData $data)
     {
         $payload = $data->toArray();
 
@@ -44,7 +44,7 @@ class CheckStorageSettingAction
 
     public function asController(Request $request)
     {
-        $data = StorageSettingCheckData::validateAndCreate($request->all());
+        $data = CheckStorageSettingData::from($request);
 
         try {
             $this->handle($data);

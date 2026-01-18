@@ -3,8 +3,8 @@
 namespace App\Actions\StorageSetting\StorageProfile;
 
 use App\Actions\StorageSetting\CheckStorageSettingAction;
-use App\Data\StorageSetting\StorageProfileUpdateData;
-use App\Data\StorageSetting\StorageSettingCheckData;
+use App\Data\StorageSetting\UpdateStorageProfileData;
+use App\Data\StorageSetting\CheckStorageSettingData;
 use App\Models\StorageProfile;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +20,7 @@ class UpdateStorageProfileAction
         protected CheckStorageSettingAction $checker,
     ) {}
 
-    public function handle(StorageProfile $profile, StorageProfileUpdateData $data): void
+    public function handle(StorageProfile $profile, UpdateStorageProfileData $data): void
     {
         $update = [
             'name' => $data->name,
@@ -39,7 +39,7 @@ class UpdateStorageProfileAction
                 ]);
             }
 
-            $checkData = StorageSettingCheckData::from([
+            $checkData = CheckStorageSettingData::from([
                 'provider' => $profile->provider,
                 'key' => $key,
                 'secret' => $secret,
@@ -70,7 +70,7 @@ class UpdateStorageProfileAction
 
     public function asController(Request $request, StorageProfile $profile)
     {
-        $data = StorageProfileUpdateData::validateAndCreate($request->all());
+        $data = UpdateStorageProfileData::validateAndCreate($request->all());
         $this->handle($profile, $data);
 
         Inertia::flash('toast', [
