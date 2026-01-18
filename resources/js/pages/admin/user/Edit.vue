@@ -37,20 +37,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     <div class="px-4 py-6 sm:px-6">
       <div class="mx-auto w-full max-w-none space-y-12">
         <div class="space-y-6">
-          <HeadingSmall
-            :title="t('编辑用户')"
-            :description="t('更新用户资料，密码可选不填表示不修改')"
-          />
-
-          <div class="flex items-center gap-2 text-sm">
-            <span class="text-muted-foreground">{{ t('两步认证') }}</span>
-            <Badge v-if="userForm.two_factor_enabled" variant="default">
-              {{ t('已启用') }}
-            </Badge>
-            <Badge v-else variant="destructive">
-              {{ t('未启用') }}
-            </Badge>
-          </div>
+          <HeadingSmall :title="t('编辑用户')"/>
 
           <Form
             v-bind="admin.updateUser.form(userForm.id)"

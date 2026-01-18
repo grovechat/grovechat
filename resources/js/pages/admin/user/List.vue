@@ -39,7 +39,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
           <div class="flex items-start justify-between gap-4">
             <HeadingSmall
               :title="t('用户管理')"
-              :description="t('管理系统中的普通用户（非超级管理员）')"
+              :description="t('工作客服账号列表')"
             />
 
             <Button as-child>
