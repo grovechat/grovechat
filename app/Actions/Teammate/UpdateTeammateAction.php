@@ -2,7 +2,7 @@
 
 namespace App\Actions\Teammate;
 
-use App\Data\Teammate\UserUpdateData;
+use App\Data\Teammate\UpdateTeammateData;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -15,7 +15,7 @@ class UpdateTeammateAction
 {
     use AsAction;
 
-    public function handle(Workspace $workspace, $userId, UserUpdateData $data): void
+    public function handle(Workspace $workspace, $userId, UpdateTeammateData $data): void
     {
         $targetUser = User::query()->findOrFail($userId);
         $targetUserWorkspace = $targetUser->workspaces()->where('workspace_id', $workspace->id)->firstOrFail();
@@ -55,7 +55,7 @@ class UpdateTeammateAction
 
     public function asController(Request $request, Workspace $workspace, string $slug, string $id)
     {
-        $data = UserUpdateData::from($request);
+        $data = UpdateTeammateData::from($request);
         $this->handle($workspace, $id, $data);
 
         Inertia::flash('toast', [

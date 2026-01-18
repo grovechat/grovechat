@@ -6,7 +6,7 @@ use App\Enums\WorkspaceRole;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Data;
 
-class UserUpdateData extends Data
+class UpdateTeammateData extends Data
 {
     public function __construct(
         public string $name,

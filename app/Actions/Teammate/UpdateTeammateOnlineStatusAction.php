@@ -2,7 +2,7 @@
 
 namespace App\Actions\Teammate;
 
-use App\Data\Teammate\UserOnlineStatusUpdateData;
+use App\Data\Teammate\UpdateTeammateOnlineStatusData;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,7 +12,7 @@ class UpdateTeammateOnlineStatusAction
 {
     use AsAction;
 
-    public function handle(Workspace $workspace, string $id, UserOnlineStatusUpdateData $data): void
+    public function handle(Workspace $workspace, string $id, UpdateTeammateOnlineStatusData $data): void
     {
         $user = $workspace->users()->whereKey($id)->firstOrFail();
 
@@ -23,7 +23,7 @@ class UpdateTeammateOnlineStatusAction
 
     public function asController(Request $request, Workspace $currentWorkspace, string $slug, string $id)
     {
-        $data = UserOnlineStatusUpdateData::from($request);
+        $data = UpdateTeammateOnlineStatusData::from($request);
         $this->handle($currentWorkspace, $id, $data);
 
         Inertia::flash('toast', [

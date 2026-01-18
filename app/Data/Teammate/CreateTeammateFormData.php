@@ -6,7 +6,7 @@ use App\Enums\UserOnlineStatus;
 use App\Enums\WorkspaceRole;
 use Spatie\LaravelData\Data;
 
-class UserCreateFormData extends Data
+class CreateTeammateFormData extends Data
 {
     public function __construct(
         public string $name = '',

@@ -6,7 +6,7 @@ use App\Enums\UserOnlineStatus;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Data;
 
-class UserOnlineStatusUpdateData extends Data
+class UpdateTeammateOnlineStatusData extends Data
 {
     public function __construct(
         public UserOnlineStatus $online_status,

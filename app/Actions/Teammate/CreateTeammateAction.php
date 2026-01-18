@@ -2,7 +2,7 @@
 
 namespace App\Actions\Teammate;
 
-use App\Data\Teammate\UserCreateData;
+use App\Data\Teammate\CreateTeammateData;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -14,7 +14,7 @@ class CreateTeammateAction
 {
     use AsAction;
 
-    public function handle(Workspace $workspace, UserCreateData $data): User
+    public function handle(Workspace $workspace, CreateTeammateData $data): User
     {
         return DB::transaction(function () use ($workspace, $data) {
             $user = User::query()->create([
@@ -35,7 +35,7 @@ class CreateTeammateAction
 
     public function asController(Request $request, Workspace $currentWorkspace)
     {
-        $data = UserCreateData::from($request);
+        $data = CreateTeammateData::from($request);
         $this->handle($currentWorkspace, $data);
 
         Inertia::flash('toast', [

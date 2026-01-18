@@ -7,7 +7,7 @@ use App\Enums\WorkspaceRole;
 use App\Models\User;
 use Spatie\LaravelData\Data;
 
-class UserListItemData extends Data
+class ListTeammateItemData extends Data
 {
     public function __construct(
         public string $id,

@@ -19,13 +19,13 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { restoreTeammate, showTeammateList, showTeammateTrashPage } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
-import type { UserTrashPagePropsData } from '@/types/generated';
+import type { TrashTeammatePagePropsData } from '@/types/generated';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const page = usePage<AppPageProps<UserTrashPagePropsData>>();
+const page = usePage<AppPageProps<TrashTeammatePagePropsData>>();
 const currentWorkspace = useRequiredWorkspace();
 const userList = computed(() => page.props.user_list);
 const restoreForm = useForm({});

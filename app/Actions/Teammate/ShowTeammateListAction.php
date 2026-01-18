@@ -3,7 +3,7 @@
 namespace App\Actions\Teammate;
 
 use App\Data\EnumOptionData;
-use App\Data\Teammate\UserListPagePropsData;
+use App\Data\Teammate\ListTeammatePagePropsData;
 use App\Data\WorkspaceUserContextData;
 use App\Enums\UserOnlineStatus;
 use App\Models\Workspace;
@@ -15,7 +15,7 @@ class ShowTeammateListAction
 {
     use AsAction;
 
-    public function handle(Workspace $workspace): UserListPagePropsData
+    public function handle(Workspace $workspace): ListTeammatePagePropsData
     {
         $users = $workspace->users()
             ->orderBy('users.id', 'asc')
@@ -25,7 +25,7 @@ class ShowTeammateListAction
             ->withShowDeleteButton(Gate::allows('workspace-users.deleteUser', [$workspace, $u]))
         )->all();
 
-        return new UserListPagePropsData(
+        return new ListTeammatePagePropsData(
             user_list: $userList,
             online_status_options: EnumOptionData::fromCases(UserOnlineStatus::cases()),
             can_restore_user: Gate::allows('workspace-users.restoreUser', [$workspace]),

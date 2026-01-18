@@ -3,8 +3,8 @@
 namespace App\Actions\Teammate;
 
 use App\Data\EnumOptionData;
-use App\Data\Teammate\UserEditFormData;
-use App\Data\Teammate\UserEditPagePropsData;
+use App\Data\Teammate\EditTeammateFormData;
+use App\Data\Teammate\EditTeammatePagePropsData;
 use App\Enums\WorkspaceRole;
 use App\Models\Workspace;
 use Illuminate\Support\Facades\Gate;
@@ -15,14 +15,14 @@ class ShowEditTeammatePageAction
 {
     use AsAction;
 
-    public function handle(Workspace $workspace, string $id): UserEditPagePropsData
+    public function handle(Workspace $workspace, string $id): EditTeammatePagePropsData
     {
         $user = $workspace->users()
             ->whereKey($id)
             ->firstOrFail();
 
-        return new UserEditPagePropsData(
-            user_form: UserEditFormData::fromModel($user),
+        return new EditTeammatePagePropsData(
+            user_form: EditTeammateFormData::fromModel($user),
             role_options: EnumOptionData::fromCases(WorkspaceRole::assignableCases()),
             can_update_profile: Gate::allows('workspace-users.updateProfile', [$workspace, $user]),
             can_update_email: Gate::allows('workspace-users.updateEmail', [$workspace, $user]),

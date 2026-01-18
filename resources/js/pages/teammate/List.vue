@@ -33,13 +33,13 @@ import {
 } from '@/routes';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type {
-  UserListPagePropsData,
+  ListTeammatePagePropsData,
 } from '@/types/generated';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 const { t } = useI18n();
-const page = usePage<AppPageProps<UserListPagePropsData>>();
+const page = usePage<AppPageProps<ListTeammatePagePropsData>>();
 const currentWorkspace = useRequiredWorkspace();
 const userList = computed(() => page.props.user_list);
 const onlineStatusOptions = computed(() => page.props.online_status_options);
