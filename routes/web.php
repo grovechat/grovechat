@@ -148,7 +148,7 @@ Route::middleware(['auth:web', IdentifyWorkspace::class, TrackLastWorkspace::cla
         Route::post('workspaces', CreateWorkspaceAction::class)->name('create-workspace');
         Route::delete('workspaces/current', DeleteCurrentWorkspaceAction::class)->name('delete-current-workspace');
 
-        // teammate（多客服）
+        // 多客服
         Route::get('teammates', ShowTeammateListAction::class)->name('show-teammate-list');
         Route::get('teammates/create', ShowCreateTeammatePageAction::class)->name('show-create-teammate-page');
         Route::get('teammates/{id}/edit', ShowEditTeammatePageAction::class)->name('show-edit-teammate-page');
