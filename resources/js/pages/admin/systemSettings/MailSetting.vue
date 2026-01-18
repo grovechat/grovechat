@@ -2,7 +2,7 @@
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
-import systemSetting from '@/routes/system-setting';
+import admin from '@/routes/admin';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -12,7 +12,7 @@ const { t } = useI18n();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('邮箱服务器'),
-    href: systemSetting.getMailSettings.url(),
+    href: admin.getMailSettings.url(),
   },
 ]);
 </script>

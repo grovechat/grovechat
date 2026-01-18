@@ -20,6 +20,11 @@ use App\Actions\StorageSetting\StorageProfile\UpdateStorageProfileAction;
 use App\Actions\StorageSetting\UpdateStorageSettingAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
+use App\Actions\SystemSetting\User\CreateSystemUserAction;
+use App\Actions\SystemSetting\User\ShowCreateSystemUserPageAction;
+use App\Actions\SystemSetting\User\ShowEditSystemUserPageAction;
+use App\Actions\SystemSetting\User\ShowSystemUserListAction;
+use App\Actions\SystemSetting\User\UpdateSystemUserAction;
 use App\Actions\User\CreateUserAction;
 use App\Actions\User\DeleteUserAction;
 use App\Actions\User\RestoreUserAction;
@@ -98,25 +103,32 @@ Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->grou
     Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
     Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
 
+    // 用户管理
+    Route::get('users', ShowSystemUserListAction::class)->name('admin.get-user-list');
+    Route::get('users/create', ShowCreateSystemUserPageAction::class)->name('admin.show-create-user-page');
+    Route::post('users', CreateSystemUserAction::class)->name('admin.create-user');
+    Route::get('users/{id}/edit', ShowEditSystemUserPageAction::class)->name('admin.show-edit-user-page');
+    Route::put('users/{id}', UpdateSystemUserAction::class)->name('admin.update-user');
+
     // 邮箱服务器
     Route::get('mail', function () {
         return Inertia::render('admin/systemSettings/MailSetting');
-    })->name('system-setting.get-mail-settings');
+    })->name('admin.get-mail-settings');
 
     // 外部集成
     Route::get('integration', function () {
         return Inertia::render('admin/systemSettings/IntegrationSetting');
-    })->name('system-setting.get-integration-settings');
+    })->name('admin.get-integration-settings');
 
     // 安全
     Route::get('security', function () {
         return Inertia::render('admin/systemSettings/SecuritySetting');
-    })->name('system-setting.get-security-settings');
+    })->name('admin.get-security-settings');
 
     // 维护
     Route::get('maintenance', function () {
         return Inertia::render('admin/systemSettings/MaintenanceSetting');
-    })->name('system-setting.get-maintenance-settings');
+    })->name('admin.get-maintenance-settings');
 });
 
 // 分 guard 登出（保证同一浏览器同时操作 admin + workspace 时互不影响）

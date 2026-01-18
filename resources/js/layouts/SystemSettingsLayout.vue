@@ -8,7 +8,7 @@ import {
   getStorageSetting,
   getWorkspaceList,
 } from '@/routes';
-import systemSetting from '@/routes/system-setting';
+import admin from '@/routes/admin';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -36,20 +36,24 @@ const sidebarNavItems = computed<NavItem[]>(() => {
       href: getStorageSetting.url(),
     },
     {
+      title: t('用户管理'),
+      href: admin.getUserList.url(),
+    },
+    {
       title: t('邮箱服务器'),
-      href: systemSetting.getMailSettings.url(),
+      href: admin.getMailSettings.url(),
     },
     {
       title: t('集成'),
-      href: systemSetting.getIntegrationSettings.url(),
+      href: admin.getIntegrationSettings.url(),
     },
     {
       title: t('安全'),
-      href: systemSetting.getSecuritySettings.url(),
+      href: admin.getSecuritySettings.url(),
     },
     {
       title: t('维护'),
-      href: systemSetting.getMaintenanceSettings.url(),
+      href: admin.getMaintenanceSettings.url(),
     },
   ];
 });
