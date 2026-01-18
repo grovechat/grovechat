@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import UploadImageAction from '@/actions/App/Actions/Attachment/UploadImageAction';
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
+import ImageUploadField from '@/components/common/ImageUploadField.vue';
 import InputError from '@/components/common/InputError.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,6 @@ import admin from '@/routes/admin';
 import type { AppPageProps, BreadcrumbItem } from '@/types';
 import type { SystemUserEditPagePropsData } from '@/types/generated';
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
-import axios from 'axios';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
@@ -20,11 +20,6 @@ const { t } = useI18n();
 const page = usePage<AppPageProps<SystemUserEditPagePropsData>>();
 const userForm = computed(() => page.props.user_form);
 
-const avatarPreview = ref<string>(userForm.value.avatar || '');
-const avatarUrl = ref<string>(userForm.value.avatar || '');
-const avatarSubmitValue = computed(() => avatarUrl.value || userForm.value.avatar || '');
-const uploading = ref(false);
-const selectedAvatarFileName = ref<string>('');
 const passwordVisible = ref(false);
 const passwordConfirmationVisible = ref(false);
 
@@ -33,37 +28,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   { title: t('编辑用户'), href: admin.showEditUserPage.url(userForm.value.id) },
 ]);
 
-const handleAvatarChange = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (!file) return;
-
-  selectedAvatarFileName.value = file.name;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    avatarPreview.value = e.target?.result as string;
-  };
-  reader.readAsDataURL(file);
-
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('folder', 'avatars');
-
-  try {
-    uploading.value = true;
-    const response = await axios.post(UploadImageAction.url(), formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    avatarUrl.value = response.data.full_url;
-  } catch {
-    avatarPreview.value = userForm.value.avatar || '';
-    avatarUrl.value = userForm.value.avatar || '';
-    selectedAvatarFileName.value = '';
-  } finally {
-    uploading.value = false;
-  }
-};
 </script>
 
 <template>
@@ -120,57 +84,17 @@ const handleAvatarChange = async (event: Event) => {
               <InputError class="mt-2" :message="errors.email" />
             </div>
 
-            <div class="grid gap-2">
-              <Label for="avatar">{{ t('头像') }}</Label>
-              <div class="mt-1 space-y-3">
-                <div
-                  v-if="avatarPreview"
-                  class="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border bg-gray-50"
-                >
-                  <img
-                    :src="avatarPreview"
-                    :alt="t('头像预览')"
-                    class="h-full w-full object-cover"
-                  />
-                  <div
-                    v-if="uploading"
-                    class="absolute inset-0 flex items-center justify-center bg-black/50"
-                  >
-                    <span class="text-sm text-white">{{ t('上传中...') }}</span>
-                  </div>
-                </div>
-
-                <input
-                  id="avatar"
-                  name="avatar"
-                  type="hidden"
-                  :value="avatarSubmitValue"
-                />
-
-                <div class="flex items-center gap-3">
-                  <input
-                    id="avatarFile"
-                    type="file"
-                    accept="image/*"
-                    class="sr-only"
-                    :disabled="uploading"
-                    @change="handleAvatarChange"
-                  />
-                  <Button as-child variant="outline" :disabled="uploading">
-                    <Label for="avatarFile" class="cursor-pointer">
-                      {{ t('选择图片') }}
-                    </Label>
-                  </Button>
-                  <span class="text-sm text-muted-foreground">
-                    {{ selectedAvatarFileName || t('未选择任何文件') }}
-                  </span>
-                </div>
-                <p class="text-sm text-muted-foreground">
-                  {{ t('支持上传图片格式文件，选择后自动上传') }}
-                </p>
-              </div>
-              <InputError class="mt-2" :message="errors.avatar" />
-            </div>
+            <ImageUploadField
+              :label="t('头像')"
+              name="avatar"
+              :upload-url="UploadImageAction.url()"
+              response-key="full_url"
+              folder="avatars"
+              :initial-preview="userForm.avatar || ''"
+              :initial-value="userForm.avatar || ''"
+              variant="avatar"
+              :error="errors.avatar"
+            />
 
             <div class="grid gap-2">
               <Label for="password">{{ t('登录密码') }}</Label>

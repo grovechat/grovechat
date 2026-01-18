@@ -3,6 +3,7 @@ import UploadImageAction from '@/actions/App/Actions/Attachment/UploadImageActio
 import DeleteCurrentWorkspaceAction from '@/actions/App/Actions/Manage/DeleteCurrentWorkspaceAction';
 import UpdateWorkspaceAction from '@/actions/App/Actions/Manage/UpdateWorkspaceAction';
 import HeadingSmall from '@/components/common/HeadingSmall.vue';
+import ImageUploadField from '@/components/common/ImageUploadField.vue';
 import InputError from '@/components/common/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +23,6 @@ import WorkspaceSettingsLayout from '@/layouts/WorkspaceSettingsLayout.vue';
 import { getCurrentWorkspace } from '@/routes';
 import { type AppPageProps, type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/vue3';
-import axios from 'axios';
 import { Check, Copy } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
@@ -37,10 +37,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   },
 ]);
 
-const logoPreview = ref<string>(currentWorkspace.value.logo_url || '');
-const logoId = ref<string>(currentWorkspace.value.logo_id || '');
-const uploading = ref(false);
-const selectedLogoFileName = ref<string>('');
 const slugInput = ref<string>(currentWorkspace.value.slug || '');
 const copied = ref(false);
 const showDeleteDialog = ref(false);
@@ -56,40 +52,6 @@ const fullAccessUrl = computed(() => {
 const isDefaultWorkspace = computed(() => {
   return currentWorkspace.value.owner_id !== null;
 });
-
-const handleLogoChange = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-
-  if (!file) return;
-  selectedLogoFileName.value = file.name;
-
-  // 先显示本地预览
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    logoPreview.value = e.target?.result as string;
-  };
-  reader.readAsDataURL(file);
-
-  // 上传文件到服务器
-  const formData = new FormData();
-  formData.append('file', file);
-
-  try {
-    uploading.value = true;
-    const response = await axios.post(UploadImageAction.url(), formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    logoId.value = response.data.id;
-  } catch {
-    logoPreview.value = currentWorkspace.value.logo_url || '';
-    selectedLogoFileName.value = '';
-  } finally {
-    uploading.value = false;
-  }
-};
 
 const copyToClipboard = async () => {
   try {
@@ -162,55 +124,16 @@ const handleDelete = () => {
             <InputError class="mt-2" :message="errors.name" />
           </div>
 
-          <div class="grid gap-2">
-            <Label for="logo_id">{{ t('工作区Logo') }}</Label>
-            <div class="mt-1 space-y-3">
-              <div
-                v-if="logoPreview"
-                class="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-md border bg-gray-50"
-              >
-                <img
-                  :src="logoPreview"
-                  alt="Logo预览"
-                  class="max-h-full max-w-full object-contain"
-                />
-                <div
-                  v-if="uploading"
-                  class="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black"
-                >
-                  <span class="text-sm text-white">{{ t('上传中...') }}</span>
-                </div>
-              </div>
-              <input
-                id="logo_id"
-                name="logo_id"
-                type="hidden"
-                :value="logoId"
-              />
-              <div class="flex items-center gap-3">
-                <input
-                  id="logoFile"
-                  type="file"
-                  accept="image/*"
-                  class="sr-only"
-                  :disabled="uploading"
-                  @change="handleLogoChange"
-                />
-                <Button as-child variant="outline" :disabled="uploading">
-                  <Label for="logoFile" class="cursor-pointer">
-                    {{ t('选择文件') }}
-                  </Label>
-                </Button>
-                <span class="text-sm text-muted-foreground">
-                  {{ selectedLogoFileName || t('未选择任何文件') }}
-                </span>
-              </div>
-              <p class="text-sm text-muted-foreground">
-                {{ t('支持上传图片格式文件，选择后自动上传') }}
-              </p>
-            </div>
-            <InputError class="mt-2" :message="errors.logo" />
-          </div>
+          <ImageUploadField
+            :label="t('工作区Logo')"
+            name="logo_id"
+            :upload-url="UploadImageAction.url()"
+            response-key="id"
+            :initial-preview="currentWorkspace.logo_url || ''"
+            :initial-value="currentWorkspace.logo_id || ''"
+            variant="logo"
+            :error="errors.logo"
+          />
 
           <div class="grid gap-2">
             <Label for="slug">{{ t('访问路径') }}</Label>
