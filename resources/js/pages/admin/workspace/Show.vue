@@ -315,7 +315,7 @@ const isOwner = (userId: string) =>
               <div class="text-sm text-muted-foreground">
                 {{ t('第') }} {{ props.members.pagination.current_page }} /
                 {{ props.members.pagination.last_page }} {{ t('页，共') }}
-                {{ props.members.pagination.total }} {{ t('人') }}
+                {{ props.members.pagination.total }} {{ t('条') }}
               </div>
               <div class="flex items-center gap-2">
                 <Button

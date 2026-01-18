@@ -181,7 +181,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               <div class="text-sm text-muted-foreground">
                 {{ t('第') }} {{ props.user_list_pagination.current_page }} /
                 {{ props.user_list_pagination.last_page }} {{ t('页，共') }}
-                {{ props.user_list_pagination.total }} {{ t('人') }}
+                {{ props.user_list_pagination.total }} {{ t('条') }}
               </div>
               <div class="flex items-center gap-2">
                 <Button

@@ -49,4 +49,5 @@ export default {
 
   // 字段/占位
   请输入名称: 'Please enter name',
+  条: 'items',
 } as const;

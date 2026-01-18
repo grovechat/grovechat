@@ -191,8 +191,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 {{ t('第') }} {{ props.workspace_trash_list_pagination.current_page }}
                 / {{ props.workspace_trash_list_pagination.last_page }}
                 {{ t('页，共') }}
-                {{ props.workspace_trash_list_pagination.total }}
-                {{ t('个工作区') }}
+                {{ props.workspace_trash_list_pagination.total }} {{ t('条') }}
               </div>
               <div class="flex items-center gap-2">
                 <Button

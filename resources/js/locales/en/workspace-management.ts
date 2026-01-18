@@ -37,7 +37,6 @@ export default {
   暂无成员: 'No members',
   第: 'Page',
   '页，共': 'of',
-  人: 'people',
   上一页: 'Previous',
   下一页: 'Next',
   '确认删除工作区？': 'Confirm delete workspace?',
