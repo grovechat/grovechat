@@ -17,8 +17,10 @@ class CreateWorkspaceAction
     public function handle(User $user, FormCreateWorkspaceData $data)
     {
         return DB::transaction(function () use ($user, $data) {
-            $workspace = Workspace::query()->create($data->toArray());
-            $user->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::ADMIN]);
+            $workspace = Workspace::query()->create(array_merge($data->toArray(), [
+                'owner_id' => $user->id,
+            ]));
+            $user->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::OWNER]);
 
             return $workspace;
         });
