@@ -15,7 +15,7 @@ class BindAttachmentModelAction
         if (! empty($attachable->attachable_id)) {
             $attachment->filesystem()->delete($attachment->path);
         }
-        
+
         $attachment->update([
             'attachable_id' => $attachable->id,
             'attachable_type' => $attachable->getMorphClass(),

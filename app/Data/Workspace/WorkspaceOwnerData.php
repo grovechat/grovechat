@@ -22,4 +22,3 @@ class WorkspaceOwnerData extends Data
         );
     }
 }
-

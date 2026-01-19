@@ -22,6 +22,7 @@ class UpdateMyOnlineStatusAction
         }
         $user->pivot->update($pivot);
     }
+
     public function asController(Request $request, Workspace $currentWorkspace, string $slug)
     {
         $data = FormUpdateTeammateOnlineStatusData::from($request);

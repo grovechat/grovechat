@@ -38,4 +38,3 @@ class StorageProfileDisk
         return 'sp_'.Str::random(8);
     }
 }
-

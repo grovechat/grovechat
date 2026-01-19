@@ -71,7 +71,7 @@ class UpdateStorageSettingAction
     {
         $data = FormStorageSettingData::from($request);
         $this->handle($data);
-        
+
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('common.操作成功'),

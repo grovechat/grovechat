@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('two_factor_secret')->after('password')->nullable();
             $table->text('two_factor_recovery_codes')->after('two_factor_secret')->nullable();
             $table->timestamp('two_factor_confirmed_at')->after('two_factor_recovery_codes')->nullable();
-            $table->boolean('is_super_admin')->default(false)->comment('是否为超级管理员'); 
+            $table->boolean('is_super_admin')->default(false)->comment('是否为超级管理员');
             $table->softDeletes();
         });
 

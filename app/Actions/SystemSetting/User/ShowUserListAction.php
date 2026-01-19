@@ -3,8 +3,8 @@
 namespace App\Actions\SystemSetting\User;
 
 use App\Data\SimplePaginationData;
-use App\Data\User\UserData;
 use App\Data\User\ShowUserListPagePropsData;
+use App\Data\User\UserData;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

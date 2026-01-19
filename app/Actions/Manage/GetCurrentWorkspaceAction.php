@@ -13,7 +13,7 @@ class GetCurrentWorkspaceAction
     {
         // ...
     }
-    
+
     public function asController()
     {
         return Inertia::render('currentWorkspace/Index');

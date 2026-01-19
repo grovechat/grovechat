@@ -14,7 +14,7 @@ class GeneralSettingsData extends Data
         public ?string $copyright = null,
         public ?string $icpRecord = null,
         public ?string $version = null,
-        public string $logoUrl = "",
+        public string $logoUrl = '',
     ) {}
 
     public static function rules(): array

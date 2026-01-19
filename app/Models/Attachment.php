@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Services\Storage\StorageProfileDisk;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use App\Services\Storage\StorageProfileDisk;
 
 class Attachment extends Model
 {
