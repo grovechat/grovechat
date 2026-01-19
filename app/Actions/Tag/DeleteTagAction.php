@@ -2,7 +2,7 @@
 
 namespace App\Actions\Tag;
 
-use App\Http\RequestContexts\WorkspaceRequestContext;
+use App\Data\WorkspaceUserContextData;
 use App\Models\Tag;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -24,14 +24,15 @@ class DeleteTagAction
 
     public function asController(Request $request, string $slug, string $id)
     {
-        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
+        $ctx = WorkspaceUserContextData::fromRequest($request);
+        $currentWorkspace = $ctx->workspace();
         $this->handle($currentWorkspace, $id);
 
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('common.操作成功'),
         ]);
-
-        return redirect()->route('workspace-setting.datas.tag', ['slug' => $currentWorkspace->slug]);
+        
+        return back();
     }
 }

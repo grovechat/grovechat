@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Data\WorkspaceUserContextData;
 use App\Enums\WorkspaceRole;
-use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Support\Facades\Gate;
@@ -27,9 +26,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $actorContext = static function (Workspace $workspace, User $actor): WorkspaceUserContextData {
             if (! app()->runningInConsole()) {
-                $ctx = WorkspaceRequestContext::tryFromRequest(request());
-                if ($ctx?->workspaceUserContext->workspace_id === (string) $workspace->id && $ctx->workspaceUserContext->user_id === (string) $actor->id) {
-                    return $ctx->workspaceUserContext;
+                $ctx = WorkspaceUserContextData::tryFromRequest(request());
+                if ($ctx?->workspace_id === (string) $workspace->id && $ctx->user_id === (string) $actor->id) {
+                    return $ctx;
                 }
             }
 

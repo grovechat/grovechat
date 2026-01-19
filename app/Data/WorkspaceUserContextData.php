@@ -6,11 +6,15 @@ use App\Enums\UserOnlineStatus;
 use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use RuntimeException;
 use Spatie\LaravelData\Data;
 
 class WorkspaceUserContextData extends Data
 {
+    private ?Workspace $workspaceModel = null;
+
     public function __construct(
         public string $workspace_id,
         public string $workspace_slug,
@@ -50,6 +54,45 @@ class WorkspaceUserContextData extends Data
             user_last_active_at: $lastActiveAt,
             role: EnumOptionData::fromEnum($role),
         );
+    }
+
+    public static function fromRequest(Request $request): self
+    {
+        $ctx = $request->attributes->get(self::class);
+
+        if (! $ctx instanceof self) {
+            throw new RuntimeException('Workspace user context is not set.');
+        }
+
+        return $ctx;
+    }
+
+    public static function tryFromRequest(Request $request): ?self
+    {
+        $ctx = $request->attributes->get(self::class);
+
+        return $ctx instanceof self ? $ctx : null;
+    }
+
+    public function workspace(): Workspace
+    {
+        if ($this->workspaceModel instanceof Workspace) {
+            return $this->workspaceModel;
+        }
+
+        $this->workspaceModel = Workspace::query()->findOrFail($this->workspace_id);
+
+        return $this->workspaceModel;
+    }
+
+    public function workspaceId(): string
+    {
+        return $this->workspace_id;
+    }
+
+    public function workspaceSlug(): string
+    {
+        return $this->workspace_slug;
     }
 
     public function withShowRemoveButton(bool $showRemoveButton): self

@@ -3,8 +3,8 @@
 namespace App\Actions\User;
 
 use App\Data\Teammate\FormUpdateTeammateOnlineStatusData;
+use App\Data\WorkspaceUserContextData;
 use App\Enums\UserOnlineStatus;
-use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -26,7 +26,7 @@ class UpdateMyOnlineStatusAction
 
     public function asController(Request $request, string $slug)
     {
-        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
+        $currentWorkspace = WorkspaceUserContextData::fromRequest($request)->workspace();
         $data = FormUpdateTeammateOnlineStatusData::from($request);
         $this->handle($currentWorkspace, $request->user()->id, $data);
 

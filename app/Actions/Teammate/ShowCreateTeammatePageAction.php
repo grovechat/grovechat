@@ -5,8 +5,8 @@ namespace App\Actions\Teammate;
 use App\Data\EnumOptionData;
 use App\Data\Teammate\ShowCreateTeammatePagePropsData;
 use App\Data\User\UserOptionData;
+use App\Data\WorkspaceUserContextData;
 use App\Enums\WorkspaceRole;
-use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -41,7 +41,7 @@ class ShowCreateTeammatePageAction
 
     public function asController(Request $request)
     {
-        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
+        $currentWorkspace = WorkspaceUserContextData::fromRequest($request)->workspace();
         $props = $this->handle($currentWorkspace);
 
         return Inertia::render('teammate/Create', $props->toArray());

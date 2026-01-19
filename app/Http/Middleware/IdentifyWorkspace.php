@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Data\Workspace\WorkspaceData;
 use App\Data\WorkspaceUserContextData;
-use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\Workspace;
 use Closure;
 use Illuminate\Http\Request;
@@ -52,10 +51,7 @@ class IdentifyWorkspace
 
         // 设置工作区用户上下文
         $workspaceUserContext = WorkspaceUserContextData::fromModels($workspace, $request->user());
-        $request->attributes->set(WorkspaceRequestContext::class, new WorkspaceRequestContext(
-            workspace: $workspace,
-            workspaceUserContext: $workspaceUserContext,
-        ));
+        $request->attributes->set(WorkspaceUserContextData::class, $workspaceUserContext);
         Inertia::share('workspaceUserContext', $workspaceUserContext->toArray());
 
         // 授权

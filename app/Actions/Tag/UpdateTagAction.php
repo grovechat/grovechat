@@ -3,7 +3,7 @@
 namespace App\Actions\Tag;
 
 use App\Data\Tag\FormUpdateTagData;
-use App\Http\RequestContexts\WorkspaceRequestContext;
+use App\Data\WorkspaceUserContextData;
 use App\Models\Tag;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -44,7 +44,8 @@ class UpdateTagAction
 
     public function asController(Request $request, string $slug, string $id)
     {
-        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
+        $ctx = WorkspaceUserContextData::fromRequest($request);
+        $currentWorkspace = $ctx->workspace();
         $data = FormUpdateTagData::from($request);
         $this->handle($currentWorkspace, $id, $data);
 
@@ -52,7 +53,7 @@ class UpdateTagAction
             'type' => 'success',
             'message' => __('common.操作成功'),
         ]);
-
-        return redirect()->route('workspace-setting.datas.tag', ['slug' => $currentWorkspace->slug]);
+        
+        return back();
     }
 }

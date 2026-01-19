@@ -2,7 +2,7 @@
 
 namespace App\Actions\Dashboard;
 
-use App\Http\RequestContexts\WorkspaceRequestContext;
+use App\Data\WorkspaceUserContextData;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -17,8 +17,8 @@ class RedirectCurrentWorkspaceDashboard
 
     public function asController(Request $request)
     {
-        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
+        $ctx = WorkspaceUserContextData::fromRequest($request);
 
-        return redirect()->route('workspace.dashboard', $currentWorkspace->slug);
+        return redirect()->route('workspace.dashboard', $ctx->workspaceSlug());
     }
 }

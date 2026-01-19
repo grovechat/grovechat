@@ -3,7 +3,7 @@
 namespace App\Actions\Tag;
 
 use App\Data\Tag\FormCreateTagData;
-use App\Http\RequestContexts\WorkspaceRequestContext;
+use App\Data\WorkspaceUserContextData;
 use App\Models\Tag;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -38,7 +38,8 @@ class CreateTagAction
 
     public function asController(Request $request)
     {
-        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
+        $ctx = WorkspaceUserContextData::fromRequest($request);
+        $currentWorkspace = $ctx->workspace();
         $data = FormCreateTagData::from($request);
         $this->handle($currentWorkspace, $data);
 
@@ -46,7 +47,7 @@ class CreateTagAction
             'type' => 'success',
             'message' => __('common.操作成功'),
         ]);
-
-        return redirect()->route('workspace-setting.datas.tag', ['slug' => $currentWorkspace->slug]);
+        
+        return back();
     }
 }

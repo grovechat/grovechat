@@ -2,8 +2,8 @@
 
 namespace App\Actions\Manage;
 
+use App\Data\WorkspaceUserContextData;
 use App\Exceptions\BusinessException;
-use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -24,7 +24,7 @@ class DeleteCurrentWorkspaceAction
 
     public function asController(Request $request)
     {
-        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
+        $currentWorkspace = WorkspaceUserContextData::fromRequest($request)->workspace();
         $this->handle($currentWorkspace);
 
         $defaultWorkspace = GetDefaultWorkspaceAction::run($request->user());
