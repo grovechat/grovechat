@@ -30,7 +30,7 @@ class Workspace extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot('role', 'nickname', 'online_status')->withTimestamps();
+        return $this->belongsToMany(User::class)->withPivot('role', 'nickname', 'online_status', 'last_active_at')->withTimestamps();
     }
 
     public function owner()

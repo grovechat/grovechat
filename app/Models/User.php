@@ -29,7 +29,6 @@ class User extends Authenticatable
         'email',
         'password',
         'avatar',
-        'last_active_at',
         'is_super_admin',
     ];
 
@@ -63,6 +62,6 @@ class User extends Authenticatable
 
     public function workspaces()
     {
-        return $this->belongsToMany(Workspace::class)->withPivot('role', 'nickname', 'online_status')->withTimestamps();
+        return $this->belongsToMany(Workspace::class)->withPivot('role', 'nickname', 'online_status', 'last_active_at')->withTimestamps();
     }
 }
