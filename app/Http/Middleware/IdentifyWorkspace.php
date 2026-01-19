@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Data\Workspace\WorkspaceData;
 use App\Data\WorkspaceUserContextData;
 use App\Models\Workspace;
 use Closure;
@@ -26,7 +27,7 @@ class IdentifyWorkspace
         // 获取当前用户所有工作区
         $workspaces = collect();
         $workspaces = $request->user()->workspaces()->get();
-        Inertia::share('workspaces', $workspaces);
+        Inertia::share('workspaces', $workspaces->map(fn (Workspace $w) => WorkspaceData::fromModel($w)->toArray())->all());
 
         // 根据slug或者from_workspace设置当前用户所在工作区
         $slug = $request->route('slug');
@@ -48,7 +49,7 @@ class IdentifyWorkspace
             abort(403, '你不是该工作区的成员');
         }
         app()->instance(Workspace::class, $workspace);
-        Inertia::share('currentWorkspace', $workspace);
+        Inertia::share('currentWorkspace', WorkspaceData::fromModel($workspace)->toArray());
 
         // 设置工作区用户上下文
         $workspaceUserContext = WorkspaceUserContextData::fromModels($workspace, $request->user());

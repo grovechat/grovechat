@@ -12,6 +12,7 @@ import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import SidebarShell, {
   type SidebarShellNavItem,
 } from '@/layouts/app/SidebarShell.vue';
+import SidebarUserMenuWithOnlineStatus from '@/layouts/app/SidebarUserMenuWithOnlineStatus.vue';
 import { getCurrentWorkspace } from '@/routes';
 import { getGeneralSetting } from '@/routes/admin';
 import contact from '@/routes/contact';
@@ -20,7 +21,6 @@ import { edit } from '@/routes/profile';
 import stats from '@/routes/stats';
 import workspace from '@/routes/workspace';
 import type { AppPageProps, BreadcrumbItemType, NavItem } from '@/types';
-import type { WorkspaceData } from '@/types/generated';
 import { router, usePage } from '@inertiajs/vue3';
 import {
   BarChart,
@@ -78,7 +78,10 @@ const mainNavItems = computed<MainNavItem[]>(() => [
   },
   {
     title: t('联系人'),
-    href: contact.index.url({ slug: currentWorkspace.value.slug, type: 'all' }),
+    href: contact.index.url({
+      slug: currentWorkspace.value.slug,
+      type: 'all',
+    }),
     icon: Users,
     activeUrls: [
       contactsBaseUrl.value,
@@ -127,8 +130,8 @@ const footerNavItems = computed<NavItem[]>(() => [
 
 const logoutHref = computed(() => logout.web.url());
 
-const switchWorkspace = (selectedWorkspace: WorkspaceData) => {
-  if (selectedWorkspace.slug !== currentWorkspace.value?.slug) {
+const switchWorkspace = (selectedWorkspace: (typeof workspaces.value)[number]) => {
+  if (selectedWorkspace.slug !== currentWorkspace.value.slug) {
     router.visit(workspace.dashboard.url(selectedWorkspace.slug), {
       preserveState: false,
       preserveScroll: false,
@@ -137,11 +140,7 @@ const switchWorkspace = (selectedWorkspace: WorkspaceData) => {
 };
 
 const goToCreateWorkspace = () => {
-  if (currentWorkspace.value) {
-    router.visit(
-      ShowCreateWorkspacePageAction.url(currentWorkspace.value.slug),
-    );
-  }
+  router.visit(ShowCreateWorkspacePageAction.url(currentWorkspace.value.slug));
 };
 </script>
 
@@ -232,6 +231,16 @@ const goToCreateWorkspace = () => {
           />
         </div>
       </div>
+    </template>
+
+    <template #userMenu="{ isMobile, sidebarState }">
+      <SidebarUserMenuWithOnlineStatus
+        :profile-href="edit({ query: { from_workspace: currentWorkspace.slug } }).url"
+        :profile-label="t('个人资料')"
+        :logout-href="logoutHref"
+        :is-mobile="isMobile"
+        :sidebar-state="sidebarState"
+      />
     </template>
 
     <slot />

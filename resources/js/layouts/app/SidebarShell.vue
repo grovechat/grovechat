@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import fallbackLogoUrl from '@/assets/images/logo.png';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,14 +9,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -33,16 +24,14 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import Toaster from '@/components/ui/toast/Toaster.vue';
-import { useI18n } from '@/composables/useI18n';
-import { getInitials } from '@/composables/useInitials';
 import { useErrorHandling } from '@/composables/useToast';
 import SidebarContextConsumer from '@/layouts/app/SidebarContextConsumer.vue';
+import SidebarUserMenu from '@/layouts/app/SidebarUserMenu.vue';
 import { cn, toUrl, urlIsActive } from '@/lib/utils';
-import { updateMyOnlineStatus } from '@/routes';
-import type { AppPageProps, BreadcrumbItemType, NavItem } from '@/types';
-import { Link, router, usePage } from '@inertiajs/vue3';
-import { ChevronsUpDown, LogOut, Pin, Settings } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import type { BreadcrumbItemType, NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
+import { Pin } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 export type SidebarShellNavItem = NavItem & {
   activeUrls?: string[];
@@ -63,9 +52,8 @@ const props = withDefaults(defineProps<Props>(), {
   breadcrumbs: () => [],
 });
 
-const { t } = useI18n();
-const page = usePage<AppPageProps>();
-const isOpen = page.props.sidebarOpen;
+const page = usePage();
+const isOpen = Boolean(page.props.sidebarOpen);
 useErrorHandling();
 
 const generalSettings = computed(() => page.props.generalSettings);
@@ -73,39 +61,6 @@ const systemName = computed(() => generalSettings.value?.name || 'GroveChat');
 const systemLogo = computed(
   () => generalSettings.value?.logo_url || fallbackLogoUrl,
 );
-const user = computed(() => page.props.auth.user);
-const showAvatar = computed(
-  () => user.value?.avatar && user.value.avatar !== '',
-);
-
-const workspaceUserContext = computed(() => page.props.workspaceUserContext);
-const currentWorkspace = computed(() => page.props.currentWorkspace);
-const hasWorkspaceOnlineStatus = computed(
-  () => !!workspaceUserContext.value?.user_online_status && !!currentWorkspace.value,
-);
-const isOnline = computed(
-  () => Number(workspaceUserContext.value?.user_online_status?.value) === 1,
-);
-const updatingOnlineStatus = ref(false);
-
-const updateOnlineStatus = (status: number) => {
-  if (!currentWorkspace.value) {
-    return;
-  }
-
-  updatingOnlineStatus.value = true;
-  router.put(
-    updateMyOnlineStatus.url(currentWorkspace.value.slug),
-    { online_status: Number(status) },
-    {
-      preserveScroll: true,
-      preserveState: true,
-      onFinish: () => {
-        updatingOnlineStatus.value = false;
-      },
-    },
-  );
-};
 
 const isExternalLink = (href: NavItem['href']) => {
   const url = toUrl(href);
@@ -122,9 +77,6 @@ const isMainNavItemActive = (item: SidebarShellNavItem) => {
   return urlIsActive(item.href, page.url);
 };
 
-const handleLogout = () => {
-  router.flushAll();
-};
 </script>
 
 <template>
@@ -255,134 +207,15 @@ const handleLogout = () => {
 
           <SidebarMenu>
             <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <SidebarMenuButton
-                    size="lg"
-                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                    data-test="sidebar-menu-button"
-                  >
-                    <div class="relative">
-                      <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-                        <AvatarImage
-                          v-if="showAvatar"
-                          :src="user.avatar!"
-                          :alt="user.name"
-                        />
-                        <AvatarFallback
-                          class="rounded-lg text-black dark:text-white"
-                        >
-                          {{ getInitials(user.name) }}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span
-                        v-if="hasWorkspaceOnlineStatus"
-                        class="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-background"
-                        :class="isOnline ? 'bg-emerald-500' : 'bg-zinc-400'"
-                      />
-                    </div>
-
-                    <div class="grid flex-1 text-left text-sm leading-tight">
-                      <span class="truncate font-medium">{{ user.name }}</span>
-                    </div>
-
-                    <ChevronsUpDown class="ml-auto size-4" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                  :side="
-                    isMobile
-                      ? 'bottom'
-                      : state.value === 'collapsed'
-                        ? 'left'
-                        : 'bottom'
-                  "
-                  align="end"
-                  :side-offset="4"
-                >
-                  <DropdownMenuLabel class="p-0 font-normal">
-                    <div
-                      class="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
-                    >
-                      <div class="relative">
-                        <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-                          <AvatarImage
-                            v-if="showAvatar"
-                            :src="user.avatar!"
-                            :alt="user.name"
-                          />
-                          <AvatarFallback
-                            class="rounded-lg text-black dark:text-white"
-                          >
-                            {{ getInitials(user.name) }}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span
-                          v-if="hasWorkspaceOnlineStatus"
-                          class="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-background"
-                          :class="isOnline ? 'bg-emerald-500' : 'bg-zinc-400'"
-                        />
-                      </div>
-
-                      <div class="grid flex-1 text-left text-sm leading-tight">
-                        <span class="truncate font-medium">{{
-                          user.name
-                        }}</span>
-                        <span class="truncate text-xs text-muted-foreground">
-                          {{ user.email }}
-                        </span>
-                      </div>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <template v-if="hasWorkspaceOnlineStatus">
-                    <DropdownMenuItem
-                      :disabled="updatingOnlineStatus"
-                      @click="updateOnlineStatus(1)"
-                    >
-                      <span
-                        class="mr-2 inline-block h-2 w-2 rounded-full bg-emerald-500"
-                      />
-                      {{ t('在线') }}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      :disabled="updatingOnlineStatus"
-                      @click="updateOnlineStatus(0)"
-                    >
-                      <span
-                        class="mr-2 inline-block h-2 w-2 rounded-full bg-zinc-400"
-                      />
-                      {{ t('离线') }}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </template>
-                  <DropdownMenuItem :as-child="true">
-                    <Link
-                      class="block w-full"
-                      :href="props.profileHref"
-                      as="button"
-                    >
-                      <Settings class="mr-2 h-4 w-4" />
-                      {{ props.profileLabel }}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem :as-child="true">
-                    <Link
-                      class="block w-full"
-                      :href="props.logoutHref"
-                      method="post"
-                      @click="handleLogout"
-                      as="button"
-                      data-test="logout-button"
-                    >
-                      <LogOut class="mr-2 h-4 w-4" />
-                      {{ t('退出登录') }}
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <slot name="userMenu" :isMobile="isMobile.value" :sidebarState="state.value">
+                <SidebarUserMenu
+                  :profile-href="props.profileHref"
+                  :profile-label="props.profileLabel"
+                  :logout-href="props.logoutHref"
+                  :is-mobile="isMobile.value"
+                  :sidebar-state="state.value"
+                />
+              </slot>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>

@@ -13,7 +13,7 @@ function getContextForError() {
 
 export function useCurrentWorpsace(): ComputedRef<WorkspaceData | null> {
   const page = usePage();
-  return computed(() => page.props.currentWorkspace);
+  return computed(() => (page.props as any)?.currentWorkspace as WorkspaceData | null);
 }
 
 /**
