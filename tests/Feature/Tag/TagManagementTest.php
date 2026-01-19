@@ -32,6 +32,7 @@ test('authenticated user can view tag list page', function () {
 
 test('can create a tag in current workspace', function () {
     $this->actingAs($this->user)
+        ->from(route('workspace-setting.datas.tag', ['slug' => $this->workspaceSlug()]))
         ->post(route('create-tag', ['slug' => $this->workspaceSlug()]), [
             'name' => '新标签',
             'color' => '#00ff00',
@@ -64,6 +65,7 @@ test('can update a tag in current workspace', function () {
     ]);
 
     $this->actingAs($this->user)
+        ->from(route('workspace-setting.datas.tag', ['slug' => $this->workspaceSlug()]))
         ->put(route('update-tag', ['slug' => $this->workspaceSlug(), 'id' => $tag->id]), [
             'name' => '新名称',
             'color' => '#222222',
@@ -83,6 +85,7 @@ test('can delete a tag in current workspace', function () {
     ]);
 
     $this->actingAs($this->user)
+        ->from(route('workspace-setting.datas.tag', ['slug' => $this->workspaceSlug()]))
         ->delete(route('delete-tag', ['slug' => $this->workspaceSlug(), 'id' => $tag->id]))
         ->assertRedirect(route('workspace-setting.datas.tag', ['slug' => $this->workspaceSlug()]));
 
