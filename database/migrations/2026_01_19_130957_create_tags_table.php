@@ -14,9 +14,14 @@ return new class extends Migration
         Schema::create('tags', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->timestamps();
+            $table->softDeletes();
+            $table->ulid('workspace_id')->comment('工作区 ID');
             $table->string('name')->comment('标签名');
-            $table->string('color')->comment('标签颜色');
-            $table->string('description')->comment('标签描述');
+            $table->string('color')->nullable()->comment('标签颜色');
+            $table->string('description')->nullable()->comment('标签描述');
+
+            $table->foreign('workspace_id')->references('id')->on('workspaces')->cascadeOnDelete();
+            $table->unique(['workspace_id', 'name']);
         });
     }
 
