@@ -122,6 +122,7 @@ test('super admin can reset a user two factor authentication', function () {
     expect($user->two_factor_recovery_codes)->not->toBeNull();
 
     $this->actingAs($this->superAdmin, 'admin')
+        ->from(route('admin.get-user-list'))
         ->put(route('admin.reset-user-two-factor-authentication', ['id' => $user->id]))
         ->assertRedirect(route('admin.get-user-list'));
 
