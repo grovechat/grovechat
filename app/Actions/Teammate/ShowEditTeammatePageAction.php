@@ -5,8 +5,10 @@ namespace App\Actions\Teammate;
 use App\Data\EnumOptionData;
 use App\Data\Teammate\ShowEditTeammatePagePropsData;
 use App\Data\Teammate\TeammateData;
+use App\Data\WorkspaceUserContextData;
 use App\Enums\WorkspaceRole;
 use App\Models\Workspace;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -29,8 +31,9 @@ class ShowEditTeammatePageAction
         );
     }
 
-    public function asController(Workspace $currentWorkspace, string $slug, string $id)
+    public function asController(Request $request, string $slug, string $id)
     {
+        $currentWorkspace = WorkspaceUserContextData::fromRequest($request)->workspace();
         $props = $this->handle($currentWorkspace, $id);
 
         return Inertia::render('teammate/Edit', $props->toArray());

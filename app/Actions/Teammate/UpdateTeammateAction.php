@@ -3,6 +3,7 @@
 namespace App\Actions\Teammate;
 
 use App\Data\Teammate\FormUpdateTeammateData;
+use App\Data\WorkspaceUserContextData;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -34,8 +35,10 @@ class UpdateTeammateAction
         ]);
     }
 
-    public function asController(Request $request, Workspace $workspace, string $slug, string $id)
+    public function asController(Request $request, string $slug, string $id)
     {
+        $ctx = WorkspaceUserContextData::fromRequest($request);
+        $workspace = $ctx->workspace();
         $data = FormUpdateTeammateData::from($request);
         $this->handle($workspace, $id, $data);
 
@@ -44,6 +47,6 @@ class UpdateTeammateAction
             'message' => __('common.操作成功'),
         ]);
 
-        return redirect()->route('show-teammate-list', ['slug' => $workspace->slug]);
+        return redirect()->route('show-teammate-list', ['slug' => $ctx->workspaceSlug()]);
     }
 }

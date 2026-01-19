@@ -7,6 +7,7 @@ use App\Data\Teammate\ShowListTeammatePagePropsData;
 use App\Data\WorkspaceUserContextData;
 use App\Enums\UserOnlineStatus;
 use App\Models\Workspace;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -31,8 +32,9 @@ class ShowTeammateListAction
         );
     }
 
-    public function asController(Workspace $currentWorkspace)
+    public function asController(Request $request)
     {
+        $currentWorkspace = WorkspaceUserContextData::fromRequest($request)->workspace();
         $props = $this->handle($currentWorkspace);
 
         return Inertia::render('teammate/List', $props->toArray());

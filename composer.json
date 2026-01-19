@@ -34,6 +34,7 @@
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^4.2",
         "pestphp/pest-plugin-laravel": "^4.0",
+        "romanzipp/laravel-model-doc": "^3.4",
         "wulfheart/laravel-actions-ide-helper": "^0.10.0"
     },
     "autoload": {

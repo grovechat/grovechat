@@ -25,10 +25,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $actorContext = static function (Workspace $workspace, User $actor): WorkspaceUserContextData {
-            if (app()->bound(WorkspaceUserContextData::class)) {
-                /** @var WorkspaceUserContextData $ctx */
-                $ctx = app(WorkspaceUserContextData::class);
-                if ($ctx->workspace_id === (string) $workspace->id && $ctx->user_id === (string) $actor->id) {
+            if (! app()->runningInConsole()) {
+                $ctx = WorkspaceUserContextData::tryFromRequest(request());
+                if ($ctx?->workspace_id === (string) $workspace->id && $ctx->user_id === (string) $actor->id) {
                     return $ctx;
                 }
             }

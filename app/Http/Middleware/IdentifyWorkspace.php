@@ -48,11 +48,10 @@ class IdentifyWorkspace
         if (! $request->user()->workspaces()->where('workspaces.id', $workspace->id)->exists()) {
             abort(403, '你不是该工作区的成员');
         }
-        app()->instance(Workspace::class, $workspace);
 
         // 设置工作区用户上下文
         $workspaceUserContext = WorkspaceUserContextData::fromModels($workspace, $request->user());
-        app()->instance(WorkspaceUserContextData::class, $workspaceUserContext);
+        $request->attributes->set(WorkspaceUserContextData::class, $workspaceUserContext);
         Inertia::share('workspaceUserContext', $workspaceUserContext->toArray());
 
         // 授权

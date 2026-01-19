@@ -26,6 +26,10 @@ use App\Actions\SystemSetting\User\ShowCreateUserPageAction;
 use App\Actions\SystemSetting\User\ShowEditUserPageAction;
 use App\Actions\SystemSetting\User\ShowUserListAction;
 use App\Actions\SystemSetting\User\UpdateUserAction;
+use App\Actions\Tag\CreateTagAction;
+use App\Actions\Tag\DeleteTagAction;
+use App\Actions\Tag\ShowTagListAction;
+use App\Actions\Tag\UpdateTagAction;
 use App\Actions\Teammate\CreateTeammateAction;
 use App\Actions\Teammate\RemoveTeammateAction;
 use App\Actions\Teammate\ShowCreateTeammatePageAction;
@@ -183,9 +187,10 @@ Route::middleware(['auth:web', IdentifyWorkspace::class, TrackLastWorkspace::cla
 
         // 标签
         Route::prefix('tags')->group(function () {
-            Route::get('/', function () {
-                return Inertia::render('workspaceSettings/datas/Tag');
-            })->name('workspace-setting.datas.tag');
+            Route::get('/', ShowTagListAction::class)->name('workspace-setting.datas.tag');
+            Route::post('/', CreateTagAction::class)->name('create-tag');
+            Route::put('{id}', UpdateTagAction::class)->name('update-tag');
+            Route::delete('{id}', DeleteTagAction::class)->name('delete-tag');
         });
 
         // 自定义属性

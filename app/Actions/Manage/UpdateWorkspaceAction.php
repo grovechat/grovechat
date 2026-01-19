@@ -3,6 +3,7 @@
 namespace App\Actions\Manage;
 
 use App\Data\CurrentWorkspace\FormUpdateWorkspaceData;
+use App\Data\WorkspaceUserContextData;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -16,11 +17,13 @@ class UpdateWorkspaceAction
         $workspace->update($data->toArray());
     }
 
-    public function asController(Request $request, Workspace $currentWorkspace)
+    public function asController(Request $request)
     {
+        $ctx = WorkspaceUserContextData::fromRequest($request);
+        $currentWorkspace = $ctx->workspace();
         $data = FormUpdateWorkspaceData::from($request);
         $this->handle($currentWorkspace, $data);
 
-        return redirect()->route('get-current-workspace', ['slug' => $currentWorkspace->slug]);
+        return redirect()->route('get-current-workspace', ['slug' => $ctx->workspaceSlug()]);
     }
 }

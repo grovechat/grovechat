@@ -1,5 +1,23 @@
 // 工作区设置（管理中心）相关（英文）
 export default {
+  // 租户设置(管理中心)页面
+  管理工作区和团队设置: 'Manage workspace and team settings',
+  工作区: 'Workspace',
+  常规设置: 'General',
+  客服: 'Teammate',
+  多客服: 'Teammates',
+  网站: 'Website',
+  数据: 'Data',
+  标签: 'Tags',
+  自定义属性: 'Custom attributes',
+
+  // 标签
+  管理和组织联系人标签: 'Manage and organize contact tags',
+  新增标签: 'Add tag',
+  编辑标签: 'Edit tag',
+  暂无标签: 'No tags',
+  '确认删除标签？': 'Confirm delete tag?',
+
   // 工作区设置 - 常规设置
   配置工作区的基本信息和设置:
     'Configure basic workspace information and settings',

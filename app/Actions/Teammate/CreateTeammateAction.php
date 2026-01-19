@@ -3,6 +3,7 @@
 namespace App\Actions\Teammate;
 
 use App\Data\Teammate\FormCreateTeammateData;
+use App\Data\WorkspaceUserContextData;
 use App\Enums\UserOnlineStatus;
 use App\Models\User;
 use App\Models\Workspace;
@@ -42,8 +43,10 @@ class CreateTeammateAction
         return $user;
     }
 
-    public function asController(Request $request, Workspace $currentWorkspace)
+    public function asController(Request $request)
     {
+        $ctx = WorkspaceUserContextData::fromRequest($request);
+        $currentWorkspace = $ctx->workspace();
         $data = FormCreateTeammateData::from($request);
         $this->handle($currentWorkspace, $data);
 
@@ -52,6 +55,6 @@ class CreateTeammateAction
             'message' => __('common.操作成功'),
         ]);
 
-        return redirect()->route('show-teammate-list', ['slug' => $currentWorkspace->slug]);
+        return redirect()->route('show-teammate-list', ['slug' => $ctx->workspaceSlug()]);
     }
 }

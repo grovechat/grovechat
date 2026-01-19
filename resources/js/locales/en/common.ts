@@ -34,6 +34,7 @@ export default {
 
   // 通用操作
   保存: 'Save',
+  '保存中...': 'Saving...',
   '已保存。': 'Saved.',
   继续: 'Continue',
   取消: 'Cancel',
@@ -50,5 +51,11 @@ export default {
 
   // 字段/占位
   请输入名称: 'Please enter name',
+  名称: 'Name',
+  颜色: 'Color',
+  描述: 'Description',
+  更新时间: 'Updated at',
+  '例如：VIP': 'e.g. VIP',
+  可选: 'Optional',
   条: 'items',
 } as const;

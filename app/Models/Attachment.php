@@ -7,9 +7,25 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @property string $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $disk
+ * @property string|null $storage_profile_id
+ * @property string $path
+ * @property string $file_name
+ * @property string $file_type
+ * @property int $file_size
+ * @property string|null $attachable_type
+ * @property string|null $attachable_id
+ * @property mixed $full_url
+ */
 class Attachment extends Model
 {
     use HasUlids;
+
+    protected $table = 'attachments';
 
     protected $guarded = [];
 
