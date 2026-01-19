@@ -173,6 +173,15 @@ const handleDelete = () => {
               {{ t('保存') }}
             </Button>
 
+            <Button
+              type="button"
+              variant="destructive"
+              :disabled="isDefaultWorkspace"
+              @click="showDeleteDialog = true"
+            >
+              {{ t('删除工作区') }}
+            </Button>
+
             <Transition
               enter-active-class="transition ease-in-out"
               enter-from-class="opacity-0"
@@ -184,29 +193,11 @@ const handleDelete = () => {
               </p>
             </Transition>
           </div>
-        </Form>
 
-        <div class="mt-12 border-t pt-8">
-          <HeadingSmall
-            :title="t('危险操作')"
-            :description="t('删除工作区将无法恢复，请谨慎操作')"
-          />
-          <div class="mt-6">
-            <Button
-              variant="destructive"
-              :disabled="isDefaultWorkspace"
-              @click="showDeleteDialog = true"
-            >
-              {{ t('删除工作区') }}
-            </Button>
-            <p
-              v-if="isDefaultWorkspace"
-              class="mt-2 text-sm text-muted-foreground"
-            >
-              {{ t('默认工作区不能删除') }}
-            </p>
-          </div>
-        </div>
+          <p v-if="isDefaultWorkspace" class="text-sm text-muted-foreground">
+            {{ t('默认工作区不能删除') }}
+          </p>
+        </Form>
       </div>
     </WorkspaceSettingsLayout>
 
@@ -217,7 +208,7 @@ const handleDelete = () => {
           <DialogDescription>
             {{
               t(
-                '删除工作区后，所有相关数据将被永久删除，此操作无法撤销。确定要继续吗？',
+                '确定要删除该工作区吗？删除后会进入回收站，需要超级管理员才能恢复。',
               )
             }}
           </DialogDescription>

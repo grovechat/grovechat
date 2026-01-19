@@ -14,14 +14,11 @@ export default {
   工作区Logo: 'Workspace Logo',
   访问路径: 'Access path',
   请输入访问路径: 'Please enter access path',
-  危险操作: 'Danger Zone',
-  '删除工作区将无法恢复，请谨慎操作':
-    'Deleting a workspace is irreversible, please proceed with caution',
   删除工作区: 'Delete Workspace',
   默认工作区不能删除: 'Default workspace cannot be deleted',
   确认删除工作区: 'Confirm Delete Workspace',
-  '删除工作区后，所有相关数据将被永久删除，此操作无法撤销。确定要继续吗？':
-    'After deleting the workspace, all related data will be permanently deleted. This action cannot be undone. Are you sure you want to continue?',
+  '确定要删除该工作区吗？删除后会进入回收站，需要超级管理员才能恢复。':
+    'Are you sure you want to delete this workspace? It will be moved to the recycle bin and can only be restored by a super admin.',
 
   // 多客服
   管理客服账号: 'Manage teammates',
