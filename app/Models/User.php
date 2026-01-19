@@ -29,9 +29,6 @@ class User extends Authenticatable
         'email',
         'password',
         'avatar',
-        'nickname',
-        'external_nickname',
-        'online_status',
         'last_active_at',
         'is_super_admin',
     ];
@@ -60,13 +57,12 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'last_active_at' => 'datetime',
-            'online_status' => 'integer',
             'is_super_admin' => 'boolean',
         ];
     }
 
     public function workspaces()
     {
-        return $this->belongsToMany(Workspace::class)->withPivot('role')->withTimestamps();
+        return $this->belongsToMany(Workspace::class)->withPivot('role', 'nickname', 'online_status')->withTimestamps();
     }
 }

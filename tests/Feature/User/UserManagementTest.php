@@ -3,7 +3,6 @@
 use App\Enums\UserOnlineStatus;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\WithWorkspace;
 
@@ -19,33 +18,78 @@ test('authenticated user can view user list page', function () {
     $member = User::factory()->create([
         'name' => '客服A',
         'email' => 'a@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, [
+        'role' => 'operator',
         'online_status' => UserOnlineStatus::OFFLINE->value,
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
 
     $this->actingAs($this->user)
-        ->get(route('show-user-list', ['slug' => $this->workspaceSlug()]))
+        ->get(route('show-teammate-list', ['slug' => $this->workspaceSlug()]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('user/List')
+            ->component('teammate/List')
             ->has('user_list')
             ->has('user_list.0', fn (Assert $item) => $item
-                ->hasAll(['id', 'name', 'avatar', 'email', 'role', 'role_label', 'online_status', 'online_status_label'])
+                ->hasAll(['user_id', 'user_name', 'user_avatar', 'user_email', 'role', 'user_online_status', 'show_remove_button'])
                 ->etc()
             )
         );
 });
 
-test('authenticated user can view create user page with role options', function () {
+test('operator cannot access manage center pages', function () {
+    $workspace = $this->workspace;
+
+    $operator = User::factory()->create([
+        'name' => '普通客服',
+        'email' => 'operator@example.com',
+    ]);
+    $workspace->users()->attach($operator->id, ['role' => 'operator']);
+
+    $this->actingAs($operator)
+        ->get(route('get-current-workspace', ['slug' => $this->workspaceSlug()]))
+        ->assertForbidden();
+
+    $this->actingAs($operator)
+        ->get(route('show-teammate-list', ['slug' => $this->workspaceSlug()]))
+        ->assertForbidden();
+});
+
+test('workspace member can update own online status from sidebar', function () {
+    $operator = User::factory()->create([
+        'name' => '普通客服',
+        'email' => 'operator-online@example.com',
+    ]);
+    $this->workspace->users()->attach($operator->id, [
+        'role' => 'operator',
+        'online_status' => UserOnlineStatus::OFFLINE->value,
+    ]);
+
+    $this->actingAs($operator)
+        ->put(route('update-my-online-status', ['slug' => $this->workspaceSlug()]), [
+            'online_status' => UserOnlineStatus::ONLINE->value,
+        ])
+        ->assertRedirect();
+
+    expect($this->workspace->users()->whereKey($operator->id)->firstOrFail()->pivot->online_status)
+        ->toBe(UserOnlineStatus::ONLINE->value);
+});
+
+test('authenticated user can view create teammate page with options', function () {
+    User::factory()->create([
+        'name' => '待添加用户',
+        'email' => 'available@example.com',
+    ]);
+
     $this->actingAs($this->user)
-        ->get(route('show-create-user-page', ['slug' => $this->workspaceSlug()]))
+        ->get(route('show-create-teammate-page', ['slug' => $this->workspaceSlug()]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('user/Create')
-            ->has('user_form')
+            ->component('teammate/Create')
             ->has('role_options', 2)
+            ->has('available_users')
             ->where('role_options.0.value', 'admin')
-            ->where('role_options.1.value', 'customer_service')
+            ->where('role_options.1.value', 'operator')
             ->etc()
         );
 });
@@ -55,156 +99,230 @@ test('authenticated user can view edit user page with role options', function ()
         'name' => '客服Z',
         'email' => 'z@example.com',
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->get(route('show-edit-user-page', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+        ->get(route('show-edit-teammate-page', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('user/Edit')
+            ->component('teammate/Edit')
             ->has('user_form')
             ->has('role_options', 2)
             ->where('role_options.0.value', 'admin')
-            ->where('role_options.1.value', 'customer_service')
+            ->where('role_options.1.value', 'operator')
             ->etc()
         );
 });
 
-test('can create a user in current workspace', function () {
-    $this->actingAs($this->user)
-        ->post(route('create-user', ['slug' => $this->workspaceSlug()]), [
-            'name' => '客服B',
-            'external_nickname' => '小B',
-            'avatar' => 'https://example.com/a.png',
-            'role' => 'customer_service',
-            'email' => 'b@example.com',
-            'password' => 'secret1234',
-            'password_confirmation' => 'secret1234',
-        ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
-
-    $created = User::query()->where('email', 'b@example.com')->firstOrFail();
-    expect(Hash::check('secret1234', $created->password))->toBeTrue();
-    expect($this->workspace->users()->whereKey($created->id)->exists())->toBeTrue();
-});
-
-test('can update a user without changing password', function () {
-    $member = User::factory()->create([
-        'name' => '客服C',
-        'email' => 'c@example.com',
-        'password' => Hash::make('old-password'),
+test('can add an existing user into current workspace', function () {
+    $candidate = User::factory()->create([
+        'name' => '客服B',
+        'email' => 'b@example.com',
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
-
-    $oldHash = $member->password;
 
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
-            'name' => '客服C-新',
-            'external_nickname' => '小C',
-            'avatar' => null,
-            'role' => 'admin',
-            'email' => 'c@example.com',
-            'password' => '',
-            'password_confirmation' => '',
+        ->post(route('create-teammate', ['slug' => $this->workspaceSlug()]), [
+            'user_id' => $candidate->id,
+            'nickname' => '小B',
+            'role' => 'operator',
         ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
-    $member->refresh();
-    expect($member->name)->toBe('客服C-新');
-    expect($member->password)->toBe($oldHash);
+    expect($this->workspace->users()->whereKey($candidate->id)->exists())->toBeTrue();
+    expect($this->workspace->users()->whereKey($candidate->id)->firstOrFail()->pivot->role)->toBe('operator');
+    expect($this->workspace->users()->whereKey($candidate->id)->firstOrFail()->pivot->nickname)->toBe('小B');
 });
 
-test('can update a user with new password', function () {
+test('cannot add a user with owner role', function () {
+    $candidate = User::factory()->create([
+        'name' => '非法 Owner',
+        'email' => 'owner-like@example.com',
+    ]);
+
+    $this->actingAs($this->user)
+        ->post(route('create-teammate', ['slug' => $this->workspaceSlug()]), [
+            'user_id' => $candidate->id,
+            'role' => 'owner',
+        ])
+        ->assertSessionHasErrors(['role']);
+});
+
+test('cannot add workspace owner as teammate', function () {
+    $member = User::factory()->create([
+        'name' => 'Owner-外部同名无关',
+        'email' => 'other@example.com',
+    ]);
+
+    $this->actingAs($this->user)
+        ->post(route('create-teammate', ['slug' => $this->workspaceSlug()]), [
+            'user_id' => $this->user->id,
+            'role' => 'operator',
+        ])
+        ->assertSessionHasErrors(['user_id']);
+});
+
+test('cannot add duplicate workspace member', function () {
+    $candidate = User::factory()->create([
+        'name' => '客服重复',
+        'email' => 'dup@example.com',
+    ]);
+    $this->workspace->users()->attach($candidate->id, ['role' => 'operator']);
+
+    $this->actingAs($this->user)
+        ->post(route('create-teammate', ['slug' => $this->workspaceSlug()]), [
+            'user_id' => $candidate->id,
+            'role' => 'operator',
+        ])
+        ->assertSessionHasErrors(['user_id']);
+});
+
+test('owner cannot change own role', function () {
+    $this->actingAs($this->user)
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]), [
+            'role' => 'admin',
+        ])
+        ->assertForbidden();
+
+    $role = $this->workspace->users()->whereKey($this->user->id)->firstOrFail()->pivot->role;
+    expect($role)->toBe('owner');
+});
+
+test('owner can update another user role', function () {
     $member = User::factory()->create([
         'name' => '客服D',
         'email' => 'd@example.com',
-        'password' => Hash::make('old-password'),
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->put(route('update-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
-            'name' => '客服D',
-            'external_nickname' => null,
-            'avatar' => null,
-            'role' => 'customer_service',
-            'email' => 'd@example.com',
-            'password' => 'newpass1234',
-            'password_confirmation' => 'newpass1234',
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+            'nickname' => '对外昵称D',
+            'role' => 'admin',
         ])
-        ->assertRedirect(route('show-user-list', ['slug' => $this->workspaceSlug()]));
+        ->assertRedirect(route('show-teammate-list', ['slug' => $this->workspaceSlug()]));
 
-    $member->refresh();
-    expect(Hash::check('newpass1234', $member->password))->toBeTrue();
+    expect($this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->role)->toBe('admin');
+    expect($this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->nickname)->toBe('对外昵称D');
+});
+
+test('owner cannot set another user role to owner', function () {
+    $member = User::factory()->create([
+        'name' => '客服-不可升 Owner',
+        'email' => 'no-owner@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
+
+    $this->actingAs($this->user)
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+            'role' => 'owner',
+        ])
+        ->assertForbidden();
+
+    $role = $this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->role;
+    expect($role)->toBe('operator');
+});
+
+test('admin cannot change operator role', function () {
+    $admin = User::factory()->create([
+        'name' => '管理员X',
+        'email' => 'admin-x@example.com',
+    ]);
+    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+
+    $member = User::factory()->create([
+        'name' => '客服-角色不可被管理员改',
+        'email' => 'no-admin-role-change@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
+
+    $this->actingAs($admin)
+        ->put(route('update-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+            'role' => 'admin',
+        ])
+        ->assertForbidden();
+
+    $role = $this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->role;
+    expect($role)->toBe('operator');
 });
 
 test('can update user online status from list', function () {
     $member = User::factory()->create([
         'name' => '客服E',
         'email' => 'e@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, [
+        'role' => 'operator',
         'online_status' => UserOnlineStatus::OFFLINE->value,
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
 
     $this->actingAs($this->user)
-        ->put(route('update-user-online-status', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+        ->put(route('update-teammate-online-status', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
             'online_status' => UserOnlineStatus::ONLINE->value,
         ])
         ->assertRedirect();
 
     $member->refresh();
-    expect($member->online_status)->toBe(UserOnlineStatus::ONLINE->value);
-});
-
-test('can soft delete a user in current workspace', function () {
-    $member = User::factory()->create([
-        'name' => '客服F',
-        'email' => 'f@example.com',
-    ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
-
-    $this->actingAs($this->user)
-        ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
-        ->assertRedirect();
-
-    $this->assertSoftDeleted('users', ['id' => $member->id]);
+    expect($this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->online_status)
+        ->toBe(UserOnlineStatus::ONLINE->value);
 });
 
 test('cannot delete current logged in user', function () {
     $this->actingAs($this->user)
-        ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]))
+        ->delete(route('remove-teammate', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]))
         ->assertForbidden();
 });
 
-test('trash page shows deleted users and can restore', function () {
+test('delete teammate only detaches from workspace', function () {
     $member = User::factory()->create([
-        'name' => '回收站客服',
-        'email' => 'trash@example.com',
+        'name' => '待移除客服',
+        'email' => 'remove@example.com',
     ]);
-    $this->workspace->users()->attach($member->id, ['role' => 'customer_service']);
+    $this->workspace->users()->attach($member->id, ['role' => 'operator']);
 
     $this->actingAs($this->user)
-        ->delete(route('delete-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+        ->delete(route('remove-teammate', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
         ->assertRedirect();
 
-    $this->actingAs($this->user)
-        ->get(route('show-user-trash-page', ['slug' => $this->workspaceSlug()]))
-        ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->component('user/Trash')
-            ->has('user_list', 1)
-            ->has('user_list.0', fn (Assert $item) => $item
-                ->hasAll(['id', 'avatar', 'name', 'email', 'role', 'deleted_at'])
-                ->where('email', 'trash@example.com')
-                ->etc()
-            )
-        );
+    expect(User::query()->whereKey($member->id)->exists())->toBeTrue();
+    expect($this->workspace->users()->whereKey($member->id)->exists())->toBeFalse();
+});
 
-    $this->actingAs($this->user)
-        ->put(route('restore-user', ['slug' => $this->workspaceSlug(), 'id' => $member->id]))
+test('admin can detach operator from workspace', function () {
+    $admin = User::factory()->create([
+        'name' => '管理员Y',
+        'email' => 'admin-y@example.com',
+    ]);
+    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+
+    $operator = User::factory()->create([
+        'name' => '客服-可被管理员移除',
+        'email' => 'operator-remove@example.com',
+    ]);
+    $this->workspace->users()->attach($operator->id, ['role' => 'operator']);
+
+    $this->actingAs($admin)
+        ->delete(route('remove-teammate', ['slug' => $this->workspaceSlug(), 'id' => $operator->id]))
         ->assertRedirect();
 
-    expect($member->fresh())->not->toBeNull();
-    expect($member->fresh()->deleted_at)->toBeNull();
+    expect($this->workspace->users()->whereKey($operator->id)->exists())->toBeFalse();
+});
+
+test('admin cannot detach another admin from workspace', function () {
+    $admin = User::factory()->create([
+        'name' => '管理员1',
+        'email' => 'admin1@example.com',
+    ]);
+    $this->workspace->users()->attach($admin->id, ['role' => 'admin']);
+
+    $admin2 = User::factory()->create([
+        'name' => '管理员2',
+        'email' => 'admin2@example.com',
+    ]);
+    $this->workspace->users()->attach($admin2->id, ['role' => 'admin']);
+
+    $this->actingAs($admin)
+        ->delete(route('remove-teammate', ['slug' => $this->workspaceSlug(), 'id' => $admin2->id]))
+        ->assertForbidden();
+
+    expect($this->workspace->users()->whereKey($admin2->id)->exists())->toBeTrue();
 });

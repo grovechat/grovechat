@@ -7,6 +7,15 @@ description: Laravel Action 模式开发规范
 
 **禁止使用传统 Controller 编写业务逻辑**，统一使用 Action 模式。
 
+## 目录组织（按领域分目录）
+
+- ✅ Action 必须放在 `app/Actions/<Domain>/` 下（例如 `User/`、`StorageSetting/`、`SystemSetting/`）
+- ✅ 领域（Domain）优先按业务概念命名，而不是技术概念（例如 `User` 优于 `AdminUser` 这种混合命名；页面场景差异用 Action 名称表达）
+- ✅ Action 命名采用 “动词 + 名词 + Action” 的用例式命名，例如：
+  - `ShowUserListAction`
+  - `UpdateStorageSettingAction`
+  - `RedirectLastDashboardAction`
+
 ## 基本结构
 
 ```php
@@ -17,7 +26,7 @@ class UpdateWorkspaceAction
     use AsAction;
 
     // ✅ 业务逻辑写在 handle() 方法中
-    public function handle(Workspace $workspace, UpdateWorkspaceDTO $data)
+    public function handle(Workspace $workspace, FormUpdateWorkspaceData $data)
     {
         $workspace->update($data->toArray());
         // 所有业务逻辑都在这里
@@ -26,7 +35,7 @@ class UpdateWorkspaceAction
     // ✅ asController() 仅做路由绑定和数据转换
     public function asController(Request $request, Workspace $currentWorkspace)
     {
-        $data = UpdateWorkspaceDTO::from($request);
+        $data = FormUpdateWorkspaceData::from($request);
         $this->handle($currentWorkspace, $data);
         
         return redirect()->route('...');
@@ -52,7 +61,7 @@ $workspace = CreateWorkspaceAction::run($user, $dto);
 ## 创建 Action
 
 ```bash
-php artisan make:action Workspace/CreateWorkspaceAction
+php artisan make:action User/UpdateUserAction
 ```
 
 ## 禁止事项

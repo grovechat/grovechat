@@ -22,7 +22,7 @@ test('super admin can open workspace as owner in web guard without losing admin 
     $owner->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::OWNER->value]);
 
     $response = actingAs($admin, 'admin')
-        ->get(route('login-as-workspace-owner', ['id' => $workspace->id]));
+        ->get(route('admin.login-as-workspace-owner', ['id' => $workspace->id]));
 
     $response->assertRedirect(route('workspace.dashboard', ['slug' => $workspace->slug], absolute: false));
     expect(auth('admin')->id())->toBe($admin->id);
@@ -41,7 +41,7 @@ test('logging out web guard does not affect admin guard', function () {
     $owner->workspaces()->attach($workspace->id, ['role' => WorkspaceRole::OWNER->value]);
 
     actingAs($admin, 'admin')
-        ->get(route('login-as-workspace-owner', ['id' => $workspace->id]));
+        ->get(route('admin.login-as-workspace-owner', ['id' => $workspace->id]));
 
     expect(auth('admin')->id())->toBe($admin->id);
     expect(auth('web')->id())->toBe($owner->id);

@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editLanguage } from '@/routes/language';
@@ -9,16 +10,15 @@ import { edit as editProfile } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const page = usePage();
-const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
+const currentWorkspace = useCurrentWorkspace();
 
 const linkOptions = computed(() => ({
   mergeQuery: {
-    from_workspace: fromWorkspaceSlug.value,
+    from_workspace: currentWorkspace.value?.slug,
   },
 }));
 

@@ -29,7 +29,7 @@ class DeleteCurrentWorkspaceAction
 
         Inertia::flash('toast', [
             'type' => 'success',
-            'message' => __('workspace.workspace_deleted'),
+            'message' => __('common.操作成功'),
         ]);
 
         return redirect(route('get-current-workspace', $defaultWorkspace->slug));

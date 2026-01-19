@@ -27,9 +27,19 @@ GroveChat 是基于 Laravel 12 + Vue 3 + Inertia.js 的全栈应用。底层使�
 app/                    # Laravel应用层（主要开发区域）
   ├─ Actions/           # 业务逻辑（Action模式）
   │   ├─ Dashboard/
+  │   ├─ Manage/
+  │   ├─ StorageSetting/
+  │   ├─ SystemSetting/
+  │   ├─ User/
+  │   └─ Workspace/
+  ├─ Data/              # 数据传输对象（DTO / PageProps / ViewModel），按领域分目录
+  │   ├─ CurrentWorkspace/
+  │   ├─ StorageSetting/
+  │   ├─ Teammate/
+  │   ├─ User/
   │   ├─ Workspace/
-  │   └─ SystemSetting/
-  ├─ Data/              # 数据传输对象（DTO）
+  │   ├─ EnumOptionData.php        # 通用 Data（跨领域复用）
+  │   └─ SimplePaginationData.php  # 通用 Data（跨领域复用）
   ├─ Models/            # Eloquent模型
   ├─ Http/              # HTTP层（中间件、少量传统Controller）
   ├─ Services/          # 业务服务
@@ -53,7 +63,7 @@ lang/                   # 后端国际化（Laravel标准）
 # 关键特性
 
 **类型安全的数据流**:
-1. 后端定义 Laravel Data（`app/Data/*.php`）
+1. 后端定义 Laravel Data（`app/Data/<Domain>/*.php`，通用 Data 例外）
 2. 运行 `php artisan typescript:transform` 生成TS类型
 3. 前端使用生成的类型（`resources/js/types/generated.d.ts`）
 4. 数据自动转换为snake_case（配置于`config/data.php`）

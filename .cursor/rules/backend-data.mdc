@@ -7,6 +7,51 @@ description: Laravel Data 和类型生成规范
 
 **所有数据传输必须使用 Laravel Data**。
 
+## 目录组织（按领域分目录）
+
+- ✅ Data 默认放在 `app/Data/<Domain>/` 下（例如 `CurrentWorkspace/`、`StorageSetting/`、`Teammate/`、`User/`）
+- ✅ 跨领域复用的通用 Data 可放在 `app/Data/` 根目录（例如 `EnumOptionData`、`SimplePaginationData`）
+- ✅ 通过“动词 + 名词 + 用途”体现语义（输入/表单/页面 props/列表项等）
+
+## 命名规范（重要）
+
+### 基本原则
+
+- ✅ **动词 + 名词**：和 `app/Data/Teammate` 的风格一致（例如 `FormCreateTeammateData`、`FormUpdateTeammateData`、`ListTeammateItemData`）
+- ✅ **保持前后端类型可直接复用**：页面 props 尽量使用 “已生成的 Data 类型”，避免前端手写 `{ ... }` props shape
+
+### `Form*`（提交入参）命名约定（强约定）
+
+- ✅ **前端提交/请求入参（Request Data）统一使用 `Form*` 前缀**：
+  - 例：`FormCreateWorkspaceData`、`FormUpdateUserData`、`FormCheckStorageSettingData`
+  - 典型用法：`$data = FormXxxData::from($request)` / `::validateAndCreate($request->all())`
+- ✅ **仅提交用 Data 才改名为 `Form*`**；列表项、PageProps、Detail 等展示 Data 不改名
+- ✅ **同一个领域既要 props 又要提交** 时：
+  - props 继续用原本的展示 Data（例如 `StorageSettingData`）
+  - 提交另起一个 `Form...`（例如 `FormStorageSettingData`），避免“展示类型被提交规则绑架”
+
+### PagePropsData（页面展示数据）如何取名
+
+- ✅ **展示型页面（列表 / 回收站 / 详情）**：使用 `ShowXXX...PagePropsData`
+  - 例：`ShowUserListPagePropsData`、`ShowWorkspaceListPagePropsData`、`ShowWorkspaceTrashPagePropsData`
+  - 说明：即使当前只有一个字段（例如只有 `*_list`），也建议保留 `Show*PagePropsData`，这样前端可以直接 `defineProps<Show...PagePropsData>()`，并且后续扩展字段无需改动 props 类型结构
+- ✅ **非展示型/仅表单型页面（Create/Edit）**：避免“无意义套娃”
+  - 如果页面 props 只有一个表单对象，**可以直接下发 `CreateXXXFormData` / `EditXXXFormData`**，不必再包一层 `ShowCreate...PagePropsData`
+  - 例：Create 用户页面可以直接返回 `CreateUserFormData` 作为 props（前端同样能直接引用生成的类型）
+
+### 常见 Data 类型命名（示例）
+
+- **输入/提交（Request Data）**：
+  - `FormCreateUserData` / `FormUpdateUserData`
+- **页面 props / 展示**：
+  - `ShowUserListPagePropsData` / `ListUserItemData`
+- **列表项（Item Data）**：
+  - `ListUserItemData`
+  - `ListWorkspaceItemData` / `TrashWorkspaceItemData`
+- **展示页 Props（PageProps Data）**：
+  - `ShowUserListPagePropsData`
+  - `ShowWorkspaceListPagePropsData` / `ShowWorkspaceTrashPagePropsData`
+
 ## 基本用法
 
 ```php
@@ -30,7 +75,7 @@ class WorkspaceData extends Data
 ```php
 use Illuminate\Validation\Rule;
 
-class CreateWorkspaceDTO extends Data
+class FormCreateWorkspaceData extends Data
 {
     public function __construct(
         public string $name,
@@ -50,6 +95,16 @@ class CreateWorkspaceDTO extends Data
     }
 }
 ```
+
+## 重构提交用 Data 的推荐流程（Form* 前缀）
+
+- ✅ **只改提交用 Data**：先从 Action 入手找 `::from($request)` / `::validateAndCreate()`，锁定目标类
+- ✅ **步骤**：
+  - 新增 `FormXxxData`（新文件名/类名）
+  - 更新所有后端引用（Action `use`、`handle()` 参数类型、`asController()` 构建 Data 方式）
+  - 删除旧的 `XxxData`（避免 TS 重复类型与歧义）
+  - 运行 `php artisan typescript:transform`
+  - 如前端有显式类型引用（`useForm<T>()` / `defineProps<T>()`），同步切到新类型
 
 ## 关键特性
 
@@ -81,7 +136,7 @@ export type WorkspaceData = {
 ## 创建 Data 类
 
 ```bash
-php artisan make:data CreateWorkspaceDTO
+php artisan make:data CurrentWorkspace/FormCreateWorkspaceData
 ```
 
 ## 禁止事项

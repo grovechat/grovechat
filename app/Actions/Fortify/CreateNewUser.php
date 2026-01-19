@@ -44,7 +44,7 @@ class CreateNewUser implements CreatesNewUsers
 
             // 创建工作区
             $workspace = Workspace::query()->create([
-                'name' => 'Default',
+                'name' => mb_substr($input['name'], 0, 5)."'s Workspace",
                 'owner_id' => $user->id,
             ]);
 

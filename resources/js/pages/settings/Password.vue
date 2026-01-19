@@ -14,16 +14,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { type BreadcrumbItem } from '@/types';
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 
 const { t } = useI18n();
 const page = usePage();
-const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
+const currentWorkspace = useCurrentWorkspace();
 const RootLayout = computed(() =>
   page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
 );
 const linkOptions = computed(() => ({
   mergeQuery: {
-    from_workspace: fromWorkspaceSlug.value,
+    from_workspace: currentWorkspace.value?.slug ?? '',
   },
 }));
 

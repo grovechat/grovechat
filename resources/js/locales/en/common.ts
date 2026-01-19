@@ -16,6 +16,15 @@ export default {
   个人设置: 'Personal settings',
   系统管理: 'System management',
 
+  // Status / Security
+  已启用: 'Enabled',
+  未启用: 'Not enabled',
+  重置两步验证: 'Reset two-factor Auth',
+  '确认重置两步验证？': 'Reset two-factor Auth?',
+  '重置后，该用户需要重新绑定两步验证。':
+    'After resetting, the user will need to set up two-factor Auth again.',
+  '重置中...': 'Resetting...',
+
   // Toast 通知
   成功: 'Success',
   错误: 'Error',
@@ -26,6 +35,7 @@ export default {
   // 通用操作
   保存: 'Save',
   '已保存。': 'Saved.',
+  继续: 'Continue',
   取消: 'Cancel',
   确认: 'Confirm',
   关闭: 'Close',
@@ -37,4 +47,8 @@ export default {
   确认删除: 'Confirm Delete',
   恢复: 'Restore',
   '恢复中...': 'Restoring...',
+
+  // 字段/占位
+  请输入名称: 'Please enter name',
+  条: 'items',
 } as const;

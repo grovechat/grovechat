@@ -3,8 +3,8 @@
 namespace App\Actions\StorageSetting\StorageProfile;
 
 use App\Actions\StorageSetting\CheckStorageSettingAction;
-use App\Data\StorageProfileCreateData;
-use App\Data\StorageSettingCheckData;
+use App\Data\StorageSetting\FormCheckStorageSettingData;
+use App\Data\StorageSetting\FormCreateStorageProfileData;
 use App\Models\StorageProfile;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -20,9 +20,9 @@ class CreateStorageProfileAction
         protected CheckStorageSettingAction $checker,
     ) {}
 
-    public function handle(StorageProfileCreateData $data): StorageProfile
+    public function handle(FormCreateStorageProfileData $data): StorageProfile
     {
-        $checkData = StorageSettingCheckData::from([
+        $checkData = FormCheckStorageSettingData::from([
             'provider' => $data->provider,
             'key' => $data->key,
             'secret' => $data->secret,
@@ -56,12 +56,12 @@ class CreateStorageProfileAction
 
     public function asController(Request $request)
     {
-        $data = StorageProfileCreateData::validateAndCreate($request->all());
+        $data = FormCreateStorageProfileData::from($request);
         $this->handle($data);
 
         Inertia::flash('toast', [
             'type' => 'success',
-            'message' => __('storage_settings.profile_created'),
+            'message' => __('common.操作成功'),
         ]);
 
         return back();

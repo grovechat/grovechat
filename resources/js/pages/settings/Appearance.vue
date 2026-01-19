@@ -12,17 +12,18 @@ import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { edit } from '@/routes/appearance';
 import { Monitor, Moon, Sun } from 'lucide-vue-next';
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 
 const { t } = useI18n();
 const { appearance, updateAppearance } = useAppearance();
 const page = usePage();
-const fromWorkspaceSlug = computed(() => page.props.fromWorkspaceSlug);
+const currentWorkspace = useCurrentWorkspace();
 const RootLayout = computed(() =>
   page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
 );
 const linkOptions = computed(() => ({
   mergeQuery: {
-    from_workspace: fromWorkspaceSlug.value,
+    from_workspace: currentWorkspace.value?.slug ?? '',
   },
 }));
 

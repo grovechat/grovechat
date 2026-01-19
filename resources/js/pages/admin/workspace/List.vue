@@ -19,24 +19,32 @@ import {
   getWorkspaceList,
   getWorkspaceTrash,
   loginAsWorkspaceOwner,
+  showCreateWorkspacePage,
+  showEditWorkspacePage,
   showWorkspaceDetail,
-} from '@/routes';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
-import type { WorkspaceListPagePropsData } from '@/types/generated';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+} from '@/routes/admin';
+import type { BreadcrumbItem } from '@/types';
+import type {
+  ShowWorkspaceListPagePropsData,
+} from '@/types/generated';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const page = usePage<AppPageProps<WorkspaceListPagePropsData>>();
-const workspaceList = computed(() => page.props.workspace_list);
 const deleteForm = useForm({});
-const currentUserId = computed(() =>
-  String((page.props as any)?.auth?.user?.id ?? ''),
+const props = defineProps<ShowWorkspaceListPagePropsData>();
+
+const prevPage = computed(() =>
+  Math.max(1, props.workspace_list_pagination.current_page - 1),
+);
+const nextPage = computed(() =>
+  Math.min(
+    props.workspace_list_pagination.last_page,
+    props.workspace_list_pagination.current_page + 1,
+  ),
 );
 
-const cannotDelete = (ws: (typeof workspaceList.value)[number]) =>
-  !!ws.owner?.id && String(ws.owner.id) === currentUserId.value;
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('工作区管理'),
@@ -55,9 +63,16 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
               :title="t('工作区管理')"
               :description="t('查看系统中所有工作区及其成员信息')"
             />
-            <Button variant="outline" as-child>
-              <Link :href="getWorkspaceTrash.url()">{{ t('回收站') }}</Link>
-            </Button>
+            <div class="flex items-center gap-2">
+              <Button as-child>
+                <Link :href="showCreateWorkspacePage.url()">
+                  {{ t('新建工作区') }}
+                </Link>
+              </Button>
+              <Button variant="outline" as-child>
+                <Link :href="getWorkspaceTrash.url()">{{ t('回收站') }}</Link>
+              </Button>
+            </div>
           </div>
 
           <div class="rounded-lg border">
@@ -84,7 +99,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 </thead>
                 <tbody>
                   <tr
-                    v-for="ws in workspaceList"
+                    v-for="ws in props.workspace_list"
                     :key="ws.id"
                     class="border-b last:border-b-0"
                   >
@@ -111,8 +126,14 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     <td class="px-4 py-3 text-right">
                       <div class="inline-flex items-center gap-2">
                         <Button variant="outline" size="sm" as-child>
+                          <Link :href="showEditWorkspacePage.url(ws.id)">
+                            {{ t('编辑') }}
+                          </Link>
+                        </Button>
+                        
+                        <Button variant="outline" size="sm" as-child>
                           <Link :href="showWorkspaceDetail.url(ws.id)">
-                            {{ t('查看详情') }}
+                            {{ t('客服列表') }}
                           </Link>
                         </Button>
 
@@ -127,7 +148,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {{ t('以所有者打开') }}
+                            {{ t('进入工作区') }}
                           </a>
                         </Button>
 
@@ -136,12 +157,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                             <Button
                               variant="destructive"
                               size="sm"
-                              :disabled="cannotDelete(ws)"
-                              :title="
-                                cannotDelete(ws)
-                                  ? t('不能删除自己作为所有者的工作区')
-                                  : undefined
-                              "
                             >
                               {{ t('删除') }}
                             </Button>
@@ -197,7 +212,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </td>
                   </tr>
 
-                  <tr v-if="workspaceList.length === 0">
+                  <tr v-if="props.workspace_list.length === 0">
                     <td
                       colspan="5"
                       class="px-4 py-8 text-center text-muted-foreground"
@@ -207,6 +222,40 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 border-t p-4">
+              <div class="text-sm text-muted-foreground">
+                {{ t('第') }} {{ props.workspace_list_pagination.current_page }}
+                / {{ props.workspace_list_pagination.last_page }}
+                {{ t('页，共') }}
+                {{ props.workspace_list_pagination.total }} {{ t('条') }}
+              </div>
+              <div class="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  :disabled="props.workspace_list_pagination.current_page <= 1"
+                  as-child
+                >
+                  <Link :href="getWorkspaceList.url({ query: { page: prevPage } })">
+                    {{ t('上一页') }}
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  :disabled="
+                    props.workspace_list_pagination.current_page >=
+                    props.workspace_list_pagination.last_page
+                  "
+                  as-child
+                >
+                  <Link :href="getWorkspaceList.url({ query: { page: nextPage } })">
+                    {{ t('下一页') }}
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

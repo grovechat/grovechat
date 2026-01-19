@@ -8,14 +8,14 @@ enum WorkspaceRole: string implements LabeledEnum
 {
     case OWNER = 'owner';
     case ADMIN = 'admin';
-    case CUSTOMER_SERVICE = 'customer_service';
+    case OPERATOR = 'operator';
 
     public function label(): string
     {
         return match ($this) {
             self::OWNER => __('workspace.roles.owner'),
             self::ADMIN => __('workspace.roles.admin'),
-            self::CUSTOMER_SERVICE => __('workspace.roles.customer_service'),
+            self::OPERATOR => __('workspace.roles.operator'),
         };
     }
 
@@ -26,7 +26,7 @@ enum WorkspaceRole: string implements LabeledEnum
     {
         return [
             self::ADMIN,
-            self::CUSTOMER_SERVICE,
+            self::OPERATOR,
         ];
     }
 }

@@ -18,17 +18,26 @@ import {
   getWorkspaceList,
   getWorkspaceTrash,
   restoreWorkspace,
-} from '@/routes';
-import type { AppPageProps, BreadcrumbItem } from '@/types';
-import type { WorkspaceTrashPagePropsData } from '@/types/generated';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+} from '@/routes/admin';
+import type { BreadcrumbItem } from '@/types';
+import type { ShowWorkspaceTrashPagePropsData } from '@/types/generated';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
 const { formatDateTime } = useDateTime();
-const page = usePage<AppPageProps<WorkspaceTrashPagePropsData>>();
-const workspaceList = computed(() => page.props.workspace_trash_list);
+const props = defineProps<ShowWorkspaceTrashPagePropsData>();
 const restoreForm = useForm({});
+
+const prevPage = computed(() =>
+  Math.max(1, props.workspace_trash_list_pagination.current_page - 1),
+);
+const nextPage = computed(() =>
+  Math.min(
+    props.workspace_trash_list_pagination.last_page,
+    props.workspace_trash_list_pagination.current_page + 1,
+  ),
+);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
@@ -82,7 +91,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 </thead>
                 <tbody>
                   <tr
-                    v-for="ws in workspaceList"
+                    v-for="ws in props.workspace_trash_list"
                     :key="ws.id"
                     class="border-b last:border-b-0"
                   >
@@ -165,7 +174,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                     </td>
                   </tr>
 
-                  <tr v-if="workspaceList.length === 0">
+                  <tr v-if="props.workspace_trash_list.length === 0">
                     <td
                       colspan="6"
                       class="px-4 py-8 text-center text-muted-foreground"
@@ -175,6 +184,40 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 border-t p-4">
+              <div class="text-sm text-muted-foreground">
+                {{ t('第') }} {{ props.workspace_trash_list_pagination.current_page }}
+                / {{ props.workspace_trash_list_pagination.last_page }}
+                {{ t('页，共') }}
+                {{ props.workspace_trash_list_pagination.total }} {{ t('条') }}
+              </div>
+              <div class="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  :disabled="props.workspace_trash_list_pagination.current_page <= 1"
+                  as-child
+                >
+                  <Link :href="getWorkspaceTrash.url({ query: { page: prevPage } })">
+                    {{ t('上一页') }}
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  :disabled="
+                    props.workspace_trash_list_pagination.current_page >=
+                    props.workspace_trash_list_pagination.last_page
+                  "
+                  as-child
+                >
+                  <Link :href="getWorkspaceTrash.url({ query: { page: nextPage } })">
+                    {{ t('下一页') }}
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

@@ -8,9 +8,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Workspace extends Model
@@ -33,7 +30,7 @@ class Workspace extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot('role')->withTimestamps();
+        return $this->belongsToMany(User::class)->withPivot('role', 'nickname', 'online_status')->withTimestamps();
     }
 
     public function owner()
@@ -64,7 +61,7 @@ class Workspace extends Model
         static::updated(function (Model $workspace) {
             if ($workspace->wasChanged('logo_id') && $workspace->logo_id) {
                 if ($attachment = Attachment::query()->find($workspace->logo_id)) {
-                    if (!empty($workspace->getOriginal('logo_id'))) {
+                    if (! empty($workspace->getOriginal('logo_id'))) {
                         if ($oldAttachment = Attachment::query()->find($workspace->getOriginal('logo_id'))) {
                             DeleteAttachmentAction::run($oldAttachment);
                         }

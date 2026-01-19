@@ -21,13 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state', 'locale']);
-
-        $middleware->alias([
-            'is_super_admin' => CheckSuperAdmin::class,
-            'authenticate_settings' => AuthenticateSettings::class,
-            'ensure_settings_workspace' => EnsureSettingsWorkspace::class,
-        ]);
-
+        
         $middleware->web(append: [
             HandleAppearance::class,
             HandleLocale::class,

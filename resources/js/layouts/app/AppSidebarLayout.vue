@@ -8,19 +8,19 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/composables/useI18n';
-import { useErrorHandling } from '@/composables/useToast';
 import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import SidebarShell, {
   type SidebarShellNavItem,
 } from '@/layouts/app/SidebarShell.vue';
-import { getCurrentWorkspace, getGeneralSetting } from '@/routes';
+import SidebarUserMenuWithOnlineStatus from '@/layouts/app/SidebarUserMenuWithOnlineStatus.vue';
+import { getCurrentWorkspace } from '@/routes';
+import { getGeneralSetting } from '@/routes/admin';
 import contact from '@/routes/contact';
 import logout from '@/routes/logout';
 import { edit } from '@/routes/profile';
 import stats from '@/routes/stats';
 import workspace from '@/routes/workspace';
 import type { AppPageProps, BreadcrumbItemType, NavItem } from '@/types';
-import type { WorkspaceData } from '@/types/generated';
 import { router, usePage } from '@inertiajs/vue3';
 import {
   BarChart,
@@ -46,11 +46,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 const page = usePage<AppPageProps>();
-useErrorHandling();
 
 const currentWorkspace = useRequiredWorkspace();
 const user = computed(() => page.props.auth.user);
-const workspaces = computed(() => page.props.workspaces);
+const workspaces = computed(() => page.props.workspaces ?? []);
 
 type MainNavItem = SidebarShellNavItem;
 
@@ -69,6 +68,8 @@ const manageBaseUrl = computed(() => {
     .replace(/\/workspaces\/current$/, '');
 });
 
+const canAccessManageCenter = computed(() => page.props.canAccessManageCenter);
+
 const mainNavItems = computed<MainNavItem[]>(() => [
   {
     title: t('工作台'),
@@ -77,7 +78,10 @@ const mainNavItems = computed<MainNavItem[]>(() => [
   },
   {
     title: t('联系人'),
-    href: contact.index.url({ slug: currentWorkspace.value.slug, type: 'all' }),
+    href: contact.index.url({
+      slug: currentWorkspace.value.slug,
+      type: 'all',
+    }),
     icon: Users,
     activeUrls: [
       contactsBaseUrl.value,
@@ -90,12 +94,16 @@ const mainNavItems = computed<MainNavItem[]>(() => [
     icon: BarChart,
     activeUrls: [stats.index.url(currentWorkspace.value.slug)],
   },
-  {
-    title: t('管理中心'),
-    href: getCurrentWorkspace.url(currentWorkspace.value.slug),
-    icon: Building2,
-    activeUrls: [manageBaseUrl.value],
-  },
+  ...(canAccessManageCenter.value
+    ? ([
+        {
+          title: t('管理中心'),
+          href: getCurrentWorkspace.url(currentWorkspace.value.slug),
+          icon: Building2,
+          activeUrls: [manageBaseUrl.value],
+        },
+      ] as MainNavItem[])
+    : []),
 ]);
 
 const footerNavItems = computed<NavItem[]>(() => [
@@ -122,8 +130,8 @@ const footerNavItems = computed<NavItem[]>(() => [
 
 const logoutHref = computed(() => logout.web.url());
 
-const switchWorkspace = (selectedWorkspace: WorkspaceData) => {
-  if (selectedWorkspace.slug !== currentWorkspace.value?.slug) {
+const switchWorkspace = (selectedWorkspace: (typeof workspaces.value)[number]) => {
+  if (selectedWorkspace.slug !== currentWorkspace.value.slug) {
     router.visit(workspace.dashboard.url(selectedWorkspace.slug), {
       preserveState: false,
       preserveScroll: false,
@@ -132,11 +140,7 @@ const switchWorkspace = (selectedWorkspace: WorkspaceData) => {
 };
 
 const goToCreateWorkspace = () => {
-  if (currentWorkspace.value) {
-    router.visit(
-      ShowCreateWorkspacePageAction.url(currentWorkspace.value.slug),
-    );
-  }
+  router.visit(ShowCreateWorkspacePageAction.url(currentWorkspace.value.slug));
 };
 </script>
 
@@ -227,6 +231,16 @@ const goToCreateWorkspace = () => {
           />
         </div>
       </div>
+    </template>
+
+    <template #userMenu="{ isMobile, sidebarState }">
+      <SidebarUserMenuWithOnlineStatus
+        :profile-href="edit({ query: { from_workspace: currentWorkspace.slug } }).url"
+        :profile-label="t('个人资料')"
+        :logout-href="logoutHref"
+        :is-mobile="isMobile"
+        :sidebar-state="sidebarState"
+      />
     </template>
 
     <slot />

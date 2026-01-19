@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import fallbackLogoUrl from '@/assets/images/logo.png';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,14 +9,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarContent,
@@ -33,14 +24,13 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import Toaster from '@/components/ui/toast/Toaster.vue';
-import { useI18n } from '@/composables/useI18n';
-import { getInitials } from '@/composables/useInitials';
 import { useErrorHandling } from '@/composables/useToast';
 import SidebarContextConsumer from '@/layouts/app/SidebarContextConsumer.vue';
+import SidebarUserMenu from '@/layouts/app/SidebarUserMenu.vue';
 import { cn, toUrl, urlIsActive } from '@/lib/utils';
 import type { BreadcrumbItemType, NavItem } from '@/types';
-import { Link, router, usePage } from '@inertiajs/vue3';
-import { ChevronsUpDown, LogOut, Pin, Settings } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { Pin } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 export type SidebarShellNavItem = NavItem & {
@@ -62,19 +52,14 @@ const props = withDefaults(defineProps<Props>(), {
   breadcrumbs: () => [],
 });
 
-const { t } = useI18n();
 const page = usePage();
-const isOpen = page.props.sidebarOpen;
+const isOpen = Boolean(page.props.sidebarOpen);
 useErrorHandling();
 
 const generalSettings = computed(() => page.props.generalSettings);
 const systemName = computed(() => generalSettings.value?.name || 'GroveChat');
 const systemLogo = computed(
   () => generalSettings.value?.logo_url || fallbackLogoUrl,
-);
-const user = computed(() => page.props.auth.user);
-const showAvatar = computed(
-  () => user.value?.avatar && user.value.avatar !== '',
 );
 
 const isExternalLink = (href: NavItem['href']) => {
@@ -92,9 +77,6 @@ const isMainNavItemActive = (item: SidebarShellNavItem) => {
   return urlIsActive(item.href, page.url);
 };
 
-const handleLogout = () => {
-  router.flushAll();
-};
 </script>
 
 <template>
@@ -225,99 +207,15 @@ const handleLogout = () => {
 
           <SidebarMenu>
             <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <SidebarMenuButton
-                    size="lg"
-                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                    data-test="sidebar-menu-button"
-                  >
-                    <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-                      <AvatarImage
-                        v-if="showAvatar"
-                        :src="user.avatar!"
-                        :alt="user.name"
-                      />
-                      <AvatarFallback
-                        class="rounded-lg text-black dark:text-white"
-                      >
-                        {{ getInitials(user.name) }}
-                      </AvatarFallback>
-                    </Avatar>
-
-                    <div class="grid flex-1 text-left text-sm leading-tight">
-                      <span class="truncate font-medium">{{ user.name }}</span>
-                    </div>
-
-                    <ChevronsUpDown class="ml-auto size-4" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  class="w-(--reka-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                  :side="
-                    isMobile
-                      ? 'bottom'
-                      : state.value === 'collapsed'
-                        ? 'left'
-                        : 'bottom'
-                  "
-                  align="end"
-                  :side-offset="4"
-                >
-                  <DropdownMenuLabel class="p-0 font-normal">
-                    <div
-                      class="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
-                    >
-                      <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-                        <AvatarImage
-                          v-if="showAvatar"
-                          :src="user.avatar!"
-                          :alt="user.name"
-                        />
-                        <AvatarFallback
-                          class="rounded-lg text-black dark:text-white"
-                        >
-                          {{ getInitials(user.name) }}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div class="grid flex-1 text-left text-sm leading-tight">
-                        <span class="truncate font-medium">{{
-                          user.name
-                        }}</span>
-                        <span class="truncate text-xs text-muted-foreground">
-                          {{ user.email }}
-                        </span>
-                      </div>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem :as-child="true">
-                    <Link
-                      class="block w-full"
-                      :href="props.profileHref"
-                      as="button"
-                    >
-                      <Settings class="mr-2 h-4 w-4" />
-                      {{ props.profileLabel }}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem :as-child="true">
-                    <Link
-                      class="block w-full"
-                      :href="props.logoutHref"
-                      method="post"
-                      @click="handleLogout"
-                      as="button"
-                      data-test="logout-button"
-                    >
-                      <LogOut class="mr-2 h-4 w-4" />
-                      {{ t('退出登录') }}
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <slot name="userMenu" :isMobile="isMobile.value" :sidebarState="state.value">
+                <SidebarUserMenu
+                  :profile-href="props.profileHref"
+                  :profile-label="props.profileLabel"
+                  :logout-href="props.logoutHref"
+                  :is-mobile="isMobile.value"
+                  :sidebar-state="state.value"
+                />
+              </slot>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>

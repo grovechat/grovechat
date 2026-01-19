@@ -2,10 +2,14 @@
 
 namespace App\Actions\Workspace;
 
+use App\Data\CurrentWorkspace\ShowWorkspaceDetailPagePropsData;
+use App\Data\CurrentWorkspace\WorkspaceDetailData;
+use App\Data\CurrentWorkspace\WorkspaceMemberData;
+use App\Data\CurrentWorkspace\WorkspaceMembersData;
+use App\Data\EnumOptionData;
 use App\Data\SimplePaginationData;
-use App\Data\WorkspaceDetailData;
-use App\Data\WorkspaceDetailPagePropsData;
-use App\Data\WorkspaceMemberData;
+use App\Data\User\UserOptionData;
+use App\Enums\WorkspaceRole;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -16,7 +20,7 @@ class ShowWorkspaceDetailAction
 {
     use AsAction;
 
-    public function handle(string $id, int $page = 1, int $perPage = 10)
+    public function handle(string $id, int $page = 1, int $perPage = 10): ShowWorkspaceDetailPagePropsData
     {
         $perPage = max(1, min($perPage, 50));
         $page = max(1, $page);
@@ -25,10 +29,22 @@ class ShowWorkspaceDetailAction
             ->with([
                 'owner' => fn ($query) => $query->withTrashed()->select(['id', 'name', 'email']),
             ])
-            ->withCount([
-                'users' => fn ($query) => $query->withTrashed(),
-            ])
             ->findOrFail($id);
+
+        $memberIds = $workspace->users()
+            ->withTrashed()
+            ->pluck('users.id')
+            ->map(static fn ($v) => (string) $v)
+            ->all();
+
+        $availableUsers = User::query()
+            ->where('is_super_admin', false)
+            ->when(filled($workspace->owner_id), fn ($q) => $q->whereKeyNot((string) $workspace->owner_id))
+            ->when(! empty($memberIds), fn ($q) => $q->whereKeyNot($memberIds))
+            ->orderBy('id')
+            ->get(['id', 'name', 'email'])
+            ->map(fn (User $u) => UserOptionData::fromModel($u))
+            ->all();
 
         $paginator = $workspace->users()
             ->withTrashed()
@@ -40,15 +56,19 @@ class ShowWorkspaceDetailAction
             ->map(fn (User $u) => WorkspaceMemberData::fromModel($u))
             ->all();
 
-        return new WorkspaceDetailPagePropsData(
-            workspace_detail: WorkspaceDetailData::fromModel($workspace),
-            workspace_members: $members,
-            workspace_members_pagination: new SimplePaginationData(
-                current_page: $paginator->currentPage(),
-                last_page: $paginator->lastPage(),
-                per_page: $paginator->perPage(),
-                total: $paginator->total(),
+        return new ShowWorkspaceDetailPagePropsData(
+            workspace: WorkspaceDetailData::fromModel($workspace, $paginator->total()),
+            members: new WorkspaceMembersData(
+                items: $members,
+                pagination: new SimplePaginationData(
+                    current_page: $paginator->currentPage(),
+                    last_page: $paginator->lastPage(),
+                    per_page: $paginator->perPage(),
+                    total: $paginator->total(),
+                ),
             ),
+            role_options: EnumOptionData::fromCases(WorkspaceRole::assignableCases()),
+            available_users: $availableUsers,
         );
     }
 

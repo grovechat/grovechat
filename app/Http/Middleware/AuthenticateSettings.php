@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticateSettings
@@ -13,31 +14,21 @@ class AuthenticateSettings
     {
         $from = $request->query('from_workspace');
         $hasFromWorkspace = is_string($from) && $from !== '';
-
-        // 带 from_workspace：强制使用 web（工作区用户）
-        if ($hasFromWorkspace) {
+        
+        if ($hasFromWorkspace) { // 带 from_workspace 使用 web guard
             if (! Auth::guard('web')->check()) {
-                return redirect()->route('login', absolute: false);
+                return redirect()->route('login');
             }
-
             Auth::shouldUse('web');
-
-            return $next($request);
-        }
-
-        // 不带 from_workspace：优先使用 admin（系统管理员），否则回退到 web（普通用户访问但缺上下文，交给 EnsureSettingsWorkspace 处理）
-        if (Auth::guard('admin')->check()) {
+        } else { // 不带 from_workspace 使用 admin guard
+            if (! Auth::guard('admin')->check()) {
+                return redirect()->route('login');
+            }
             Auth::shouldUse('admin');
-
-            return $next($request);
         }
-
-        if (Auth::guard('web')->check()) {
-            Auth::shouldUse('web');
-
-            return $next($request);
-        }
-
-        return redirect()->route('login', absolute: false);
+        
+        Inertia::share('auth', ['user' => $request->user()]);
+        
+        return $next($request);
     }
 }

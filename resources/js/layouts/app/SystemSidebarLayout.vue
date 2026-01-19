@@ -3,14 +3,9 @@ import { useI18n } from '@/composables/useI18n';
 import SidebarShell, {
   type SidebarShellNavItem,
 } from '@/layouts/app/SidebarShell.vue';
-import {
-  getGeneralSetting,
-  getStorageSetting,
-  getWorkspaceList,
-} from '@/routes';
 import logout from '@/routes/logout';
 import { edit as editProfile } from '@/routes/profile';
-import systemSetting from '@/routes/system-setting';
+import admin, { getGeneralSetting, getStorageSetting, getWorkspaceList } from '@/routes/admin';
 import type { BreadcrumbItemType, NavItem } from '@/types';
 import {
   BookOpen,
@@ -21,6 +16,7 @@ import {
   Plug,
   Settings,
   Shield,
+  Users,
   Wrench,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
@@ -43,6 +39,12 @@ const mainNavItems = computed<SidebarShellNavItem[]>(() => [
     activeUrls: ['/admin/general'],
   },
   {
+    title: t('用户管理'),
+    href: admin.getUserList.url(),
+    icon: Users,
+    activeUrls: ['/admin/users'],
+  },
+  {
     title: t('工作区管理'),
     href: getWorkspaceList.url(),
     icon: Building2,
@@ -56,25 +58,25 @@ const mainNavItems = computed<SidebarShellNavItem[]>(() => [
   },
   {
     title: t('邮箱服务器'),
-    href: systemSetting.getMailSettings.url(),
+    href: admin.getMailSettings.url(),
     icon: Mail,
     activeUrls: ['/admin/mail'],
   },
   {
     title: t('集成'),
-    href: systemSetting.getIntegrationSettings.url(),
+    href: admin.getIntegrationSettings.url(),
     icon: Plug,
     activeUrls: ['/admin/integration'],
   },
   {
     title: t('安全'),
-    href: systemSetting.getSecuritySettings.url(),
+    href: admin.getSecuritySettings.url(),
     icon: Shield,
     activeUrls: ['/admin/security'],
   },
   {
     title: t('维护'),
-    href: systemSetting.getMaintenanceSettings.url(),
+    href: admin.getMaintenanceSettings.url(),
     icon: Wrench,
     activeUrls: ['/admin/maintenance'],
   },

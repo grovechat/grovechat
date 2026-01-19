@@ -2,10 +2,10 @@
 
 namespace App\Actions\StorageSetting;
 
-use App\Data\StorageConfigData;
-use App\Data\StorageProfileData;
-use App\Data\StorageSettingData;
-use App\Data\StorageSettingPagePropsData;
+use App\Data\StorageSetting\ShowGetStorageSettingPagePropsData;
+use App\Data\StorageSetting\StorageProfileData;
+use App\Data\StorageSetting\StorageProviderConfigData;
+use App\Data\StorageSetting\StorageSettingData;
 use App\Enums\StorageProvider;
 use App\Models\StorageProfile;
 use App\Settings\StorageSettings;
@@ -18,7 +18,7 @@ class GetStorageSettingAction
 
     public function __construct(public StorageSettings $settings) {}
 
-    public function handle()
+    public function handle(): ShowGetStorageSettingPagePropsData
     {
         $storageSettings = new StorageSettingData(
             enabled: (bool) $this->settings->enabled,
@@ -31,19 +31,14 @@ class GetStorageSettingAction
             ->map(fn (StorageProfile $p) => StorageProfileData::fromModel($p))
             ->all();
 
-        $storageConfig = collect(StorageProvider::cases())->map(function ($provider) {
-            return StorageConfigData::from([
-                'value' => $provider->value,
-                'label' => $provider->label(),
-                'helpLink' => $provider->getHelpLink(),
-                'regions' => $provider->getRegions(),
-            ]);
-        })->all();
+        $storageConfig = collect(StorageProvider::cases())
+            ->map(fn (StorageProvider $provider) => StorageProviderConfigData::fromProvider($provider))
+            ->all();
 
-        return new StorageSettingPagePropsData(
-            storageSettings: $storageSettings,
-            storageProfiles: $storageProfiles,
-            storageConfig: $storageConfig,
+        return new ShowGetStorageSettingPagePropsData(
+            settings: $storageSettings,
+            profiles: $storageProfiles,
+            providers: $storageConfig,
         );
     }
 

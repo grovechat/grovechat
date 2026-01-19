@@ -16,19 +16,25 @@ import {
 } from '@/components/ui/select';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
-import { getStorageSetting } from '@/routes';
-import storageProfile from '@/routes/storage-profile';
-import type { AppPageProps } from '@/types';
+import { getStorageSetting } from '@/routes/admin';
+import storageProfile from '@/routes/admin/storage-profile';
 import { type BreadcrumbItem } from '@/types';
 import type {
   StorageProfileData,
-  StorageSettingPagePropsData,
+  ShowGetStorageSettingPagePropsData,
+  FormCreateStorageProfileData,
+  FormCheckStorageSettingData,
+  FormUpdateStorageProfileData,
+  FormStorageSettingData,
 } from '@/types/generated';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 
-const page = usePage<AppPageProps<StorageSettingPagePropsData>>();
+const props = defineProps<ShowGetStorageSettingPagePropsData>();
 const { t } = useI18n();
+
+const nullToEmpty = (value: string | null | undefined): string => value ?? '';
+const emptyToNull = (value: string): string | null => (value === '' ? null : value);
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
@@ -37,11 +43,18 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   },
 ]);
 
-const settingsForm = useForm({
-  enabled: page.props.storage_settings.enabled,
-  current_profile_id: page.props.storage_settings.current_profile_id || '',
+const settingsForm = useForm<FormStorageSettingData>({
+  enabled: props.settings.enabled,
+  current_profile_id: props.settings.current_profile_id,
 });
 const actionForm = useForm({});
+
+const settingsCurrentProfileId = computed<string>({
+  get: () => nullToEmpty(settingsForm.current_profile_id),
+  set: (value) => {
+    settingsForm.current_profile_id = emptyToNull(value);
+  },
+});
 
 const saveSettings = () => {
   settingsForm.put(UpdateStorageSettingAction.url(), {
@@ -51,7 +64,7 @@ const saveSettings = () => {
 
 const showCreate = ref(false);
 
-const createForm = useForm({
+const createForm = useForm<FormCreateStorageProfileData>({
   name: '',
   provider: 'aws',
   region: '',
@@ -59,23 +72,30 @@ const createForm = useForm({
   key: '',
   secret: '',
   bucket: '',
-  url: '',
+  url: null,
 });
 
-const checkCreateForm = useForm({
+const createUrl = computed<string>({
+  get: () => nullToEmpty(createForm.url),
+  set: (value) => {
+    createForm.url = emptyToNull(value);
+  },
+});
+
+const checkCreateForm = useForm<FormCheckStorageSettingData>({
   provider: '',
   region: '',
   endpoint: '',
   key: '',
-  secret: '',
+  secret: null,
   bucket: '',
-  url: '',
+  url: null,
 });
 
 const useInternalEndpoint = ref<boolean>(false);
 
 const currentProvider = computed(() =>
-  page.props.storage_config.find((p) => p.value === createForm.provider),
+  props.providers.find((p) => p.provider.value === createForm.provider),
 );
 
 const currentRegions = computed(() => currentProvider.value?.regions || []);
@@ -93,9 +113,7 @@ const hasInternalEndpoint = computed(
 watch(
   () => createForm.provider,
   (newProvider) => {
-    const provider = page.props.storage_config.find(
-      (p) => p.value === newProvider,
-    );
+    const provider = props.providers.find((p) => p.provider.value === newProvider);
     if (provider && provider.regions.length > 0) {
       createForm.region = '';
       createForm.endpoint = '';
@@ -140,15 +158,23 @@ const createProfile = () => {
   });
 };
 
+const getCheckCreateData = (): FormCheckStorageSettingData => ({
+  provider: createForm.provider,
+  region: createForm.region,
+  endpoint: createForm.endpoint,
+  key: createForm.key,
+  secret: createForm.secret,
+  bucket: createForm.bucket,
+  url: createForm.url,
+});
+
+const errorForCreate = (field: string): string | undefined =>
+  (createForm.errors as Record<string, string | undefined>)[field] ??
+  (checkCreateForm.errors as Record<string, string | undefined>)[field];
+
 const checkConnectionForCreate = () => {
   checkCreateForm.clearErrors();
-  checkCreateForm.provider = createForm.provider;
-  checkCreateForm.region = createForm.region;
-  checkCreateForm.endpoint = createForm.endpoint;
-  checkCreateForm.key = createForm.key;
-  checkCreateForm.secret = createForm.secret;
-  checkCreateForm.bucket = createForm.bucket;
-  checkCreateForm.url = createForm.url;
+  Object.assign(checkCreateForm, getCheckCreateData());
 
   checkCreateForm.put(CheckStorageSettingAction.url(), {
     preserveScroll: true,
@@ -160,25 +186,46 @@ const checkConnectionForCreate = () => {
 
 const editingProfileId = ref<string | null>(null);
 
-const editForm = useForm({
+const editForm = useForm<FormUpdateStorageProfileData>({
   name: '',
-  url: '',
-  key: '',
-  secret: '',
+  url: null,
+  key: null,
+  secret: null,
+});
+
+const editUrl = computed<string>({
+  get: () => nullToEmpty(editForm.url),
+  set: (value) => {
+    editForm.url = emptyToNull(value);
+  },
+});
+
+const editKey = computed<string>({
+  get: () => nullToEmpty(editForm.key),
+  set: (value) => {
+    editForm.key = emptyToNull(value);
+  },
+});
+
+const editSecret = computed<string>({
+  get: () => nullToEmpty(editForm.secret),
+  set: (value) => {
+    editForm.secret = emptyToNull(value);
+  },
 });
 
 const startEdit = (profile: StorageProfileData) => {
   editingProfileId.value = profile.id;
   editForm.name = profile.name;
-  editForm.url = profile.url || '';
-  editForm.key = '';
-  editForm.secret = '';
+  editForm.url = profile.url ?? null;
+  editForm.key = null;
+  editForm.secret = null;
 };
 
 const cancelEdit = () => {
   editingProfileId.value = null;
   editForm.reset();
-  editForm.secret = '';
+  editForm.secret = null;
 };
 
 const saveEdit = (profileId: string) => {
@@ -203,8 +250,6 @@ const deleteProfile = (profileId: string) => {
   });
 };
 
-const providerLabel = (value: string) =>
-  page.props.storage_config.find((p) => p.value === value)?.label || value;
 </script>
 
 <template>
@@ -240,19 +285,19 @@ const providerLabel = (value: string) =>
                   t('当前使用的存储配置')
                 }}</Label>
                 <Select
-                  v-model="settingsForm.current_profile_id"
-                  :default-value="settingsForm.current_profile_id"
+                  v-model="settingsCurrentProfileId"
+                  :default-value="settingsCurrentProfileId"
                 >
                   <SelectTrigger id="current_profile_id">
                     <SelectValue :placeholder="t('请选择存储配置')" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem
-                      v-for="p in page.props.storage_profiles"
+                      v-for="p in props.profiles"
                       :key="p.id"
                       :value="p.id"
                     >
-                      {{ p.name }}（{{ providerLabel(p.provider) }}）
+                      {{ p.name }}（{{ p.provider.label }}）
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -331,11 +376,11 @@ const providerLabel = (value: string) =>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem
-                      v-for="providerOption in page.props.storage_config"
-                      :key="providerOption.value"
-                      :value="providerOption.value"
+                      v-for="providerOption in props.providers"
+                      :key="providerOption.provider.value"
+                      :value="providerOption.provider.value"
                     >
-                      {{ providerOption.label }}
+                      {{ providerOption.provider.label }}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -392,7 +437,7 @@ const providerLabel = (value: string) =>
                 <InputError
                   class="mt-1"
                   :message="
-                    createForm.errors.region || checkCreateForm.errors.region
+                    errorForCreate('region')
                   "
                 />
               </div>
@@ -418,8 +463,7 @@ const providerLabel = (value: string) =>
                 <InputError
                   class="mt-1"
                   :message="
-                    createForm.errors.endpoint ||
-                    checkCreateForm.errors.endpoint
+                    errorForCreate('endpoint')
                   "
                 />
               </div>
@@ -434,7 +478,7 @@ const providerLabel = (value: string) =>
                 <InputError
                   class="mt-1"
                   :message="
-                    createForm.errors.bucket || checkCreateForm.errors.bucket
+                    errorForCreate('bucket')
                   "
                 />
               </div>
@@ -448,7 +492,7 @@ const providerLabel = (value: string) =>
                 />
                 <InputError
                   class="mt-1"
-                  :message="createForm.errors.key || checkCreateForm.errors.key"
+                  :message="errorForCreate('key')"
                 />
               </div>
 
@@ -466,7 +510,7 @@ const providerLabel = (value: string) =>
                 <InputError
                   class="mt-1"
                   :message="
-                    createForm.errors.secret || checkCreateForm.errors.secret
+                    errorForCreate('secret')
                   "
                 />
               </div>
@@ -476,12 +520,12 @@ const providerLabel = (value: string) =>
                 <Input
                   id="url"
                   type="url"
-                  v-model="createForm.url"
+                  v-model="createUrl"
                   :placeholder="t('例如：https://cdn.example.com')"
                 />
                 <InputError
                   class="mt-1"
-                  :message="createForm.errors.url || checkCreateForm.errors.url"
+                  :message="errorForCreate('url')"
                 />
               </div>
 
@@ -509,7 +553,7 @@ const providerLabel = (value: string) =>
 
             <div class="space-y-3">
               <div
-                v-for="p in page.props.storage_profiles"
+                v-for="p in props.profiles"
                 :key="p.id"
                 class="space-y-3 rounded-lg border p-4"
               >
@@ -518,7 +562,7 @@ const providerLabel = (value: string) =>
                     <div class="font-medium">
                       {{ p.name }}
                       <span class="text-muted-foreground"
-                        >（{{ providerLabel(p.provider) }}）</span
+                        >（{{ p.provider.label }}）</span
                       >
                     </div>
                     <dl class="mt-2 grid gap-1 text-sm text-muted-foreground">
@@ -620,13 +664,13 @@ const providerLabel = (value: string) =>
                   </div>
                   <div class="grid gap-2">
                     <Label>{{ t('自定义域名 (可选)') }}</Label>
-                    <Input v-model="editForm.url" type="url" />
+                    <Input v-model="editUrl" type="url" />
                     <InputError class="mt-1" :message="editForm.errors.url" />
                   </div>
                   <div class="grid gap-2">
                     <Label>{{ t('Access Key / Access Key ID') }}</Label>
                     <Input
-                      v-model="editForm.key"
+                      v-model="editKey"
                       :placeholder="t('留空表示不修改')"
                     />
                     <InputError class="mt-1" :message="editForm.errors.key" />
@@ -634,7 +678,7 @@ const providerLabel = (value: string) =>
                   <div class="grid gap-2">
                     <Label>{{ t('Secret Key / Access Key Secret') }}</Label>
                     <Input
-                      v-model="editForm.secret"
+                      v-model="editSecret"
                       type="password"
                       autocomplete="off"
                       :placeholder="t('留空表示不修改')"

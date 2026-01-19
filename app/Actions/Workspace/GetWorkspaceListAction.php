@@ -2,9 +2,11 @@
 
 namespace App\Actions\Workspace;
 
-use App\Data\WorkspaceListItemData;
-use App\Data\WorkspaceListPagePropsData;
+use App\Data\SimplePaginationData;
+use App\Data\Workspace\ShowWorkspaceListPagePropsData;
+use App\Data\Workspace\WorkspaceData;
 use App\Models\Workspace;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -12,9 +14,12 @@ class GetWorkspaceListAction
 {
     use AsAction;
 
-    public function handle()
+    public function handle(int $page = 1, int $perPage = 10): ShowWorkspaceListPagePropsData
     {
-        $workspaces = Workspace::query()
+        $perPage = max(1, min($perPage, 50));
+        $page = max(1, $page);
+
+        $paginator = Workspace::query()
             ->with([
                 'owner' => fn ($query) => $query->withTrashed()->select(['id', 'name', 'email']),
             ])
@@ -22,17 +27,29 @@ class GetWorkspaceListAction
                 'users' => fn ($query) => $query->withTrashed(),
             ])
             ->orderByDesc('created_at')
-            ->get()
-            ->map(fn (Workspace $w) => WorkspaceListItemData::fromModel($w))
+            ->paginate($perPage, ['id', 'name', 'slug', 'created_at', 'owner_id'], 'page', $page);
+
+        $workspaces = $paginator
+            ->getCollection()
+            ->map(fn (Workspace $w) => WorkspaceData::fromModel($w))
             ->all();
 
-        return new WorkspaceListPagePropsData(
+        return new ShowWorkspaceListPagePropsData(
             workspace_list: $workspaces,
+            workspace_list_pagination: new SimplePaginationData(
+                current_page: $paginator->currentPage(),
+                last_page: $paginator->lastPage(),
+                per_page: $paginator->perPage(),
+                total: $paginator->total(),
+            ),
         );
     }
 
-    public function asController()
+    public function asController(Request $request)
     {
-        return Inertia::render('admin/workspace/List', $this->handle()->toArray());
+        $page = (int) $request->query('page', 1);
+        $perPage = (int) $request->query('per_page', 10);
+
+        return Inertia::render('admin/workspace/List', $this->handle($page, $perPage)->toArray());
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Actions\StorageSetting;
 
-use App\Data\StorageSettingData;
+use App\Data\StorageSetting\FormStorageSettingData;
 use App\Models\StorageProfile;
 use App\Services\Storage\StorageProfileDisk;
 use App\Settings\StorageSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Throwable;
 
@@ -20,7 +21,7 @@ class UpdateStorageSettingAction
         public StorageSettings $settings,
     ) {}
 
-    public function handle(StorageSettingData $data): void
+    public function handle(FormStorageSettingData $data): void
     {
         if (! $data->enabled) {
             $this->settings->enabled = false;
@@ -68,8 +69,13 @@ class UpdateStorageSettingAction
 
     public function asController(Request $request)
     {
-        $data = StorageSettingData::validateAndCreate($request->all());
+        $data = FormStorageSettingData::from($request);
         $this->handle($data);
+        
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('common.操作成功'),
+        ]);
 
         return back();
     }

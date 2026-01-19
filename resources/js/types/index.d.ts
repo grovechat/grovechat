@@ -1,6 +1,6 @@
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
-import type { GeneralSettingsData, WorkspaceData } from './generated';
+import type { GeneralSettingsData, WorkspaceData, WorkspaceUserContextData } from './generated';
 
 export interface Auth {
   user: User;
@@ -19,17 +19,15 @@ export interface NavItem {
 }
 
 export type AppPageProps<
-  T extends Record<string, unknown> = Record<string, unknown>,
+  T extends object = Record<string, never>,
 > = T & {
   name: string;
   quote: { message: string; author: string };
   auth: Auth;
   sidebarOpen: boolean;
   generalSettings: GeneralSettingsData;
-  currentWorkspace: WorkspaceData | null;
-  workspaces: WorkspaceData[];
-  fromWorkspace: WorkspaceData | null;
-  fromWorkspaceSlug: string | null;
+  workspaces?: WorkspaceData[];
+  workspaceUserContext?: WorkspaceUserContextData;
 };
 
 export interface User {

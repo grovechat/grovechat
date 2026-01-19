@@ -20,36 +20,49 @@ use App\Actions\StorageSetting\StorageProfile\UpdateStorageProfileAction;
 use App\Actions\StorageSetting\UpdateStorageSettingAction;
 use App\Actions\SystemSetting\GetGeneralSettingAction;
 use App\Actions\SystemSetting\UpdateGeneralSettingAction;
-use App\Actions\User\CreateUserAction;
-use App\Actions\User\DeleteUserAction;
-use App\Actions\User\RestoreUserAction;
-use App\Actions\User\ShowCreateUserPageAction;
-use App\Actions\User\ShowEditUserPageAction;
-use App\Actions\User\ShowUserListAction;
-use App\Actions\User\ShowUserTrashAction;
-use App\Actions\User\UpdateUserAction;
-use App\Actions\User\UpdateUserOnlineStatusAction;
+use App\Actions\SystemSetting\User\CreateUserAction;
+use App\Actions\SystemSetting\User\ResetUserTwoFactorAuthenticationAction;
+use App\Actions\SystemSetting\User\ShowCreateUserPageAction;
+use App\Actions\SystemSetting\User\ShowEditUserPageAction;
+use App\Actions\SystemSetting\User\ShowUserListAction;
+use App\Actions\SystemSetting\User\UpdateUserAction;
+use App\Actions\Teammate\CreateTeammateAction;
+use App\Actions\Teammate\RemoveTeammateAction;
+use App\Actions\Teammate\ShowCreateTeammatePageAction;
+use App\Actions\Teammate\ShowEditTeammatePageAction;
+use App\Actions\Teammate\ShowTeammateListAction;
+use App\Actions\Teammate\UpdateTeammateAction;
+use App\Actions\Teammate\UpdateTeammateOnlineStatusAction;
+use App\Actions\User\UpdateMyOnlineStatusAction;
+use App\Actions\Workspace\AddWorkspaceMemberAction;
+use App\Actions\Workspace\CreateWorkspaceAction as WorkspaceCreateWorkspaceAction;
 use App\Actions\Workspace\DeleteWorkspaceAction;
+use App\Actions\Workspace\DeleteWorkspaceMemberAction;
 use App\Actions\Workspace\GetWorkspaceListAction;
 use App\Actions\Workspace\GetWorkspaceTrashListAction;
 use App\Actions\Workspace\LoginAsWorkspaceOwnerAction;
 use App\Actions\Workspace\RestoreWorkspaceAction;
+use App\Actions\Workspace\ShowCreateWorkspacePageAction as WorkspaceShowCreateWorkspacePageAction;
+use App\Actions\Workspace\ShowEditWorkspacePageAction;
 use App\Actions\Workspace\ShowWorkspaceDetailAction;
+use App\Actions\Workspace\UpdateWorkspaceAction as WorkspaceUpdateWorkspaceAction;
 use App\Http\Controllers\Settings\AppearanceController;
 use App\Http\Controllers\Settings\LanguageController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
+use App\Http\Middleware\AuthenticateSettings;
+use App\Http\Middleware\CheckSuperAdmin;
 use App\Http\Middleware\IdentifyWorkspace;
 use App\Http\Middleware\TrackLastWorkspace;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', ShowHomePageAction::class)->name('home');
-Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth:web', 'verified'])->name('dashboard');
+Route::get('/dashboard', RedirectLastDashboardAction::class)->middleware(['auth:web'])->name('dashboard');
 
 // 个人设置（全局，不绑定工作区）
-Route::middleware(['authenticate_settings', 'verified', 'ensure_settings_workspace'])->prefix('settings')->group(function () {
+Route::middleware([AuthenticateSettings::class, IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('settings')->group(function () {
     Route::redirect('/', '/settings/profile');
 
     // 个人资料
@@ -72,58 +85,73 @@ Route::middleware(['authenticate_settings', 'verified', 'ensure_settings_workspa
 });
 
 // 系统设置（仅超级管理员）
-Route::prefix('admin')->middleware(['auth:admin', 'verified', 'is_super_admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth:admin', CheckSuperAdmin::class])->group(function () {
     Route::redirect('/', '/admin/general')->name('admin.home');
 
     // 基础设置
-    Route::get('general', GetGeneralSettingAction::class)->name('get-general-setting');
-    Route::put('general', UpdateGeneralSettingAction::class)->name('update-general-setting');
+    Route::get('general', GetGeneralSettingAction::class)->name('admin.get-general-setting');
+    Route::put('general', UpdateGeneralSettingAction::class)->name('admin.update-general-setting');
 
     // 工作区管理
-    Route::get('workspaces', GetWorkspaceListAction::class)->name('get-workspace-list');
-    Route::get('workspaces/trash', GetWorkspaceTrashListAction::class)->name('get-workspace-trash');
-    Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('show-workspace-detail');
-    Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('delete-workspace');
-    Route::put('workspaces/{id}/restore', RestoreWorkspaceAction::class)->name('restore-workspace');
-    Route::get('workspaces/{id}/login-as-owner', LoginAsWorkspaceOwnerAction::class)->name('login-as-workspace-owner');
+    Route::get('workspaces', GetWorkspaceListAction::class)->name('admin.get-workspace-list');
+    Route::get('workspaces/trash', GetWorkspaceTrashListAction::class)->name('admin.get-workspace-trash');
+    Route::get('workspaces/create', WorkspaceShowCreateWorkspacePageAction::class)->name('admin.show-create-workspace-page');
+    Route::post('workspaces', WorkspaceCreateWorkspaceAction::class)->name('admin.create-workspace');
+    Route::get('workspaces/{id}', ShowWorkspaceDetailAction::class)->name('admin.show-workspace-detail');
+    Route::get('workspaces/{id}/edit', ShowEditWorkspacePageAction::class)->name('admin.show-edit-workspace-page');
+    Route::put('workspaces/{id}', WorkspaceUpdateWorkspaceAction::class)->name('admin.update-workspace');
+    Route::delete('workspaces/{id}', DeleteWorkspaceAction::class)->name('admin.delete-workspace');
+    Route::put('workspaces/{id}/restore', RestoreWorkspaceAction::class)->name('admin.restore-workspace');
+    Route::get('workspaces/{id}/login-as-owner', LoginAsWorkspaceOwnerAction::class)->name('admin.login-as-workspace-owner');
+    Route::post('workspaces/{id}/members', AddWorkspaceMemberAction::class)->name('admin.add-workspace-member');
+    Route::delete('workspaces/{id}/members/{userId}', DeleteWorkspaceMemberAction::class)->name('admin.delete-workspace-member');
 
     // 存储设置
-    Route::get('storage', GetStorageSettingAction::class)->name('get-storage-setting');
-    Route::put('storage', UpdateStorageSettingAction::class)->name('update-storage-setting');
-    Route::put('check', CheckStorageSettingAction::class)->name('check-storage-settiing');
-    Route::post('storage/profiles', CreateStorageProfileAction::class)->name('storage-profile.create');
-    Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('storage-profile.update');
-    Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('storage-profile.check');
-    Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('storage-profile.delete');
+    Route::get('storage', GetStorageSettingAction::class)->name('admin.get-storage-setting');
+    Route::put('storage', UpdateStorageSettingAction::class)->name('admin.update-storage-setting');
+    Route::put('storage/check', CheckStorageSettingAction::class)->name('admin.check-storage-settiing');
+    Route::post('storage/profiles', CreateStorageProfileAction::class)->name('admin.storage-profile.create');
+    Route::put('storage/profiles/{profile}', UpdateStorageProfileAction::class)->name('admin.storage-profile.update');
+    Route::put('storage/profiles/{profile}/check', CheckStorageProfileAction::class)->name('admin.storage-profile.check');
+    Route::delete('storage/profiles/{profile}', DeleteStorageProfileAction::class)->name('admin.storage-profile.delete');
+
+    // 用户管理
+    Route::get('users', ShowUserListAction::class)->name('admin.get-user-list');
+    Route::get('users/create', ShowCreateUserPageAction::class)->name('admin.show-create-user-page');
+    Route::post('users', CreateUserAction::class)->name('admin.create-user');
+    Route::get('users/{id}/edit', ShowEditUserPageAction::class)->name('admin.show-edit-user-page');
+    Route::put('users/{id}', UpdateUserAction::class)->name('admin.update-user');
+    Route::put('users/{id}/two-factor/reset', ResetUserTwoFactorAuthenticationAction::class)->name('admin.reset-user-two-factor-authentication');
 
     // 邮箱服务器
     Route::get('mail', function () {
         return Inertia::render('admin/systemSettings/MailSetting');
-    })->name('system-setting.get-mail-settings');
+    })->name('admin.get-mail-settings');
 
     // 外部集成
     Route::get('integration', function () {
         return Inertia::render('admin/systemSettings/IntegrationSetting');
-    })->name('system-setting.get-integration-settings');
+    })->name('admin.get-integration-settings');
 
     // 安全
     Route::get('security', function () {
         return Inertia::render('admin/systemSettings/SecuritySetting');
-    })->name('system-setting.get-security-settings');
+    })->name('admin.get-security-settings');
 
     // 维护
     Route::get('maintenance', function () {
         return Inertia::render('admin/systemSettings/MaintenanceSetting');
-    })->name('system-setting.get-maintenance-settings');
+    })->name('admin.get-maintenance-settings');
 });
 
 // 分 guard 登出（保证同一浏览器同时操作 admin + workspace 时互不影响）
 Route::post('/logout/admin', LogoutAdminAction::class)->middleware(['auth:admin'])->name('logout.admin');
 Route::post('/logout/web', LogoutWebAction::class)->middleware(['auth:web'])->name('logout.web');
 
-Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
+Route::middleware(['auth:web', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
     Route::get('/', RedirectCurrentWorkspaceDashboard::class)->name('workspace.home');
     Route::get('/dashboard', ShowDashboardAction::class)->name('workspace.dashboard');
+    Route::put('/online-status', UpdateMyOnlineStatusAction::class)->name('update-my-online-status');
 
     // 管理中心
     Route::prefix('manage')->group(function () {
@@ -135,15 +163,13 @@ Route::middleware(['auth:web', 'verified', IdentifyWorkspace::class, TrackLastWo
         Route::delete('workspaces/current', DeleteCurrentWorkspaceAction::class)->name('delete-current-workspace');
 
         // 多客服
-        Route::get('users', ShowUserListAction::class)->name('show-user-list');
-        Route::get('users/create', ShowCreateUserPageAction::class)->name('show-create-user-page');
-        Route::get('users/{id}/edit', ShowEditUserPageAction::class)->name('show-edit-user-page');
-        Route::get('users/trash', ShowUserTrashAction::class)->name('show-user-trash-page');
-        Route::post('users', CreateUserAction::class)->name('create-user');
-        Route::put('users/{id}', UpdateUserAction::class)->name('update-user');
-        Route::put('users/{id}/online-status', UpdateUserOnlineStatusAction::class)->name('update-user-online-status');
-        Route::put('users/{id}/restore', RestoreUserAction::class)->name('restore-user');
-        Route::delete('users/{id}', DeleteUserAction::class)->name('delete-user');
+        Route::get('teammates', ShowTeammateListAction::class)->name('show-teammate-list');
+        Route::get('teammates/create', ShowCreateTeammatePageAction::class)->name('show-create-teammate-page');
+        Route::get('teammates/{id}/edit', ShowEditTeammatePageAction::class)->name('show-edit-teammate-page');
+        Route::post('teammates', CreateTeammateAction::class)->name('create-teammate');
+        Route::put('teammates/{id}', UpdateTeammateAction::class)->name('update-teammate');
+        Route::put('teammates/{id}/online-status', UpdateTeammateOnlineStatusAction::class)->name('update-teammate-online-status');
+        Route::delete('teammates/{id}', RemoveTeammateAction::class)->name('remove-teammate');
 
         // 渠道
         Route::prefix('channels')->group(function () {
