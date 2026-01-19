@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 class StorageProfile extends Model
 {
     use HasUlids;
-    
+
     protected $table = 'storage_profiles';
 
     protected $guarded = [];

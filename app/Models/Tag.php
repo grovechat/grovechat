@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $description
  * @property mixed $use_factory
  * @property int|null $workspaces_count
- *
  * @property-read \App\Models\Workspace $workspace
  *
  * @method static \Database\Factories\TagFactory<self> factory($count = null, $state = [])
@@ -27,7 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Tag extends Model
 {
     use HasFactory, HasUlids, SoftDeletes;
-    
+
     protected $table = 'tags';
 
     protected $guarded = [];

@@ -24,7 +24,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property mixed $logoUrl
  * @property mixed $logo_url
  * @property int|null $tags_count
- *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  *
  * @method static \Database\Factories\WorkspaceFactory<self> factory($count = null, $state = [])
@@ -32,7 +31,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Workspace extends Model
 {
     use HasFactory, HasUlids, SoftDeletes;
-    
+
     protected $table = 'workspaces';
 
     protected $guarded = [];

@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
 class Attachment extends Model
 {
     use HasUlids;
-    
+
     protected $table = 'attachments';
 
     protected $guarded = [];

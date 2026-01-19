@@ -53,7 +53,7 @@ class UpdateTagAction
             'type' => 'success',
             'message' => __('common.操作成功'),
         ]);
-        
+
         return back();
     }
 }

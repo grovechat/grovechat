@@ -148,7 +148,10 @@ const submitDelete = (tagId: string) => {
     <WorkspaceSettingsLayout content-class="max-w-none">
       <div class="space-y-6">
         <div class="flex items-start justify-between gap-4">
-          <HeadingSmall :title="t('标签')" :description="t('管理和组织联系人标签')" />
+          <HeadingSmall
+            :title="t('标签')"
+            :description="t('管理和组织联系人标签')"
+          />
 
           <Dialog v-model:open="createOpen">
             <DialogTrigger as-child>
@@ -305,7 +308,9 @@ const submitDelete = (tagId: string) => {
                               @click="submitDelete(tag.id)"
                             >
                               {{
-                                deleteForm.processing ? t('删除中...') : t('确认删除')
+                                deleteForm.processing
+                                  ? t('删除中...')
+                                  : t('确认删除')
                               }}
                             </Button>
                           </DialogFooter>
@@ -387,4 +392,3 @@ const submitDelete = (tagId: string) => {
     </WorkspaceSettingsLayout>
   </AppLayout>
 </template>
-
