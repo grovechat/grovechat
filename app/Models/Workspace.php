@@ -11,9 +11,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $name
+ * @property string|null $slug
+ * @property string|null $logo_id
+ * @property string|null $owner_id
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property mixed $use_factory
+ * @property mixed $logoUrl
+ * @property mixed $logo_url
+ * @property int|null $tags_count
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ *
+ * @method static \Database\Factories\WorkspaceFactory<self> factory($count = null, $state = [])
+ */
 class Workspace extends Model
 {
     use HasFactory, HasUlids, SoftDeletes;
+    
+    protected $table = 'workspaces';
 
     protected $guarded = [];
 
