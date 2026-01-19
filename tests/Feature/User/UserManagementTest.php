@@ -55,6 +55,26 @@ test('operator cannot access manage center pages', function () {
         ->assertForbidden();
 });
 
+test('workspace member can update own online status from sidebar', function () {
+    $operator = User::factory()->create([
+        'name' => '普通客服',
+        'email' => 'operator-online@example.com',
+    ]);
+    $this->workspace->users()->attach($operator->id, [
+        'role' => 'operator',
+        'online_status' => UserOnlineStatus::OFFLINE->value,
+    ]);
+
+    $this->actingAs($operator)
+        ->put(route('update-my-online-status', ['slug' => $this->workspaceSlug()]), [
+            'online_status' => UserOnlineStatus::ONLINE->value,
+        ])
+        ->assertRedirect();
+
+    expect($this->workspace->users()->whereKey($operator->id)->firstOrFail()->pivot->online_status)
+        ->toBe(UserOnlineStatus::ONLINE->value);
+});
+
 test('authenticated user can view create teammate page with options', function () {
     User::factory()->create([
         'name' => '待添加用户',

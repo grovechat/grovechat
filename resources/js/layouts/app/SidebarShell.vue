@@ -38,10 +38,11 @@ import { getInitials } from '@/composables/useInitials';
 import { useErrorHandling } from '@/composables/useToast';
 import SidebarContextConsumer from '@/layouts/app/SidebarContextConsumer.vue';
 import { cn, toUrl, urlIsActive } from '@/lib/utils';
-import type { BreadcrumbItemType, NavItem } from '@/types';
+import { updateMyOnlineStatus } from '@/routes';
+import type { AppPageProps, BreadcrumbItemType, NavItem } from '@/types';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown, LogOut, Pin, Settings } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 export type SidebarShellNavItem = NavItem & {
   activeUrls?: string[];
@@ -63,7 +64,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const { t } = useI18n();
-const page = usePage();
+const page = usePage<AppPageProps>();
 const isOpen = page.props.sidebarOpen;
 useErrorHandling();
 
@@ -76,6 +77,35 @@ const user = computed(() => page.props.auth.user);
 const showAvatar = computed(
   () => user.value?.avatar && user.value.avatar !== '',
 );
+
+const workspaceUserContext = computed(() => page.props.workspaceUserContext);
+const currentWorkspace = computed(() => page.props.currentWorkspace);
+const hasWorkspaceOnlineStatus = computed(
+  () => !!workspaceUserContext.value?.user_online_status && !!currentWorkspace.value,
+);
+const isOnline = computed(
+  () => Number(workspaceUserContext.value?.user_online_status?.value) === 1,
+);
+const updatingOnlineStatus = ref(false);
+
+const updateOnlineStatus = (status: number) => {
+  if (!currentWorkspace.value) {
+    return;
+  }
+
+  updatingOnlineStatus.value = true;
+  router.put(
+    updateMyOnlineStatus.url(currentWorkspace.value.slug),
+    { online_status: Number(status) },
+    {
+      preserveScroll: true,
+      preserveState: true,
+      onFinish: () => {
+        updatingOnlineStatus.value = false;
+      },
+    },
+  );
+};
 
 const isExternalLink = (href: NavItem['href']) => {
   const url = toUrl(href);
@@ -232,18 +262,25 @@ const handleLogout = () => {
                     class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                     data-test="sidebar-menu-button"
                   >
-                    <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-                      <AvatarImage
-                        v-if="showAvatar"
-                        :src="user.avatar!"
-                        :alt="user.name"
+                    <div class="relative">
+                      <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
+                        <AvatarImage
+                          v-if="showAvatar"
+                          :src="user.avatar!"
+                          :alt="user.name"
+                        />
+                        <AvatarFallback
+                          class="rounded-lg text-black dark:text-white"
+                        >
+                          {{ getInitials(user.name) }}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span
+                        v-if="hasWorkspaceOnlineStatus"
+                        class="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-background"
+                        :class="isOnline ? 'bg-emerald-500' : 'bg-zinc-400'"
                       />
-                      <AvatarFallback
-                        class="rounded-lg text-black dark:text-white"
-                      >
-                        {{ getInitials(user.name) }}
-                      </AvatarFallback>
-                    </Avatar>
+                    </div>
 
                     <div class="grid flex-1 text-left text-sm leading-tight">
                       <span class="truncate font-medium">{{ user.name }}</span>
@@ -268,18 +305,25 @@ const handleLogout = () => {
                     <div
                       class="flex items-center gap-2 px-1 py-1.5 text-left text-sm"
                     >
-                      <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-                        <AvatarImage
-                          v-if="showAvatar"
-                          :src="user.avatar!"
-                          :alt="user.name"
+                      <div class="relative">
+                        <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
+                          <AvatarImage
+                            v-if="showAvatar"
+                            :src="user.avatar!"
+                            :alt="user.name"
+                          />
+                          <AvatarFallback
+                            class="rounded-lg text-black dark:text-white"
+                          >
+                            {{ getInitials(user.name) }}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span
+                          v-if="hasWorkspaceOnlineStatus"
+                          class="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-background"
+                          :class="isOnline ? 'bg-emerald-500' : 'bg-zinc-400'"
                         />
-                        <AvatarFallback
-                          class="rounded-lg text-black dark:text-white"
-                        >
-                          {{ getInitials(user.name) }}
-                        </AvatarFallback>
-                      </Avatar>
+                      </div>
 
                       <div class="grid flex-1 text-left text-sm leading-tight">
                         <span class="truncate font-medium">{{
@@ -292,6 +336,27 @@ const handleLogout = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <template v-if="hasWorkspaceOnlineStatus">
+                    <DropdownMenuItem
+                      :disabled="updatingOnlineStatus"
+                      @click="updateOnlineStatus(1)"
+                    >
+                      <span
+                        class="mr-2 inline-block h-2 w-2 rounded-full bg-emerald-500"
+                      />
+                      {{ t('在线') }}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      :disabled="updatingOnlineStatus"
+                      @click="updateOnlineStatus(0)"
+                    >
+                      <span
+                        class="mr-2 inline-block h-2 w-2 rounded-full bg-zinc-400"
+                      />
+                      {{ t('离线') }}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </template>
                   <DropdownMenuItem :as-child="true">
                     <Link
                       class="block w-full"

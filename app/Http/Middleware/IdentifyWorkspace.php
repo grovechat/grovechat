@@ -27,11 +27,11 @@ class IdentifyWorkspace
         $workspaces = collect();
         $workspaces = $request->user()->workspaces()->get();
         Inertia::share('workspaces', $workspaces);
-        
+
         // 根据slug或者from_workspace设置当前用户所在工作区
         $slug = $request->route('slug');
         $path = '/'.ltrim($request->path(), '/');
-        $isSettingsPath = str_starts_with($path, '/settings');   
+        $isSettingsPath = str_starts_with($path, '/settings');
         if ($isSettingsPath) {
             $from = $request->query('from_workspace');
             $hasFromWorkspace = is_string($from) && $from !== '';
@@ -49,16 +49,18 @@ class IdentifyWorkspace
         }
         app()->instance(Workspace::class, $workspace);
         Inertia::share('currentWorkspace', $workspace);
-        
+
         // 设置工作区用户上下文
-        app()->instance(WorkspaceUserContextData::class, WorkspaceUserContextData::fromModels($workspace, $request->user()));
-        
+        $workspaceUserContext = WorkspaceUserContextData::fromModels($workspace, $request->user());
+        app()->instance(WorkspaceUserContextData::class, $workspaceUserContext);
+        Inertia::share('workspaceUserContext', $workspaceUserContext->toArray());
+
         // 授权
         Inertia::share('canAccessManageCenter', Gate::allows('workspace.canAccessManageCenter', [$workspace]));
         if ($request->is('w/*/manage*')) {
             Gate::authorize('workspace.canAccessManageCenter', [$workspace]);
         }
-        
+
         // 返回
         return $next($request);
     }

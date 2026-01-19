@@ -33,6 +33,7 @@ use App\Actions\Teammate\ShowEditTeammatePageAction;
 use App\Actions\Teammate\ShowTeammateListAction;
 use App\Actions\Teammate\UpdateTeammateAction;
 use App\Actions\Teammate\UpdateTeammateOnlineStatusAction;
+use App\Actions\User\UpdateMyOnlineStatusAction;
 use App\Actions\Workspace\AddWorkspaceMemberAction;
 use App\Actions\Workspace\CreateWorkspaceAction as WorkspaceCreateWorkspaceAction;
 use App\Actions\Workspace\DeleteWorkspaceAction;
@@ -150,6 +151,7 @@ Route::post('/logout/web', LogoutWebAction::class)->middleware(['auth:web'])->na
 Route::middleware(['auth:web', IdentifyWorkspace::class, TrackLastWorkspace::class])->prefix('w/{slug}')->group(function () {
     Route::get('/', RedirectCurrentWorkspaceDashboard::class)->name('workspace.home');
     Route::get('/dashboard', ShowDashboardAction::class)->name('workspace.dashboard');
+    Route::put('/online-status', UpdateMyOnlineStatusAction::class)->name('update-my-online-status');
 
     // 管理中心
     Route::prefix('manage')->group(function () {
