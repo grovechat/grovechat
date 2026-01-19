@@ -130,7 +130,9 @@ const footerNavItems = computed<NavItem[]>(() => [
 
 const logoutHref = computed(() => logout.web.url());
 
-const switchWorkspace = (selectedWorkspace: (typeof workspaces.value)[number]) => {
+const switchWorkspace = (
+  selectedWorkspace: (typeof workspaces.value)[number],
+) => {
   if (selectedWorkspace.slug !== currentWorkspace.value.slug) {
     router.visit(workspace.dashboard.url(selectedWorkspace.slug), {
       preserveState: false,
@@ -235,7 +237,9 @@ const goToCreateWorkspace = () => {
 
     <template #userMenu="{ isMobile, sidebarState }">
       <SidebarUserMenuWithOnlineStatus
-        :profile-href="edit({ query: { from_workspace: currentWorkspace.slug } }).url"
+        :profile-href="
+          edit({ query: { from_workspace: currentWorkspace.slug } }).url
+        "
         :profile-label="t('个人资料')"
         :logout-href="logoutHref"
         :is-mobile="isMobile"

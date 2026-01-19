@@ -20,12 +20,12 @@ import { getStorageSetting } from '@/routes/admin';
 import storageProfile from '@/routes/admin/storage-profile';
 import { type BreadcrumbItem } from '@/types';
 import type {
-  StorageProfileData,
-  ShowGetStorageSettingPagePropsData,
-  FormCreateStorageProfileData,
   FormCheckStorageSettingData,
-  FormUpdateStorageProfileData,
+  FormCreateStorageProfileData,
   FormStorageSettingData,
+  FormUpdateStorageProfileData,
+  ShowGetStorageSettingPagePropsData,
+  StorageProfileData,
 } from '@/types/generated';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
@@ -34,7 +34,8 @@ const props = defineProps<ShowGetStorageSettingPagePropsData>();
 const { t } = useI18n();
 
 const nullToEmpty = (value: string | null | undefined): string => value ?? '';
-const emptyToNull = (value: string): string | null => (value === '' ? null : value);
+const emptyToNull = (value: string): string | null =>
+  value === '' ? null : value;
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
@@ -113,7 +114,9 @@ const hasInternalEndpoint = computed(
 watch(
   () => createForm.provider,
   (newProvider) => {
-    const provider = props.providers.find((p) => p.provider.value === newProvider);
+    const provider = props.providers.find(
+      (p) => p.provider.value === newProvider,
+    );
     if (provider && provider.regions.length > 0) {
       createForm.region = '';
       createForm.endpoint = '';
@@ -249,7 +252,6 @@ const deleteProfile = (profileId: string) => {
     preserveScroll: true,
   });
 };
-
 </script>
 
 <template>
@@ -434,12 +436,7 @@ const deleteProfile = (profileId: string) => {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <InputError
-                  class="mt-1"
-                  :message="
-                    errorForCreate('region')
-                  "
-                />
+                <InputError class="mt-1" :message="errorForCreate('region')" />
               </div>
 
               <div class="grid gap-2">
@@ -462,9 +459,7 @@ const deleteProfile = (profileId: string) => {
                 <Input id="endpoint" type="url" v-model="createForm.endpoint" />
                 <InputError
                   class="mt-1"
-                  :message="
-                    errorForCreate('endpoint')
-                  "
+                  :message="errorForCreate('endpoint')"
                 />
               </div>
 
@@ -475,12 +470,7 @@ const deleteProfile = (profileId: string) => {
                   v-model="createForm.bucket"
                   :placeholder="t('请输入 Bucket 名称')"
                 />
-                <InputError
-                  class="mt-1"
-                  :message="
-                    errorForCreate('bucket')
-                  "
-                />
+                <InputError class="mt-1" :message="errorForCreate('bucket')" />
               </div>
 
               <div class="grid gap-2">
@@ -490,10 +480,7 @@ const deleteProfile = (profileId: string) => {
                   v-model="createForm.key"
                   :placeholder="t('请输入 Access Key')"
                 />
-                <InputError
-                  class="mt-1"
-                  :message="errorForCreate('key')"
-                />
+                <InputError class="mt-1" :message="errorForCreate('key')" />
               </div>
 
               <div class="grid gap-2">
@@ -507,12 +494,7 @@ const deleteProfile = (profileId: string) => {
                   v-model="createForm.secret"
                   :placeholder="t('请输入 Secret Key')"
                 />
-                <InputError
-                  class="mt-1"
-                  :message="
-                    errorForCreate('secret')
-                  "
-                />
+                <InputError class="mt-1" :message="errorForCreate('secret')" />
               </div>
 
               <div class="grid gap-2">
@@ -523,10 +505,7 @@ const deleteProfile = (profileId: string) => {
                   v-model="createUrl"
                   :placeholder="t('例如：https://cdn.example.com')"
                 />
-                <InputError
-                  class="mt-1"
-                  :message="errorForCreate('url')"
-                />
+                <InputError class="mt-1" :message="errorForCreate('url')" />
               </div>
 
               <div class="flex items-center gap-3">

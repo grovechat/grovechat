@@ -51,7 +51,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
       <div class="mx-auto w-full max-w-none space-y-12">
         <div class="space-y-6">
           <div class="flex items-start justify-between gap-4">
-            <HeadingSmall :title="t('用户管理')"/>
+            <HeadingSmall :title="t('用户管理')" />
 
             <Button as-child>
               <Link :href="admin.showCreateUserPage.url()">
@@ -122,7 +122,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                           </DialogTrigger>
                           <DialogContent>
                             <DialogHeader class="space-y-3">
-                              <DialogTitle>{{ t('确认重置两步验证？') }}</DialogTitle>
+                              <DialogTitle>{{
+                                t('确认重置两步验证？')
+                              }}</DialogTitle>
                               <DialogDescription>
                                 {{ t('重置后，该用户需要重新绑定两步验证。') }}
                               </DialogDescription>
@@ -130,7 +132,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
                             <div class="rounded-md bg-muted/30 p-3 text-sm">
                               <div class="font-medium">{{ u.name }}</div>
-                              <div class="text-muted-foreground">{{ u.email }}</div>
+                              <div class="text-muted-foreground">
+                                {{ u.email }}
+                              </div>
                             </div>
 
                             <DialogFooter class="gap-2">
@@ -147,7 +151,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                                 :disabled="resetTwoFactorForm.processing"
                                 @click="
                                   resetTwoFactorForm.put(
-                                    admin.resetUserTwoFactorAuthentication.url(u.id),
+                                    admin.resetUserTwoFactorAuthentication.url(
+                                      u.id,
+                                    ),
                                     { preserveScroll: true },
                                   )
                                 "
@@ -219,4 +225,3 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     </div>
   </SystemAppLayout>
 </template>
-

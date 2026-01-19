@@ -107,7 +107,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
             <div class="grid gap-2">
               <Label>{{ t('版本号') }}</Label>
               <div class="py-2 text-sm text-muted-foreground">
-              {{ props.generalSettings.version || t('未设置') }}
+                {{ props.generalSettings.version || t('未设置') }}
               </div>
             </div>
 

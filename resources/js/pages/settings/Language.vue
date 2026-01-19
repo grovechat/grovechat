@@ -15,13 +15,13 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
 import { useTimezone, type Timezone } from '@/composables/useTimezone';
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { availableLocales, type Locale } from '@/locales';
 import { edit } from '@/routes/language';
 import { type BreadcrumbItem } from '@/types';
-import { useCurrentWorkspace } from '@/composables/useWorkspace';
 
 const { locale, updateLocale, t } = useI18n();
 const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =

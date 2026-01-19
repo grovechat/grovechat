@@ -72,7 +72,7 @@ class UpdateStorageProfileAction
     {
         $data = FormUpdateStorageProfileData::validateAndCreate($request->all());
         $this->handle($profile, $data);
-        
+
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('common.操作成功'),

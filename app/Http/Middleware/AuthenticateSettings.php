@@ -14,7 +14,7 @@ class AuthenticateSettings
     {
         $from = $request->query('from_workspace');
         $hasFromWorkspace = is_string($from) && $from !== '';
-        
+
         if ($hasFromWorkspace) { // 带 from_workspace 使用 web guard
             if (! Auth::guard('web')->check()) {
                 return redirect()->route('login');
@@ -26,9 +26,9 @@ class AuthenticateSettings
             }
             Auth::shouldUse('admin');
         }
-        
+
         Inertia::share('auth', ['user' => $request->user()]);
-        
+
         return $next($request);
     }
 }

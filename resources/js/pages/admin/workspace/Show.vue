@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -18,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { useDateTime } from '@/composables/useDateTime';
 import { useI18n } from '@/composables/useI18n';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
@@ -90,7 +90,8 @@ const nextPage = computed(() =>
 );
 
 const isOwner = (userId: string) =>
-  !!props.workspace.owner?.id && String(props.workspace.owner.id) === String(userId);
+  !!props.workspace.owner?.id &&
+  String(props.workspace.owner.id) === String(userId);
 </script>
 
 <template>
@@ -122,7 +123,11 @@ const isOwner = (userId: string) =>
                   <div class="space-y-5">
                     <div class="grid gap-2">
                       <Label for="user_id">{{ t('用户') }}</Label>
-                      <input type="hidden" name="user_id" :value="addForm.user_id" />
+                      <input
+                        type="hidden"
+                        name="user_id"
+                        :value="addForm.user_id"
+                      />
                       <Select v-model="addForm.user_id">
                         <SelectTrigger id="user_id" class="mt-1">
                           <SelectValue :placeholder="t('请选择用户')" />
@@ -143,7 +148,10 @@ const isOwner = (userId: string) =>
                       >
                         {{ t('暂无可添加的用户') }}
                       </p>
-                      <p v-if="addForm.errors.user_id" class="text-sm text-destructive">
+                      <p
+                        v-if="addForm.errors.user_id"
+                        class="text-sm text-destructive"
+                      >
                         {{ addForm.errors.user_id }}
                       </p>
                     </div>
@@ -165,7 +173,10 @@ const isOwner = (userId: string) =>
                           </SelectItem>
                         </SelectContent>
                       </Select>
-                      <p v-if="addForm.errors.role" class="text-sm text-destructive">
+                      <p
+                        v-if="addForm.errors.role"
+                        class="text-sm text-destructive"
+                      >
                         {{ addForm.errors.role }}
                       </p>
                     </div>
@@ -173,21 +184,29 @@ const isOwner = (userId: string) =>
 
                   <DialogFooter class="gap-2">
                     <DialogClose as-child>
-                      <Button variant="secondary" :disabled="addForm.processing">
+                      <Button
+                        variant="secondary"
+                        :disabled="addForm.processing"
+                      >
                         {{ t('取消') }}
                       </Button>
                     </DialogClose>
                     <Button
-                      :disabled="addForm.processing || !addForm.user_id || !addForm.role"
+                      :disabled="
+                        addForm.processing || !addForm.user_id || !addForm.role
+                      "
                       @click="
-                        addForm.post(addWorkspaceMember.url(props.workspace.id), {
-                          preserveScroll: true,
-                          onSuccess: () => {
-                            showAddDialog = false;
-                            addForm.reset();
-                            addForm.clearErrors();
+                        addForm.post(
+                          addWorkspaceMember.url(props.workspace.id),
+                          {
+                            preserveScroll: true,
+                            onSuccess: () => {
+                              showAddDialog = false;
+                              addForm.reset();
+                              addForm.clearErrors();
+                            },
                           },
-                        })
+                        )
                       "
                     >
                       {{ addForm.processing ? t('添加中...') : t('确认添加') }}
@@ -269,7 +288,9 @@ const isOwner = (userId: string) =>
 
                           <div class="rounded-md bg-muted/30 p-3 text-sm">
                             <div class="font-medium">{{ m.name }}</div>
-                            <div class="text-muted-foreground">{{ m.email }}</div>
+                            <div class="text-muted-foreground">
+                              {{ m.email }}
+                            </div>
                           </div>
 
                           <DialogFooter class="gap-2">
@@ -295,7 +316,9 @@ const isOwner = (userId: string) =>
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                      <span v-else class="text-sm text-muted-foreground">-</span>
+                      <span v-else class="text-sm text-muted-foreground"
+                        >-</span
+                      >
                     </td>
                   </tr>
 

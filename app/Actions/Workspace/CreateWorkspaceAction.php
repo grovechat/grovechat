@@ -41,13 +41,13 @@ class CreateWorkspaceAction
     public function asController(Request $request): RedirectResponse
     {
         $data = FormCreateSystemWorkspaceData::from($request);
-        $workspace = $this->handle($data);
+        $this->handle($data);
 
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('common.操作成功'),
         ]);
 
-        return redirect()->route('admin.show-workspace-detail', ['id' => $workspace->id]);
+        return redirect()->route('admin.get-workspace-list');
     }
 }

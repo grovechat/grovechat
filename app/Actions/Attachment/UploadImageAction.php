@@ -9,8 +9,8 @@ use App\Settings\StorageSettings;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class UploadImageAction
@@ -60,16 +60,16 @@ class UploadImageAction
             'attachable_id' => $attachable?->id,
             'attachable_type' => $attachable ? get_class($attachable) : null,
         ]);
-        
+
     }
-    
+
     public function asController(Request $request)
     {
         $request->validate([
             'file' => ['required', 'file', 'image', 'max:2048', 'mimes:jpeg,png,jpg,gif,webp'],
             'folder' => 'string|alpha_dash',
         ]);
-        
+
         return $this->handle($request->file('file'), $request->input('folder', 'uploads'));
     }
 }

@@ -1,6 +1,10 @@
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
-import type { GeneralSettingsData, WorkspaceData, WorkspaceUserContextData } from './generated';
+import type {
+  GeneralSettingsData,
+  WorkspaceData,
+  WorkspaceUserContextData,
+} from './generated';
 
 export interface Auth {
   user: User;
@@ -18,9 +22,7 @@ export interface NavItem {
   isActive?: boolean;
 }
 
-export type AppPageProps<
-  T extends object = Record<string, never>,
-> = T & {
+export type AppPageProps<T extends object = Record<string, never>> = T & {
   name: string;
   quote: { message: string; author: string };
   auth: Auth;

@@ -7,12 +7,12 @@ import { useAppearance } from '@/composables/useAppearance';
 import { useI18n } from '@/composables/useI18n';
 import { type BreadcrumbItem } from '@/types';
 
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { edit } from '@/routes/appearance';
 import { Monitor, Moon, Sun } from 'lucide-vue-next';
-import { useCurrentWorkspace } from '@/composables/useWorkspace';
 
 const { t } = useI18n();
 const { appearance, updateAppearance } = useAppearance();

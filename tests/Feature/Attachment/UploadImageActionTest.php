@@ -60,6 +60,7 @@ test('upload uses current storage profile when enabled', function () {
         public function putFileAs($path, $file, $name, $options = [])
         {
             $this->puts[] = compact('path', 'name', 'options');
+
             return trim($path, '/').'/'.$name;
         }
     };
@@ -76,4 +77,3 @@ test('upload uses current storage profile when enabled', function () {
     expect($attachment->storage_profile_id)->toBe((string) $profile->id);
     expect($attachment->path)->toStartWith('uploads/');
 });
-

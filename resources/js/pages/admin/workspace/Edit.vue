@@ -31,7 +31,10 @@ const slugInput = ref<string>(props.workspace.slug || '');
 
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   { title: t('工作区管理'), href: admin.getWorkspaceList.url() },
-  { title: props.workspace.name || t('编辑'), href: admin.showEditWorkspacePage.url(props.workspace.id) },
+  {
+    title: props.workspace.name || t('编辑'),
+    href: admin.showEditWorkspacePage.url(props.workspace.id),
+  },
 ]);
 
 const fullAccessUrl = computed(() => {
@@ -144,4 +147,3 @@ const fullAccessUrl = computed(() => {
     </div>
   </SystemAppLayout>
 </template>
-

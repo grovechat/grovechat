@@ -12,6 +12,7 @@ class DeleteAttachmentAction
     public function handle(Attachment $attachment)
     {
         $attachment->filesystem()->delete($attachment->path);
+
         return $attachment->delete();
     }
 }

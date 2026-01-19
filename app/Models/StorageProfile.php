@@ -16,4 +16,3 @@ class StorageProfile extends Model
         'secret' => 'encrypted',
     ];
 }
-

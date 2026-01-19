@@ -13,4 +13,3 @@ class SimplePaginationData extends Data
         public int $total,
     ) {}
 }
-

@@ -31,14 +31,17 @@ const { t } = useI18n();
 const page = usePage<AppPageProps>();
 
 const user = computed(() => page.props.auth.user);
-const showAvatar = computed(() => user.value?.avatar && user.value.avatar !== '');
+const showAvatar = computed(
+  () => user.value?.avatar && user.value.avatar !== '',
+);
 
 const workspaceUserContext = computed(() => page.props.workspaceUserContext);
 const currentWorkspace = useCurrentWorkspace();
 const workspaceSlug = computed(() => currentWorkspace.value?.slug ?? null);
 
 const hasWorkspaceOnlineStatus = computed(
-  () => !!workspaceUserContext.value?.user_online_status && !!workspaceSlug.value,
+  () =>
+    !!workspaceUserContext.value?.user_online_status && !!workspaceSlug.value,
 );
 const isOnline = computed(
   () => Number(workspaceUserContext.value?.user_online_status?.value) === 1,
@@ -50,7 +53,11 @@ const handleLogout = () => {
 };
 
 const dropdownSide = computed(() => {
-  return props.isMobile ? 'bottom' : props.sidebarState === 'collapsed' ? 'left' : 'bottom';
+  return props.isMobile
+    ? 'bottom'
+    : props.sidebarState === 'collapsed'
+      ? 'left'
+      : 'bottom';
 });
 
 const updateOnlineStatus = (status: number) => {
@@ -83,7 +90,11 @@ const updateOnlineStatus = (status: number) => {
       >
         <div class="relative">
           <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-            <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" />
+            <AvatarImage
+              v-if="showAvatar"
+              :src="user.avatar!"
+              :alt="user.name"
+            />
             <AvatarFallback class="rounded-lg text-black dark:text-white">
               {{ getInitials(user.name) }}
             </AvatarFallback>
@@ -113,7 +124,11 @@ const updateOnlineStatus = (status: number) => {
         <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
           <div class="relative">
             <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-              <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" />
+              <AvatarImage
+                v-if="showAvatar"
+                :src="user.avatar!"
+                :alt="user.name"
+              />
               <AvatarFallback class="rounded-lg text-black dark:text-white">
                 {{ getInitials(user.name) }}
               </AvatarFallback>
@@ -127,7 +142,9 @@ const updateOnlineStatus = (status: number) => {
 
           <div class="grid flex-1 text-left text-sm leading-tight">
             <span class="truncate font-medium">{{ user.name }}</span>
-            <span class="truncate text-xs text-muted-foreground">{{ user.email }}</span>
+            <span class="truncate text-xs text-muted-foreground">{{
+              user.email
+            }}</span>
           </div>
         </div>
       </DropdownMenuLabel>
@@ -135,11 +152,17 @@ const updateOnlineStatus = (status: number) => {
       <DropdownMenuSeparator />
 
       <template v-if="hasWorkspaceOnlineStatus">
-        <DropdownMenuItem :disabled="updatingOnlineStatus" @click="updateOnlineStatus(1)">
+        <DropdownMenuItem
+          :disabled="updatingOnlineStatus"
+          @click="updateOnlineStatus(1)"
+        >
           <span class="mr-2 inline-block h-2 w-2 rounded-full bg-emerald-500" />
           {{ t('在线') }}
         </DropdownMenuItem>
-        <DropdownMenuItem :disabled="updatingOnlineStatus" @click="updateOnlineStatus(0)">
+        <DropdownMenuItem
+          :disabled="updatingOnlineStatus"
+          @click="updateOnlineStatus(0)"
+        >
           <span class="mr-2 inline-block h-2 w-2 rounded-full bg-zinc-400" />
           {{ t('离线') }}
         </DropdownMenuItem>
@@ -171,4 +194,3 @@ const updateOnlineStatus = (status: number) => {
     </DropdownMenuContent>
   </DropdownMenu>
 </template>
-

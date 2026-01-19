@@ -3,7 +3,6 @@
 namespace App\Actions\Dashboard;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class RedirectLastDashboardAction

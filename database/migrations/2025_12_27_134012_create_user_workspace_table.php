@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserOnlineStatus;
 use App\Enums\WorkspaceRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,6 +18,9 @@ return new class extends Migration
             $table->ulid('workspace_id');
             $table->ulid('user_id');
             $table->string('role')->default(WorkspaceRole::OPERATOR->value)->comment('角色');
+            $table->integer('online_status')->default(UserOnlineStatus::ONLINE->value);
+            $table->string('nickname', 50)->nullable();
+            $table->timestamp('last_active_at')->nullable()->comment('最后活跃时间');
             $table->primary(['workspace_id', 'user_id']);
         });
     }
