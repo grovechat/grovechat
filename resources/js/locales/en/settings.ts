@@ -42,6 +42,37 @@ export default {
   深色: 'Dark',
   跟随系统: 'System',
 
+  // 两步验证
+  两步验证设置: 'Two-factor authentication',
+  管理你的两步验证设置: 'Manage your two-factor authentication settings',
+  已启用: 'Enabled',
+  已禁用: 'Disabled',
+  '启用两步验证后，登录时将需要输入安全验证码。该验证码可以通过手机上支持 TOTP 的应用程序获取。':
+    'After enabling two-factor authentication, you will be prompted for a secure verification code when logging in. You can get this code from a TOTP app on your phone.',
+  继续设置: 'Continue setup',
+  启用两步验证: 'Enable two-factor authentication',
+  '启用两步验证后，登录时将需要输入安全的随机验证码，你可以通过手机上支持 TOTP 的应用程序获取该验证码。':
+    'After enabling two-factor authentication, you will be prompted for a secure random verification code when logging in. You can get this code from a TOTP app on your phone.',
+  禁用两步验证: 'Disable two-factor authentication',
+  '要完成两步验证的启用，请扫描二维码或在身份验证器应用中输入设置密钥':
+    'To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app.',
+  两步验证现已启用: 'Two-factor authentication is now enabled',
+  '两步验证现已启用。扫描二维码或在身份验证器应用中输入设置密钥。':
+    'Two-factor authentication is now enabled. Scan the QR code or enter the setup key in your authenticator app.',
+  验证身份验证码: 'Verify authentication code',
+  '输入来自身份验证器应用的 6 位数字验证码':
+    'Enter the 6-digit code from your authenticator app.',
+  '或者，手动输入密钥': 'Or, enter the key manually',
+  两步验证恢复码: 'Two-factor recovery codes',
+  '如果丢失两步验证设备，恢复码可以让你重新访问账户。请将它们存储在安全的密码管理器中。':
+    'If you lose your two-factor device, recovery codes can help you regain access to your account. Store them in a secure password manager.',
+  查看恢复码: 'View recovery codes',
+  隐藏恢复码: 'Hide recovery codes',
+  重新生成恢复码: 'Regenerate recovery codes',
+  '每个恢复码只能使用一次来访问你的账户，使用后将被删除。如需更多恢复码，请点击上方的':
+    'Each recovery code can only be used once to access your account and will be deleted after use. If you need more recovery codes, click',
+  '"重新生成恢复码"': '"Regenerate recovery codes"',
+
   // 语言和时区
   语言和时区设置: 'Language and Timezone Settings',
   语言偏好: 'Language preference',

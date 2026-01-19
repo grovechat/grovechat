@@ -35,6 +35,7 @@ export default {
   // 通用操作
   保存: 'Save',
   '已保存。': 'Saved.',
+  继续: 'Continue',
   取消: 'Cancel',
   确认: 'Confirm',
   关闭: 'Close',
