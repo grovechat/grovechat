@@ -29,14 +29,20 @@ const { t } = useI18n();
 const page = usePage<AppPageProps>();
 
 const user = computed(() => page.props.auth.user);
-const showAvatar = computed(() => user.value?.avatar && user.value.avatar !== '');
+const showAvatar = computed(
+  () => user.value?.avatar && user.value.avatar !== '',
+);
 
 const handleLogout = () => {
   router.flushAll();
 };
 
 const dropdownSide = computed(() => {
-  return props.isMobile ? 'bottom' : props.sidebarState === 'collapsed' ? 'left' : 'bottom';
+  return props.isMobile
+    ? 'bottom'
+    : props.sidebarState === 'collapsed'
+      ? 'left'
+      : 'bottom';
 });
 </script>
 
@@ -72,7 +78,11 @@ const dropdownSide = computed(() => {
       <DropdownMenuLabel class="p-0 font-normal">
         <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
           <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-            <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" />
+            <AvatarImage
+              v-if="showAvatar"
+              :src="user.avatar!"
+              :alt="user.name"
+            />
             <AvatarFallback class="rounded-lg text-black dark:text-white">
               {{ getInitials(user.name) }}
             </AvatarFallback>
@@ -80,7 +90,9 @@ const dropdownSide = computed(() => {
 
           <div class="grid flex-1 text-left text-sm leading-tight">
             <span class="truncate font-medium">{{ user.name }}</span>
-            <span class="truncate text-xs text-muted-foreground">{{ user.email }}</span>
+            <span class="truncate text-xs text-muted-foreground">{{
+              user.email
+            }}</span>
           </div>
         </div>
       </DropdownMenuLabel>
@@ -112,4 +124,3 @@ const dropdownSide = computed(() => {
     </DropdownMenuContent>
   </DropdownMenu>
 </template>
-

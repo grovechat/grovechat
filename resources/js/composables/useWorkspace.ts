@@ -22,7 +22,8 @@ export function useCurrentWorkspace(): ComputedRef<WorkspaceData | null> {
       return null;
     }
 
-    const workspaces = ((page.props as any)?.workspaces ?? []) as WorkspaceData[];
+    const workspaces = ((page.props as any)?.workspaces ??
+      []) as WorkspaceData[];
     return workspaces.find((w) => w.slug === slug) ?? null;
   });
 }
@@ -39,9 +40,10 @@ export function useRequiredWorkspace(): ComputedRef<WorkspaceData> {
       | string
       | null
       | undefined;
-    const workspaces = ((page.props as any)?.workspaces ?? []) as WorkspaceData[];
+    const workspaces = ((page.props as any)?.workspaces ??
+      []) as WorkspaceData[];
 
-    const ws = slug ? workspaces.find((w) => w.slug === slug) ?? null : null;
+    const ws = slug ? (workspaces.find((w) => w.slug === slug) ?? null) : null;
 
     if (!ws) {
       const { url, component } = getContextForError();

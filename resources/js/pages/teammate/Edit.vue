@@ -37,7 +37,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     href: '#',
   },
 ]);
-
 </script>
 
 <template>

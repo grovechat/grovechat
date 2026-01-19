@@ -130,7 +130,9 @@ const fullAccessUrl = computed(() => {
               </Button>
 
               <Button variant="outline" as-child :disabled="processing">
-                <Link :href="admin.getWorkspaceList.url()">{{ t('返回') }}</Link>
+                <Link :href="admin.getWorkspaceList.url()">{{
+                  t('返回')
+                }}</Link>
               </Button>
 
               <Transition
@@ -150,4 +152,3 @@ const fullAccessUrl = computed(() => {
     </div>
   </SystemAppLayout>
 </template>
-

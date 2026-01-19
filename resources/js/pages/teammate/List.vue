@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useDateTime } from '@/composables/useDateTime';
 import { useI18n } from '@/composables/useI18n';
 import { useRequiredWorkspace } from '@/composables/useWorkspace';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -30,12 +31,9 @@ import {
   showTeammateList,
   updateTeammateOnlineStatus,
 } from '@/routes';
-import { useDateTime } from '@/composables/useDateTime';
 
 import type { BreadcrumbItem } from '@/types';
-import type {
-  ShowListTeammatePagePropsData,
-} from '@/types/generated';
+import type { ShowListTeammatePagePropsData } from '@/types/generated';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -139,9 +137,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                       "
                     >
                       <SelectTrigger class="h-9 w-28">
-                        <SelectValue
-                          :placeholder="u.user_online_status.label"
-                        >
+                        <SelectValue :placeholder="u.user_online_status.label">
                           {{ u.user_online_status.label }}
                         </SelectValue>
                       </SelectTrigger>
@@ -157,7 +153,11 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                     </Select>
                   </td>
                   <td class="px-4 py-3">
-                    {{ u.user_last_active_at ? formatDateTime(u.user_last_active_at) : '-' }}
+                    {{
+                      u.user_last_active_at
+                        ? formatDateTime(u.user_last_active_at)
+                        : '-'
+                    }}
                   </td>
                   <td class="px-4 py-3">
                     <div class="flex justify-end gap-2">
@@ -178,7 +178,9 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                           <Button
                             variant="destructive"
                             size="sm"
-                            :disabled="!u.show_remove_button || removeForm.processing"
+                            :disabled="
+                              !u.show_remove_button || removeForm.processing
+                            "
                             :title="
                               !u.show_remove_button
                                 ? t('当前登录用户不允许删除')
@@ -194,7 +196,11 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                               {{ t('确认移除客服？') }}
                             </DialogTitle>
                             <DialogDescription>
-                              {{ t('将从当前工作区移除该成员的访问权限（不会删除用户）。') }}
+                              {{
+                                t(
+                                  '将从当前工作区移除该成员的访问权限（不会删除用户）。',
+                                )
+                              }}
                             </DialogDescription>
                           </DialogHeader>
 

@@ -24,9 +24,7 @@ import {
   showWorkspaceDetail,
 } from '@/routes/admin';
 import type { BreadcrumbItem } from '@/types';
-import type {
-  ShowWorkspaceListPagePropsData,
-} from '@/types/generated';
+import type { ShowWorkspaceListPagePropsData } from '@/types/generated';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -130,7 +128,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                             {{ t('编辑') }}
                           </Link>
                         </Button>
-                        
+
                         <Button variant="outline" size="sm" as-child>
                           <Link :href="showWorkspaceDetail.url(ws.id)">
                             {{ t('客服列表') }}
@@ -154,10 +152,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
                         <Dialog>
                           <DialogTrigger as-child>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                            >
+                            <Button variant="destructive" size="sm">
                               {{ t('删除') }}
                             </Button>
                           </DialogTrigger>
@@ -226,8 +221,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
             <div class="flex items-center justify-between gap-3 border-t p-4">
               <div class="text-sm text-muted-foreground">
-                {{ t('第') }} {{ props.workspace_list_pagination.current_page }}
-                / {{ props.workspace_list_pagination.last_page }}
+                {{ t('第') }}
+                {{ props.workspace_list_pagination.current_page }} /
+                {{ props.workspace_list_pagination.last_page }}
                 {{ t('页，共') }}
                 {{ props.workspace_list_pagination.total }} {{ t('条') }}
               </div>
@@ -238,7 +234,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   :disabled="props.workspace_list_pagination.current_page <= 1"
                   as-child
                 >
-                  <Link :href="getWorkspaceList.url({ query: { page: prevPage } })">
+                  <Link
+                    :href="getWorkspaceList.url({ query: { page: prevPage } })"
+                  >
                     {{ t('上一页') }}
                   </Link>
                 </Button>
@@ -251,7 +249,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   "
                   as-child
                 >
-                  <Link :href="getWorkspaceList.url({ query: { page: nextPage } })">
+                  <Link
+                    :href="getWorkspaceList.url({ query: { page: nextPage } })"
+                  >
                     {{ t('下一页') }}
                   </Link>
                 </Button>

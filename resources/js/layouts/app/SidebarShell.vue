@@ -76,7 +76,6 @@ const isMainNavItemActive = (item: SidebarShellNavItem) => {
 
   return urlIsActive(item.href, page.url);
 };
-
 </script>
 
 <template>
@@ -207,7 +206,11 @@ const isMainNavItemActive = (item: SidebarShellNavItem) => {
 
           <SidebarMenu>
             <SidebarMenuItem>
-              <slot name="userMenu" :isMobile="isMobile.value" :sidebarState="state.value">
+              <slot
+                name="userMenu"
+                :isMobile="isMobile.value"
+                :sidebarState="state.value"
+              >
                 <SidebarUserMenu
                   :profile-href="props.profileHref"
                   :profile-label="props.profileLabel"

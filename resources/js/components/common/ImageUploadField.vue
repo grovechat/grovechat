@@ -70,7 +70,9 @@ watch(
 );
 
 const fileInputId = computed(() => props.inputId || `${props.name}File`);
-const hiddenInputValue = computed(() => value.value || props.initialValue || '');
+const hiddenInputValue = computed(
+  () => value.value || props.initialValue || '',
+);
 
 const previewWrapperClass = computed(() => {
   if (props.variant === 'logo') {
@@ -130,7 +132,11 @@ const handleFileChange = async (event: Event) => {
     <Label :for="fileInputId">{{ label }}</Label>
     <div class="mt-1 space-y-3">
       <div v-if="previewUrl" :class="previewWrapperClass">
-        <img :src="previewUrl" :alt="t('图片预览')" :class="previewImageClass" />
+        <img
+          :src="previewUrl"
+          :alt="t('图片预览')"
+          :class="previewImageClass"
+        />
         <div
           v-if="uploading"
           class="absolute inset-0 flex items-center justify-center bg-black/50"

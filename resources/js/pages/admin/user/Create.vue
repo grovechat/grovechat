@@ -23,7 +23,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   { title: t('用户管理'), href: admin.getUserList.url() },
   { title: t('新增用户'), href: admin.showCreateUserPage.url() },
 ]);
-
 </script>
 
 <template>
@@ -33,7 +32,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     <div class="px-4 py-6 sm:px-6">
       <div class="mx-auto w-full max-w-none space-y-12">
         <div class="space-y-6">
-          <HeadingSmall :title="t('新增用户')"/>
+          <HeadingSmall :title="t('新增用户')" />
 
           <Form
             v-bind="admin.createUser.form()"
@@ -150,4 +149,3 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     </div>
   </SystemAppLayout>
 </template>
-

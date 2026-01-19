@@ -188,8 +188,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 
             <div class="flex items-center justify-between gap-3 border-t p-4">
               <div class="text-sm text-muted-foreground">
-                {{ t('第') }} {{ props.workspace_trash_list_pagination.current_page }}
-                / {{ props.workspace_trash_list_pagination.last_page }}
+                {{ t('第') }}
+                {{ props.workspace_trash_list_pagination.current_page }} /
+                {{ props.workspace_trash_list_pagination.last_page }}
                 {{ t('页，共') }}
                 {{ props.workspace_trash_list_pagination.total }} {{ t('条') }}
               </div>
@@ -197,10 +198,14 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                 <Button
                   variant="outline"
                   size="sm"
-                  :disabled="props.workspace_trash_list_pagination.current_page <= 1"
+                  :disabled="
+                    props.workspace_trash_list_pagination.current_page <= 1
+                  "
                   as-child
                 >
-                  <Link :href="getWorkspaceTrash.url({ query: { page: prevPage } })">
+                  <Link
+                    :href="getWorkspaceTrash.url({ query: { page: prevPage } })"
+                  >
                     {{ t('上一页') }}
                   </Link>
                 </Button>
@@ -213,7 +218,9 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
                   "
                   as-child
                 >
-                  <Link :href="getWorkspaceTrash.url({ query: { page: nextPage } })">
+                  <Link
+                    :href="getWorkspaceTrash.url({ query: { page: nextPage } })"
+                  >
                     {{ t('下一页') }}
                   </Link>
                 </Button>

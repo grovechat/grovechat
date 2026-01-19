@@ -28,7 +28,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     href: admin.showEditUserPage.url(props.id),
   },
 ]);
-
 </script>
 
 <template>
@@ -38,7 +37,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     <div class="px-4 py-6 sm:px-6">
       <div class="mx-auto w-full max-w-none space-y-12">
         <div class="space-y-6">
-          <HeadingSmall :title="t('编辑用户')"/>
+          <HeadingSmall :title="t('编辑用户')" />
 
           <Form
             v-bind="admin.updateUser.form(props.id)"
@@ -155,4 +154,3 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     </div>
   </SystemAppLayout>
 </template>
-
