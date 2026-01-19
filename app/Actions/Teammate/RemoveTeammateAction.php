@@ -2,6 +2,7 @@
 
 namespace App\Actions\Teammate;
 
+use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -28,8 +29,9 @@ class RemoveTeammateAction
         $workspace->users()->detach($targetUser->id);
     }
 
-    public function asController(Request $request, Workspace $currentWorkspace, string $slug, string $id)
+    public function asController(Request $request, string $slug, string $id)
     {
+        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
         $this->handle($currentWorkspace, $id);
 
         Inertia::flash('toast', [

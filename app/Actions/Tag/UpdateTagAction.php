@@ -3,6 +3,7 @@
 namespace App\Actions\Tag;
 
 use App\Data\Tag\FormUpdateTagData;
+use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\Tag;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -41,8 +42,9 @@ class UpdateTagAction
         return $tag;
     }
 
-    public function asController(Request $request, Workspace $currentWorkspace, string $slug, string $id)
+    public function asController(Request $request, string $slug, string $id)
     {
+        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
         $data = FormUpdateTagData::from($request);
         $this->handle($currentWorkspace, $id, $data);
 

@@ -3,6 +3,7 @@
 namespace App\Actions\Tag;
 
 use App\Data\Tag\FormCreateTagData;
+use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\Tag;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -35,8 +36,9 @@ class CreateTagAction
         ]);
     }
 
-    public function asController(Request $request, Workspace $currentWorkspace)
+    public function asController(Request $request)
     {
+        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
         $data = FormCreateTagData::from($request);
         $this->handle($currentWorkspace, $data);
 

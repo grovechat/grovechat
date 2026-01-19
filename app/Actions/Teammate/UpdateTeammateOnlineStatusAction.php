@@ -3,6 +3,7 @@
 namespace App\Actions\Teammate;
 
 use App\Data\Teammate\FormUpdateTeammateOnlineStatusData;
+use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,8 +22,9 @@ class UpdateTeammateOnlineStatusAction
         ]);
     }
 
-    public function asController(Request $request, Workspace $currentWorkspace, string $slug, string $id)
+    public function asController(Request $request, string $slug, string $id)
     {
+        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
         $data = FormUpdateTeammateOnlineStatusData::from($request);
         $this->handle($currentWorkspace, $id, $data);
 

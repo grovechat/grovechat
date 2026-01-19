@@ -3,6 +3,7 @@
 namespace App\Actions\Teammate;
 
 use App\Data\Teammate\FormUpdateTeammateData;
+use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -34,8 +35,9 @@ class UpdateTeammateAction
         ]);
     }
 
-    public function asController(Request $request, Workspace $workspace, string $slug, string $id)
+    public function asController(Request $request, string $slug, string $id)
     {
+        $workspace = WorkspaceRequestContext::fromRequest($request)->workspace;
         $data = FormUpdateTeammateData::from($request);
         $this->handle($workspace, $id, $data);
 

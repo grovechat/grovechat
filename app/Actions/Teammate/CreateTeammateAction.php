@@ -4,6 +4,7 @@ namespace App\Actions\Teammate;
 
 use App\Data\Teammate\FormCreateTeammateData;
 use App\Enums\UserOnlineStatus;
+use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
@@ -42,8 +43,9 @@ class CreateTeammateAction
         return $user;
     }
 
-    public function asController(Request $request, Workspace $currentWorkspace)
+    public function asController(Request $request)
     {
+        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
         $data = FormCreateTeammateData::from($request);
         $this->handle($currentWorkspace, $data);
 

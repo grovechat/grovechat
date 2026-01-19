@@ -4,8 +4,10 @@ namespace App\Actions\Tag;
 
 use App\Data\Tag\ListTagItemData;
 use App\Data\Tag\ShowListTagPagePropsData;
+use App\Http\RequestContexts\WorkspaceRequestContext;
 use App\Models\Tag;
 use App\Models\Workspace;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -24,8 +26,9 @@ class ShowTagListAction
         );
     }
 
-    public function asController(Workspace $currentWorkspace)
+    public function asController(Request $request)
     {
+        $currentWorkspace = WorkspaceRequestContext::fromRequest($request)->workspace;
         $props = $this->handle($currentWorkspace);
 
         return Inertia::render('tags/Index', $props->toArray());
