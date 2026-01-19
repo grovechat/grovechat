@@ -21,14 +21,14 @@ import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { availableLocales, type Locale } from '@/locales';
 import { edit } from '@/routes/language';
 import { type BreadcrumbItem } from '@/types';
-import { useCurrentWorpsace } from '@/composables/useWorkspace';
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 
 const { locale, updateLocale, t } = useI18n();
 const { timezone, updateTimezone, getTimezones, getCurrentTimezoneInfo } =
   useTimezone();
 
 const page = usePage();
-const currentWorkspace = useCurrentWorpsace();
+const currentWorkspace = useCurrentWorkspace();
 const RootLayout = computed(() =>
   page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
 );

@@ -26,8 +26,7 @@ export type AppPageProps<
   auth: Auth;
   sidebarOpen: boolean;
   generalSettings: GeneralSettingsData;
-  currentWorkspace: WorkspaceData | null;
-  workspaces: WorkspaceData[];
+  workspaces?: WorkspaceData[];
   workspaceUserContext?: WorkspaceUserContextData;
 };
 

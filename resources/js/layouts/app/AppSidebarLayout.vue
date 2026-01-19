@@ -49,7 +49,7 @@ const page = usePage<AppPageProps>();
 
 const currentWorkspace = useRequiredWorkspace();
 const user = computed(() => page.props.auth.user);
-const workspaces = computed(() => page.props.workspaces);
+const workspaces = computed(() => page.props.workspaces ?? []);
 
 type MainNavItem = SidebarShellNavItem;
 

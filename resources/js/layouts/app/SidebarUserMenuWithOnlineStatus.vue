@@ -11,6 +11,7 @@ import {
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { useI18n } from '@/composables/useI18n';
 import { getInitials } from '@/composables/useInitials';
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 import { updateMyOnlineStatus } from '@/routes';
 import type { AppPageProps } from '@/types';
 import { Link, router, usePage } from '@inertiajs/vue3';
@@ -33,7 +34,7 @@ const user = computed(() => page.props.auth.user);
 const showAvatar = computed(() => user.value?.avatar && user.value.avatar !== '');
 
 const workspaceUserContext = computed(() => page.props.workspaceUserContext);
-const currentWorkspace = computed(() => page.props.currentWorkspace);
+const currentWorkspace = useCurrentWorkspace();
 const workspaceSlug = computed(() => currentWorkspace.value?.slug ?? null);
 
 const hasWorkspaceOnlineStatus = computed(

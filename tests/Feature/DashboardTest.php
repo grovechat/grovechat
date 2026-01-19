@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Workspace;
+use Inertia\Testing\AssertableInertia as Assert;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -23,5 +24,12 @@ test('authenticated users can visit the dashboard', function () {
 
     // 访问租户 dashboard 应该成功
     $response = $this->get(route('workspace.dashboard', ['slug' => $workspace->slug]));
-    $response->assertStatus(200);
+    $response->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Dashboard')
+            ->has('workspaces', 1)
+            ->has('workspaceUserContext')
+            ->where('workspaceUserContext.workspace_slug', $workspace->slug)
+            ->missing('currentWorkspace')
+        );
 });

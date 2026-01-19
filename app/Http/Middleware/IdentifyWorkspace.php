@@ -49,7 +49,6 @@ class IdentifyWorkspace
             abort(403, '你不是该工作区的成员');
         }
         app()->instance(Workspace::class, $workspace);
-        Inertia::share('currentWorkspace', WorkspaceData::fromModel($workspace)->toArray());
 
         // 设置工作区用户上下文
         $workspaceUserContext = WorkspaceUserContextData::fromModels($workspace, $request->user());

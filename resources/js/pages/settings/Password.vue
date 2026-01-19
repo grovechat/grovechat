@@ -14,11 +14,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { type BreadcrumbItem } from '@/types';
-import { useCurrentWorpsace } from '@/composables/useWorkspace';
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 
 const { t } = useI18n();
 const page = usePage();
-const currentWorkspace = useCurrentWorpsace();
+const currentWorkspace = useCurrentWorkspace();
 const RootLayout = computed(() =>
   page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
 );

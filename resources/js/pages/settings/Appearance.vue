@@ -12,12 +12,12 @@ import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import SystemAppLayout from '@/layouts/SystemAppLayout.vue';
 import { edit } from '@/routes/appearance';
 import { Monitor, Moon, Sun } from 'lucide-vue-next';
-import { useCurrentWorpsace } from '@/composables/useWorkspace';
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 
 const { t } = useI18n();
 const { appearance, updateAppearance } = useAppearance();
 const page = usePage();
-const currentWorkspace = useCurrentWorpsace();
+const currentWorkspace = useCurrentWorkspace();
 const RootLayout = computed(() =>
   page.props.auth.user.is_super_admin ? SystemAppLayout : AppLayout,
 );

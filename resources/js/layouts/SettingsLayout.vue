@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/composables/useI18n';
-import { useCurrentWorpsace } from '@/composables/useWorkspace';
+import { useCurrentWorkspace } from '@/composables/useWorkspace';
 import { toUrl, urlIsActive } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editLanguage } from '@/routes/language';
@@ -14,7 +14,7 @@ import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const { t } = useI18n();
-const currentWorkspace = useCurrentWorpsace();
+const currentWorkspace = useCurrentWorkspace();
 
 const linkOptions = computed(() => ({
   mergeQuery: {
