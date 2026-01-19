@@ -30,6 +30,8 @@ import {
   showTeammateList,
   updateTeammateOnlineStatus,
 } from '@/routes';
+import { useDateTime } from '@/composables/useDateTime';
+
 import type { BreadcrumbItem } from '@/types';
 import type {
   ShowListTeammatePagePropsData,
@@ -42,7 +44,7 @@ const props = defineProps<ShowListTeammatePagePropsData>();
 const currentWorkspace = useRequiredWorkspace();
 const updatingStatusIds = ref<Record<string, boolean>>({});
 const removeForm = useForm({});
-
+const { formatDateTime } = useDateTime();
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     title: t('多客服'),
@@ -98,6 +100,7 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                   <th class="px-4 py-3">{{ t('邮箱') }}</th>
                   <th class="px-4 py-3">{{ t('身份') }}</th>
                   <th class="px-4 py-3">{{ t('在线状态') }}</th>
+                  <th class="px-4 py-3">{{ t('最后活跃时间') }}</th>
                   <th class="px-4 py-3 text-right">{{ t('操作') }}</th>
                 </tr>
               </thead>
@@ -152,6 +155,9 @@ const handleOnlineStatusChange = (userId: string, status: number) => {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                  </td>
+                  <td class="px-4 py-3">
+                    {{ u.user_last_active_at ? formatDateTime(u.user_last_active_at) : '-' }}
                   </td>
                   <td class="px-4 py-3">
                     <div class="flex justify-end gap-2">

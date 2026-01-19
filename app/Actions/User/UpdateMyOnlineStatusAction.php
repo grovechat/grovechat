@@ -3,6 +3,7 @@
 namespace App\Actions\User;
 
 use App\Data\Teammate\FormUpdateTeammateOnlineStatusData;
+use App\Enums\UserOnlineStatus;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -15,11 +16,12 @@ class UpdateMyOnlineStatusAction
     {
         $user = $workspace->users()->whereKey($userId)->firstOrFail();
 
-        $user->pivot->update([
-            'online_status' => $data->online_status->value,
-        ]);
+        $pivot = ['online_status' => $data->online_status];
+        if ($data->online_status == UserOnlineStatus::OFFLINE) {
+            $pivot['last_active_at'] = now();
+        }
+        $user->pivot->update($pivot);
     }
-
     public function asController(Request $request, Workspace $currentWorkspace, string $slug)
     {
         $data = FormUpdateTeammateOnlineStatusData::from($request);
