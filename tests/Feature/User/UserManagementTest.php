@@ -266,6 +266,26 @@ test('can update user online status from list', function () {
         ->toBe(UserOnlineStatus::ONLINE->value);
 });
 
+test('cannot update user online status with invalid enum value', function () {
+    $member = User::factory()->create([
+        'name' => '客服E-非法状态',
+        'email' => 'e-invalid-status@example.com',
+    ]);
+    $this->workspace->users()->attach($member->id, [
+        'role' => 'operator',
+        'online_status' => UserOnlineStatus::OFFLINE->value,
+    ]);
+
+    $this->actingAs($this->user)
+        ->put(route('update-teammate-online-status', ['slug' => $this->workspaceSlug(), 'id' => $member->id]), [
+            'online_status' => 2,
+        ])
+        ->assertSessionHasErrors('online_status');
+
+    expect($this->workspace->users()->whereKey($member->id)->firstOrFail()->pivot->online_status)
+        ->toBe(UserOnlineStatus::OFFLINE->value);
+});
+
 test('cannot delete current logged in user', function () {
     $this->actingAs($this->user)
         ->delete(route('remove-teammate', ['slug' => $this->workspaceSlug(), 'id' => $this->user->id]))

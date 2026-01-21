@@ -15,11 +15,9 @@ class FormAddWorkspaceMemberData extends Data
 
     public static function rules(): array
     {
-        $roles = array_map(static fn (WorkspaceRole $r) => $r->value, WorkspaceRole::assignableCases());
-
         return [
             'user_id' => ['required', 'string', Rule::exists('users', 'id')],
-            'role' => ['required', Rule::in($roles)],
+            'role' => ['required', Rule::enum(WorkspaceRole::class)->only(WorkspaceRole::assignableCases())],
         ];
     }
 }

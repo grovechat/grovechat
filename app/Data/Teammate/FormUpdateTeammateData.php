@@ -17,11 +17,9 @@ class FormUpdateTeammateData extends Data
     {
         // 更新时允许传入 owner（例如 owner 编辑自己时 role 会作为隐藏字段提交），
         // 具体是否允许变更由 Gate('workspace-users.updateRole') 决定。
-        $roles = array_map(static fn (WorkspaceRole $r) => $r->value, WorkspaceRole::cases());
-
         return [
             'nickname' => ['nullable', 'string', 'max:50'],
-            'role' => ['required', Rule::in($roles)],
+            'role' => ['required', Rule::enum(WorkspaceRole::class)],
         ];
     }
 }

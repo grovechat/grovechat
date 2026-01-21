@@ -21,11 +21,9 @@ class FormCreateStorageProfileData extends Data
 
     public static function rules(): array
     {
-        $providers = array_map(static fn (StorageProvider $p) => $p->value, StorageProvider::cases());
-
         return [
             'name' => ['required', 'string', 'max:64'],
-            'provider' => ['required', 'string', Rule::in($providers)],
+            'provider' => ['required', 'string', Rule::enum(StorageProvider::class)],
             'region' => ['required', 'string'],
             'endpoint' => ['required', 'string', 'url'],
             'bucket' => ['required', 'string'],

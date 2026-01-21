@@ -14,10 +14,8 @@ class FormUpdateTeammateOnlineStatusData extends Data
 
     public static function rules(): array
     {
-        $values = array_map(static fn (UserOnlineStatus $s) => $s->value, UserOnlineStatus::cases());
-
         return [
-            'online_status' => ['required', 'integer', Rule::in($values)],
+            'online_status' => ['required', 'integer', Rule::enum(UserOnlineStatus::class)],
         ];
     }
 }

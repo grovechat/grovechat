@@ -52,6 +52,23 @@ test('authenticated user can create storage profile when connection check passes
     expect($profile->url)->toBe('https://cdn.example.com');
 });
 
+test('create storage profile fails when provider is invalid enum value', function () {
+    Storage::shouldReceive('build')->never();
+
+    $this->actingAs($this->user, 'admin')
+        ->post(route('admin.storage-profile.create'), [
+            'name' => 'bad-provider',
+            'provider' => 'not-a-provider',
+            'region' => 'ap-guangzhou',
+            'endpoint' => 'https://cos.ap-guangzhou.myqcloud.com',
+            'bucket' => 'bucket',
+            'key' => 'key',
+            'secret' => 'secret',
+            'url' => 'https://cdn.example.com',
+        ])
+        ->assertSessionHasErrors('provider');
+});
+
 test('create storage profile fails with field error when connection check fails', function () {
     Storage::shouldReceive('build')
         ->once()
