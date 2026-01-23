@@ -59,7 +59,10 @@ ENV LANG=zh_CN.UTF-8 \
 
 # Go 配置
 ENV GOPROXY=https://goproxy.cn,direct \
-    GO111MODULE=on
+    GO111MODULE=on \
+    GOPATH=/root/go \
+    GOROOT=/usr/local/go \
+    PATH=$PATH:/root/go/bin:/usr/local/go/bin
 RUN CGO_ENABLED=0 go install -v -ldflags="-s -w" golang.org/x/tools/gopls@latest
 RUN CGO_ENABLED=0 go install -v -ldflags="-s -w" honnef.co/go/tools/cmd/staticcheck@latest
 COPY go.mod go.sum ./

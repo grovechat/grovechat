@@ -37,7 +37,7 @@ docker buildx build \
     ${BUILD_ARGS} \
     --platform linux/amd64 \
     -t grovechat-static-builder:amd64 \
-    -f static-build.Dockerfile \
+    -f static.Dockerfile \
     --load \
     .
 
@@ -54,7 +54,7 @@ docker buildx build \
     ${BUILD_ARGS} \
     --platform linux/arm64 \
     -t grovechat-static-builder:arm64 \
-    -f static-build.Dockerfile \
+    -f static.Dockerfile \
     --load \
     .
 

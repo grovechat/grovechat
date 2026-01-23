@@ -53,6 +53,12 @@
   },
 
   "forwardPorts": [80, 443, 5173],
+  "containerEnv": {
+    "GOPATH": "/root/go",
+    "PATH": "/root/go/bin:${containerEnv:PATH}",
+    "SHELL": "/bin/bash"
+  },
 
+  "postCreateCommand": "ln -sf /bin/bash /bin/sh",
   "remoteUser": "root"
 }
